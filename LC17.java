@@ -11,7 +11,7 @@ Input:Digit string "23"
 Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
 
 Combination/DFS/BFS
-Sum of Geo
+Sum of Geometric Series
 */
 
 class LC17 {
