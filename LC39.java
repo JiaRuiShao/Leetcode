@@ -1,8 +1,6 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /*
 Problem:
@@ -63,7 +61,6 @@ public class LC39 {
 	 * 	- why T/MIN(N) + 1 layers/call stack? in case the target cannot be evenly divided by min(n)
 	 * Space: O(T/MIN(N))
 	 * 	- max stackframe layers
-	 * 	- **Note that, we don't take into the account the space used to hold the final results for the space complexity
 	 *
 	 * @param candidates the candidate numbers
 	 * @param target     the target sum
