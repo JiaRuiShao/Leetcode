@@ -92,7 +92,7 @@ public class LC46 {
             path.add(num);
             used[i] = true;
             // **move on to the next call stack in decision tree
-            backtrack1(nums, path, result);
+            backtrack2(nums, used, path, result);
             // **deselect
             path.remove(path.size() - 1);
             used[i] = false;
