@@ -1,7 +1,19 @@
 public class Test {
     public static void main(String[] args) {
-        int[] nums = new int[] {0, 1, 2};
-        System.out.println('1'-'0');
-        System.out.println(Integer.parseInt(Character.toString('1')));
+        int[] a = { 1, 2, 3, 4, 5 };
+        int[] b = { 1, 2, 3, 4, 5 };
+
+        if (a == b) {
+            System.out.println("a == b is true");
+        } else {
+            System.out.println("a == b is false");
+        }
+        
+        if (a.equals(b)) {
+            System.out.println("true");
+        } else {
+            System.out.println("false");
+        }
+
     }
 }
