@@ -7,6 +7,16 @@ import java.util.Set;
 
 public class _127 {
 
+    /**
+     * Time: O(N + (M * 24) * N) = O(N + 240N) = O(N) where N is the number of words in the given word list (dictionary)
+     * - 1 ≤ M ≤ 10 according to the requirement
+     * - at most N newWord
+     * 
+     * Space: O(3N + N * M + N * M * 23) = O(3N + 240N) = O(N)
+     * - 1≤ M ≤ 10 according to the requirement
+     * - char[] chars: O(N * M)
+     * - String newWord: O(N * M * 23)
+     */
     static class BFS {
 
         private void addNextWords(String word, Queue<String> words, Set<String> dict, Set<String> visited) {
