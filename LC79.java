@@ -7,8 +7,6 @@ import java.util.Set;
 public class LC79 {
 
 	public static class Solution1 {
-        // credit: https://discuss.leetcode.com/topic/21142/my-java-solution
-
         boolean[][] visited;
 
         public boolean exist(char[][] board, String word) {
@@ -102,23 +100,6 @@ public class LC79 {
             return false;
         }
     }
-
-
-	/* // 3 x 4 example
-	int[][] neighbors = {
-		{1, 4}, // 0
-		{0, 2, 5}, // 1
-		{1, 3, 6}, // 2
-		{2, 7}, // 3
-		{0, 5, 8}, // 4
-		{1, 4, 6, 9}, // 5
-		{2, 5, 7, 10}, // 6
-		{3, 6, 11}, // 7
-		{4, 9}, // 8
-		{5, 8, 10}, // 9
-		{6, 9, 11}, // 10
-		{7, 10} // 11
-	}; */
 
 	int m, n;
 
