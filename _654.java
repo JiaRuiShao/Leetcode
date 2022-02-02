@@ -17,12 +17,12 @@ class _654 {
         public TreeNode constructMaximumBinaryTree(int[] nums) {
             return build(nums, 0, nums.length - 1);
         }
-        
+
         /**
          * Build the tree given nums[lo..hi] & return the root.
          * Time: O(n + n-1 + n-2 + ... + 1) = O(n^2)
          * Space: O(n)
-         * 
+         *
          * @param nums the input arr
          * @param lo left arr range
          * @param hi right arr range
@@ -33,7 +33,7 @@ class _654 {
             if (lo > hi) {
                 return null;
             }
-        
+
             // find the max value & its index in the given array scope
             int index = -1, maxVal = Integer.MIN_VALUE;
             for (int i = lo; i <= hi; i++) {
@@ -42,12 +42,12 @@ class _654 {
                     maxVal = nums[i];
                 }
             }
-        
+
             TreeNode root = new TreeNode(maxVal);
             // recursively build left & right sub tree
             root.left = build(nums, lo, index - 1);
             root.right = build(nums, index + 1, hi);
-            
+
             return root;
         }
     }
