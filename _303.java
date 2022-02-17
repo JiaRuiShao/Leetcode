@@ -1,5 +1,5 @@
 public class _303 {
-    static class Solution {
+    static class Solution1 {
         class NumArray {
             private int[] preSum;
 
@@ -13,6 +13,30 @@ public class _303 {
 
             public int sumRange(int left, int right) {
                 return preSum[right + 1] - preSum[left];
+            }
+        }
+    }
+
+    static class Solution2 {
+        public static class NumArray {
+            int[] sums;
+
+            public NumArray(int[] nums) {
+                sums = new int[nums.length];
+                for (int i = 0; i < nums.length; i++) {
+                    if (i == 0) {
+                        sums[i] = nums[i];
+                    } else {
+                        sums[i] = sums[i - 1] + nums[i];
+                    }
+                }
+            }
+
+            public int sumRange(int i, int j) {
+                if (i == 0) {
+                    return sums[j];
+                }
+                return sums[j] - sums[i - 1];
             }
         }
     }
