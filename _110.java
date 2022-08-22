@@ -5,6 +5,8 @@
  * a binary tree in which the left and right subtrees of every node differ in height by no more than 1.
  * In order to know whether the height of any left and right subtree differ by at least one, we need to know:
  * - the height of any left & right subtree of any node
+ * - and then check their height difference
+ * also, we need to know whether the left and right subtree is balanced.
  */
 public class _110 {
     private static class TreeNode {
