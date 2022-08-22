@@ -22,7 +22,7 @@ public class _104 {
     class Solution1_DP {
         /**
          * Divide the problem into sub-problems -- height of tree = height of root node = max(h_left_subtree, h_right_subtree) + 1.
-         * Time: O(h) = O(n)
+         * Time: O(n)
          * Space: O(h) = O(n)
          * @param root
          * @return
@@ -67,7 +67,7 @@ public class _104 {
         /**
          * Level-order traverse.
          * Time: O(n)
-         * Space: O(n)
+         * Space: O(n) when the tree is balanced
          * @param root
          * @return
          */
