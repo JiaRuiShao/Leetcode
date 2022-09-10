@@ -13,7 +13,7 @@ public class _111 {
         /**
          * Faster than DFS -- traverse less nodes.
          * Time: O(n/2) if balanced; O(n) if skewed
-         * Space: O(n) if balanced; O(1) if skewed
+         * Space: O(w) = O(n) if balanced; O(1) if skewed
          * @param root
          * @return
          */
