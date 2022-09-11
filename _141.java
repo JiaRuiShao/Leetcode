@@ -3,9 +3,18 @@ import helper.ListNode;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * 141. Linked List Cycle.
+ */
 public class _141 {
 
-    public static class Solution1 {
+    public static class Solution1_HashTable {
+        /**
+         * Time: O(n)
+         * Space: O(n)
+         * @param head
+         * @return
+         */
         public boolean hasCycle(ListNode head) {
             Set<ListNode> set = new HashSet();
             while (head != null) {
@@ -18,7 +27,14 @@ public class _141 {
         }
     }
 
-    public class Solution2 {
+    public class Solution2_Fast_Slow_Pointers {
+        /**
+         * Floyd's Algorithm.
+         * Time: O(n+k) = O(n) where k is the cycle length if it exists
+         * Space: O(1)
+         * @param head
+         * @return
+         */
         public boolean hasCycle(ListNode head) {
             // fast & slow pointer
             ListNode slow = head, fast = head;
