@@ -23,7 +23,7 @@ public class _102 {
         }
     }
 
-    class Solution1 {
+    class Solution1_Iterative_BFS {
 
         /**
          * Breath-First Search.
@@ -55,11 +55,11 @@ public class _102 {
         }
     }
 
-    class Solution2 {
+    class Solution2_DFS_Recursion {
 
         private void traverse(TreeNode root, List<List<Integer>> res, int depth) {
             if (root == null) return;
-            if (depth == res.size()) res.add(new ArrayList<Integer>());
+            if (depth == res.size()) res.add(new ArrayList<>());
             res.get(depth).add(root.val);
             traverse(root.left, res, depth + 1);
             traverse(root.right, res, depth + 1);
