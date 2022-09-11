@@ -3,8 +3,12 @@ import helper.ListNode;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * 142. Linked List Cycle II.
+ * Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return null.
+ */
 public class _142 {
-    static class Solution1 {
+    static class Solution1_Fast_Slow_Pointers {
         ListNode detectCycle(ListNode head) {
             ListNode fast, slow;
             fast = slow = head;
@@ -26,9 +30,7 @@ public class _142 {
             }
             return slow; // or fast
         }
-    }
 
-    public static class Solution2 {
         /**
          * This comment explains it really well for this solution:
          * https://leetcode.com/problems/linked-list-cycle-ii/discuss/44774/Java-O(1)-space-solution-with-detailed-explanation./44281
@@ -39,7 +41,7 @@ public class _142 {
          * so at point P, we start a new slow2 pointer from the head, when both slow and slow2 travelled distance a, they must meet
          * at cycle entrance point Q.
          */
-        public ListNode detectCycle(ListNode head) {
+        public ListNode detectCycle2(ListNode head) {
             ListNode slow = head;
             ListNode fast = head;
             while (fast != null && fast.next != null) {
@@ -58,7 +60,7 @@ public class _142 {
         }
     }
 
-    public static class Solution3 {
+    public static class Solution2_HashTable {
         public ListNode detectCycle(ListNode head) {
             Set<ListNode> seen = new HashSet<>(); // store the list nodes we already traversed
             while (head != null) {
