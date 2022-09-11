@@ -1,6 +1,4 @@
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class Test {
 
@@ -40,10 +38,19 @@ public class Test {
             System.out.println("false");
         }*/
 
-        System.out.println((int)'Z');
+        /*System.out.println((int)'Z');
         System.out.println((int)'z');
         System.out.println((int)'a');
-        System.out.println((int)'A');
+        System.out.println((int)'A');*/
+
+        List<String> a = List.of("a", "b", "c");
+        a.forEach(System.out::print);
+        System.out.println(a);
+
+        int[] arr = new int[2];
+        arr[0] = 1;
+        arr[1] = 2;
+        System.out.println(Arrays.toString(arr));
     }
 
     void traverse(TreeNode root) {
