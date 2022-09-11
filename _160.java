@@ -3,6 +3,9 @@ import helper.ListNode;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * 160. Intersection of Two Linked Lists
+ */
 public class _160 {
     public static class Solution1 {
         /**
@@ -49,16 +52,13 @@ public class _160 {
          * O(1) space
          */
         public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
-            if (headA == null || headB == null) {
-                return null;
-            }
-
             ListNode a = headA;
             ListNode b = headB;
 
-            /**if a and b have different lengths, then it will stop the loop after second iteration*/
+            // if a and b don't intersect, then the loop will be terminated after second iteration
+            // (1st iteration if they have the same length) when a = b = null
             while (a != b) {
-                /**for the first iteration, it'll just reset the pointer to the head of another linkedlist*/
+                // for the first iteration, reset the pointer to the head of another linkedlist
                 a = a == null ? headB : a.next;
                 b = b == null ? headA : b.next;
             }
