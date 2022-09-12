@@ -1,7 +1,11 @@
 import helper.ListNode;
 
+/**
+ * 19. Remove Nth Node From End of List.
+ * Given the head of a linked list, remove the nth node from the end of the list and return its head.
+ */
 public class _19 {
-    static class Solution1 {
+    static class Solution1_Two_Pointers {
         public ListNode removeNthFromEnd(ListNode head, int n) {
             ListNode n1 = head, n2 = head, prev = head;
             while (n1 != null && n > 0) { // n steps
@@ -19,9 +23,7 @@ public class _19 {
             prev.next = n2.next;
             return head;
         }
-    }
 
-    static class Solution2 {
         /**
          * This solution is more clear & concise.
          *
@@ -29,7 +31,7 @@ public class _19 {
          * @param n target n
          * @return the head of the ll
          */
-        public ListNode removeNthFromEnd(ListNode head, int n) {
+        public ListNode removeNthFromEnd2(ListNode head, int n) {
             ListNode dummy = new ListNode(-1);
             dummy.next = head;
             // to delete the nth node from the end, we need to find the (n + 1)th node from the end
@@ -61,5 +63,9 @@ public class _19 {
             // p2 now points to the (n - k)th node
             return p2;
         }
+    }
+
+    static class Solution2_One_Pointer {
+
     }
 }
