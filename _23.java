@@ -2,7 +2,13 @@ import helper.ListNode;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
+/**
+ * 23. Merge k Sorted Lists.
+ * You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+ * Merge all the linked-lists into one sorted linked-list and return it.
+ */
 public class _23 {
     static class Solution {
         /**
@@ -20,7 +26,7 @@ public class _23 {
             int k = lists.length;
             ListNode dummy = new ListNode(-1), curr = dummy, temp;
             /** Notice that here the initialization size CANNOT be 0 */
-            PriorityQueue<ListNode> minHeap = new PriorityQueue<>(k, (a, b) -> Integer.compare(a.val, b.val));
+            Queue<ListNode> minHeap = new PriorityQueue<>(k, (a, b) -> Integer.compare(a.val, b.val));
             // O(klogk)
             for (ListNode node : lists) {
                 if (node != null) minHeap.offer(node);
