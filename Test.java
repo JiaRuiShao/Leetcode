@@ -43,14 +43,18 @@ public class Test {
         System.out.println((int)'a');
         System.out.println((int)'A');*/
 
-        List<String> a = List.of("a", "b", "c");
+        /*List<String> a = List.of("a", "b", "c");
         a.forEach(System.out::print);
         System.out.println(a);
 
         int[] arr = new int[2];
         arr[0] = 1;
         arr[1] = 2;
-        System.out.println(Arrays.toString(arr));
+        System.out.println(Arrays.toString(arr));*/
+
+        System.out.println("a: " + (int) 'a');
+        System.out.println("A: " + (int) 'A');
+        System.out.println("a-A: " + String.valueOf('a' - 'A'));
     }
 
     void traverse(TreeNode root) {
