@@ -1,13 +1,20 @@
+/**
+ * 303. Range Sum Query - Immutable.
+ * Implement the NumArray class:
+ * - NumArray(int[] nums) Initializes the object with the integer array nums
+ * - int sumRange(int left, int right) Returns the sum of the elements of nums between indices left and right inclusive
+ * (i.e. nums[left] + nums[left + 1] + ... + nums[right]).
+ */
 public class _303 {
-    static class Solution1 {
+    static class Solution1_PrefixSum {
         class NumArray {
             private int[] preSum;
 
             public NumArray(int[] nums) {
                 // preSum[0] = 0, used to calculate the sum
                 preSum = new int[nums.length + 1];
-                for (int i = 1; i < preSum.length; i++) {
-                    preSum[i] = preSum[i - 1] + nums[i - 1];
+                for (int i = 0; i < nums.length; i++) {
+                    preSum[i + 1] = preSum[i] + nums[i];
                 }
             }
 
@@ -17,7 +24,7 @@ public class _303 {
         }
     }
 
-    static class Solution2 {
+    static class Solution2_PrefixSum_Modified {
         public static class NumArray {
             int[] sums;
 
