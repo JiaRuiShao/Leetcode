@@ -45,7 +45,7 @@ public class _1314 {
 	class Solution2_BruteForce {
 		
 		/**
-		 * Time: O(m^2*n^2)
+		 * Time: O(m*n*k^2)
 		 * Space: O(1)
 		 *
 		 * @param mat given int matrix
@@ -55,23 +55,24 @@ public class _1314 {
 		public int[][] matrixBlockSum(int[][] mat, int k) {
 			int m = mat.length, n = mat[0].length;
 			int[][] ans = new int[m][n];
-			int r1 = 0, r2 = 0, c1 = 0, c2 = 0;
+			int rMin, rMax, cMin, cMax;
+			
 			for (int i = 0; i < m; i++) {
 				for (int j = 0; j < n; j++) {
-					ans[i][j] = sumMat(mat, i, j, k);
+					rMin = i - k >= 0 ? i - k : 0;
+					rMax = i + k < m ? i + k : m - 1;
+					cMin = j - k >= 0 ? j - k : 0;
+					cMax = j + k < n ? j + k : n - 1;
+					
+					for (int r = rMin; r <= rMax; r++) {
+						for (int c = cMin; c <= cMax; c++) {
+							ans[r][c] += mat[i][j];
+						}
+					}
 				}
 			}
+			
 			return ans;
-		}
-		
-		int sumMat(int[][] mat, int i, int j, int k) {
-			int sum = 0;
-			for (int a = i - k; a <= i + k; a++)
-				if (a >= 0 && mat.length > a)
-					for (int b = j - k; b <= j + k; b++)
-						if (b >= 0 && mat[0].length > b)
-							sum += mat[a][b];
-			return sum;
 		}
 	}
 }
