@@ -55,17 +55,17 @@ public class _1314 {
 		public int[][] matrixBlockSum(int[][] mat, int k) {
 			int m = mat.length, n = mat[0].length;
 			int[][] ans = new int[m][n];
-			int rMin, rMax, cMin, cMax;
+			int r1, r2, c1, c2;
 			
 			for (int i = 0; i < m; i++) {
 				for (int j = 0; j < n; j++) {
-					rMin = i - k >= 0 ? i - k : 0;
-					rMax = i + k < m ? i + k : m - 1;
-					cMin = j - k >= 0 ? j - k : 0;
-					cMax = j + k < n ? j + k : n - 1;
+					r1 = Math.max(i - k, 0);
+					r2 = Math.min(i + k, m - 1);
+					c1 = Math.max(j - k, 0);
+					c2 = Math.min(j + k, n - 1);
 					
-					for (int r = rMin; r <= rMax; r++) {
-						for (int c = cMin; c <= cMax; c++) {
+					for (int r = r1; r <= r2; r++) {
+						for (int c = c1; c <= c2; c++) {
 							ans[r][c] += mat[i][j];
 						}
 					}
