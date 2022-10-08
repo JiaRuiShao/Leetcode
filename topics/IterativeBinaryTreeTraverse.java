@@ -1,13 +1,15 @@
-package topics.bt;
+package topics;
 
 import helper.TreeNode;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class IterativeTraverse {
+/**
+ * Binary Tree Iterative Traverse.
+ */
+public class IterativeBinaryTreeTraverse {
 
     class Solution1_Iterative_Stack {
 
