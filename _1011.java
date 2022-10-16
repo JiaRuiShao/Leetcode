@@ -4,6 +4,14 @@ import java.util.Arrays;
  * 1011. Capacity To Ship Packages Within D Days.
  */
 public class _1011 {
+	/**
+	 * Time: O(log((S-M)*n)) where n is num of orders in the given weights, M is the max order weight, and S is sum of order weights.
+	 * Space: O(1)
+	 *
+	 * @param weights given order weights
+	 * @param days target days
+	 * @return min weight capacity that ship within target days
+	 */
 	public int shipWithinDays(int[] weights, int days) {
 		return lowerBoundBinarySearch(weights, days, Arrays.stream(weights).max().getAsInt(), Arrays.stream(weights).sum());
 	}
