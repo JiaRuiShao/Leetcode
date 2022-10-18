@@ -1,32 +1,34 @@
+/**
+ * 370. Range Addition.
+ */
 public class _370 {
-    class Solution1 {
-        /**
-         * Use difference array to return the arr with length after applying the updates.
-         *
-         * @param length result array length
-         * @param updates updates[i] = [startIdx, endIdx, increaseVal]
-         * @return the result array
-         */
+    class Solution1_Differential_Array {
         public int[] getModifiedArray(int length, int[][] updates) {
-            int[] arr = new int[length];
-            if (updates == null || updates.length == 0) return arr;
-            // build the difference array
             int[] diff = new int[length];
             for (int[] update : updates) {
-                int i = update[0], j = update[1], val = update[2];
-                diff[i] += val;
-                if (j + 1 < length) diff[j + 1] -= val;
+                updateDiff(diff, update[0], update[1], update[2]);
             }
-            // build the result array based on the difference array
+            return updatedArr(diff);
+        }
+        
+        private void updateDiff(int[] diff, int start, int end, int val) {
+            diff[start] += val;
+            if (end + 1 < diff.length) {
+                diff[end + 1] -= val;
+            }
+        }
+        
+        private int[] updatedArr(int[] diff) {
+            int[] arr = new int[diff.length];
             arr[0] = diff[0];
-            for (int i = 1; i < length; i++) {
+            for (int i = 1; i < diff.length; i++) {
                 arr[i] = arr[i - 1] + diff[i];
             }
             return arr;
         }
     }
 
-    public static class Solution2 {
+    class Solution2_Brute_Force {
         /**
          * The brute force way to update the array.
          *
