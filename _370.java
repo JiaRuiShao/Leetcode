@@ -29,13 +29,6 @@ public class _370 {
     }
 
     class Solution2_Brute_Force {
-        /**
-         * The brute force way to update the array.
-         *
-         * @param length result array length
-         * @param updates updates[i] = [startIdx, endIdx, increaseVal]
-         * @return the result array
-         */
         public int[] getModifiedArray(int length, int[][] updates) {
             int[] result = new int[length];
             for (int[] update : updates) {
