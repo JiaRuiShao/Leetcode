@@ -1,5 +1,8 @@
 import java.util.Arrays;
 
+/**
+ * 48. Rotate Image.
+ */
 public class _48 {
     static class Rotate90DegreesClockwise {
         /**First swap the elements on the diagonal, then reverse each col:
@@ -50,7 +53,7 @@ public class _48 {
             int m = matrix.length, tmp;
             /** First rotate on the diagonal -- swap m[i][j] & m[m-1-j][m-1-i] **/
             for (int i = 0; i < m; i++) {
-                for (int j = 0; j < m - 1 - i; j++) { // OR j = 0; j < i; j++
+                for (int j = 0; j < m - 1 - i; j++) { // OR j = m - 1; j > m - 1 - i; j--
                     tmp = matrix[i][j];
                     matrix[i][j] = matrix[m-1-j][m-1-i];
                     matrix[m-1-j][m-1-i] = tmp;
