@@ -1,0 +1,37 @@
+
+
+```
+private Deque<TreeNode> stk = new ArrayDeque<>();
+
+public List<Integer> traverse(TreeNode root) {
+    // records the root node that has been traversed the last time
+    TreeNode visited = new TreeNode(-1);
+    // start traversal
+    pushLeftBranch(root);
+    
+    while (!stk.isEmpty()) {
+        TreeNode p = stk.peek();
+        // if left subtree of p has been traversed & right subtree hasn't been traversed
+        if ((p.left == null || p.left == visited) && p.right != visited) {
+            /** in-order traversal position **/
+            // traverse the right subtree of node p
+            pushLeftBranch(p.right);
+        }
+        // if right subtree of p has been traversed
+        if (p.right == null || p.right == visited) {
+            /** post-order traversal position **/
+            // update visited pointer
+            visited = stk.pop();
+        }
+    }
+}
+
+// add all left childs in the stack
+private void pushLeftBranch(TreeNode p) {
+    while (p != null) {
+	/** pre-order traversal position **/
+        stk.push(p);
+        p = p.left;
+    }
+}
+```
