@@ -2,10 +2,12 @@ import helper.ListNode;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
+/**
+ * 234. Palindrome Linked List.
+ */
 public class _234 {
-    static class Solution1 {
+    static class Solution1_Iterative_Stack {
         /**
          * Check if a LinkedList is a palindrome.
          * Time: O(3n/2) = O(n)
@@ -35,8 +37,8 @@ public class _234 {
         }
     }
 
-    static class Solution2 {
-        ListNode head;
+    static class Solution2_Recursive_Two_Pointers {
+        ListNode left;
 
         /**
          * Post-order traversal, use call stack as a stack.
@@ -44,20 +46,22 @@ public class _234 {
          * @param curr current list node
          * @return true if the given linked list is a palindrome; false if not
          */
-        private boolean traverse(ListNode curr) {
-            if (curr == null || head == null) return true;
-            boolean res = traverse(curr.next) && curr.val == head.val;
-            head = head.next;
+        private boolean traverse(ListNode right) {
+            if (right == null || left == null) return true;
+            boolean res = traverse(right.next);
+            // post-order traversal
+            res = res && right.val == left.val;
+            left = left.next;
             return res;
         }
 
         public boolean isPalindrome(ListNode head) {
-            this.head = head;
+            this.left = head;
             return traverse(head);
         }
     }
 
-    static class Solution3 {
+    static class Solution3_Iterative_Fast_Slow_Pointers {
         private ListNode reverse(ListNode head) {
             ListNode prev = null, curr = head, next = head;
             while (curr != null) {
@@ -69,7 +73,7 @@ public class _234 {
             return prev;
         }
 
-        boolean isPalindrome(ListNode head) {
+        public boolean isPalindrome(ListNode head) {
             ListNode slow = head, fast = head;
             // find the middle node
             while (fast != null && fast.next != null) {
@@ -90,6 +94,5 @@ public class _234 {
 
             return true;
         }
-
     }
 }
