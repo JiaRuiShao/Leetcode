@@ -1,5 +1,7 @@
 /**
  * 264. Ugly Number II.
+ * An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
+ * Given an integer n, return the nth ugly number.
  */
 public class _264 {
 	public static void main(String[] args) {
@@ -51,12 +53,19 @@ public class _264 {
 		 * @return the nth ugly number whose prime factor are: 2, 3, and 5
 		 */
 		public int nthUglyNumber(int n) {
+			// p is teh pointer of the merged ugly num list, and p2, p3, p5 represents the pointer for list of multiples of 2, 3, and 5
 			int p = 0, p2 = 0, p3 = 0, p5 = 0;
+			// represent the pointed val on list of multiples of 2, 3, and 5
 			int product2 = 1, product3 = 1, product5 = 1;
+			// merged list
 			int[] ugly = new int[n];
+			
+			// merge three list until nth elem
 			while (p < n) {
+				// update the merged list with the smallest val of three list
 				int min = findSmallest(product2, product3, product5);
 				ugly[p++] = min;
+				// update the pointers and pointed val of three lists
 				if (product2 == min) {
 					product2 = 2 * ugly[p2++];
 				}
@@ -67,6 +76,7 @@ public class _264 {
 					product5 = 5 * ugly[p5++];
 				}
 			}
+			// return the nth ugly num
 			return ugly[n - 1];
 		}
 		
