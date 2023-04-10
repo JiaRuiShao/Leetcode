@@ -59,16 +59,43 @@ public class _111 {
             currDepth++;
             if (root.left == null && root.right == null) {
                 minDepth = Math.min(minDepth, currDepth);
-                return;
             }
             if (root.left != null) {
                 traverseTree(root.left);
-                currDepth--;
             }
             if (root.right != null) {
                 traverseTree(root.right);
-                currDepth--;
             }
+            currDepth--;
+        }
+    }
+    
+    class Solution2_DFS_Backtrack2 {
+        int depth = 0, minDepth = Integer.MAX_VALUE;
+        
+        public int minDepth(TreeNode root) {
+            backtracking(root);
+            return minDepth == Integer.MAX_VALUE ? 0 : minDepth;
+        }
+        
+        private void backtracking(TreeNode root) {
+            if (root == null) {
+                return;
+            }
+            depth++;
+            // base case: leaf node, update minDepth
+            if (root.left == null && root.right == null) {
+                minDepth = Math.min(depth, minDepth);
+                // continue traversing to next level/depth
+            } else if (root.left != null && root.right != null) {
+                backtracking(root.left);
+                backtracking(root.right);
+            } else if (root.left != null) {
+                backtracking(root.left);
+            } else if (root.right != null) {
+                backtracking(root.right);
+            }
+            depth--;
         }
     }
 
