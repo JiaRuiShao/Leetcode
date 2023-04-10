@@ -6,22 +6,35 @@ import helper.ListNode;
  */
 public class _19 {
     static class Solution1_Two_Pointers {
+        /**
+         * Use dummy node to simplify the case where the head is null or head is the node to be deleted.
+         *
+         * @param head head node
+         * @param n nth from the end
+         * @return modified list
+         */
         public ListNode removeNthFromEnd(ListNode head, int n) {
-            ListNode n1 = head, n2 = head, prev = head;
-            while (n1 != null && n > 0) { // n steps
-                n1 = n1.next;
-                n--;
+            ListNode dummy = new ListNode(-1, head);
+            ListNode p1 = dummy, p2 = dummy, prev = null;
+    
+            // move p1 forward by n steps
+            for (int step = 0; step < n; step++) {
+                p1 = p1.next;
+                if (p1 == null) { // n > size
+                    return dummy.next;
+                }
             }
-            if (n > 0) return head; // n > list size
-            if (n == 0 && n1 == null) return n2.next; // head is the node to be deleted
-            while (n1 != null) { // size - n steps
-                n1 = n1.next;
-                prev = n2;
-                n2 = n2.next;
+    
+            // move p1 & p2 forward together until p1 is null
+            // then p2 points to the node we need to remove
+            while (p1 != null) {
+                p1 = p1.next;
+                prev = p2;
+                p2 = p2.next;
             }
-            // now n2 points to the node to be deleted
-            prev.next = n2.next;
-            return head;
+            prev.next = p2.next;
+    
+            return dummy.next;
         }
 
         /**
