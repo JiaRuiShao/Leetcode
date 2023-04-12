@@ -1,39 +1,52 @@
-import helper.ListNode;
-
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 1836. Remove Duplicates From an Unsorted Linked List.
  */
 public class _1836 {
-	class Solution1_HashMap {
+	public static class ListNode {
+		int val;
+		ListNode next;
+		
+		public ListNode() {
+		}
+		
+		public ListNode(int val) {
+			this.val = val;
+		}
+		
+		public ListNode(int val, ListNode next) {
+			this.val = val;
+			this.next = next;
+		}
+	}
+	/**
+	 * Time: O(n)
+	 * Space: O(n)
+	 */
+	class Solution1_HashMap_Two_Pointers {
 		public ListNode deleteDuplicatesUnsorted(ListNode head) {
-			Set<Integer> duplicates = new HashSet<>();
-			ListNode dummy = new ListNode(-1), prev = dummy, curr = head;
-			findDuplicates(head, duplicates);
+			ListNode dummy = new ListNode(-1, head);
+			ListNode left = dummy, right = head;
+			Map<Integer, Integer> freq = new HashMap<>();
+			buildFreqMap(right, freq);
 			
-			while (curr != null) {
-				if (!duplicates.contains(curr.val)) {
-					prev.next = curr;
-					prev = prev.next;
+			while (right != null) {
+				if (freq.get(right.val) == 1) {
+					left.next = right;
+					left = left.next;
 				}
-				curr = curr.next;
+				right = right.next;
 			}
-			prev.next = null;
+			left.next = null;
 			return dummy.next;
 		}
 		
-		private void findDuplicates(ListNode head, Set<Integer> duplicates) {
-			Map<Integer, Integer> freq = new HashMap<>();
-			while (head != null) {
-				freq.put(head.val, freq.getOrDefault(head.val, 0) + 1);
-				if (freq.get(head.val) == 2) {
-					duplicates.add(head.val);
-				}
-				head = head.next;
+		private void buildFreqMap(ListNode curr, Map<Integer, Integer> freq) {
+			while (curr != null) {
+				freq.put(curr.val, freq.getOrDefault(curr.val, 0) + 1);
+				curr = curr.next;
 			}
 		}
 	}
