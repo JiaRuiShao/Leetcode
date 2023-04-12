@@ -56,13 +56,28 @@ public class _160 {
             ListNode b = headB;
 
             // if a and b don't intersect, then the loop will be terminated after second iteration
-            // (1st iteration if they have the same length) when a = b = null
+            // (1st iteration if they have the same length) when a == b == null
             while (a != b) {
-                // for the first iteration, reset the pointer to the head of another linkedlist
+                // for the first iteration, reset the pointer to the head of another linked-list
                 a = a == null ? headB : a.next;
                 b = b == null ? headA : b.next;
             }
             return a;
+        }
+    
+        public ListNode getIntersectionNode2(ListNode headA, ListNode headB) {
+            ListNode n1 = headA, n2 = headB;
+            while (n1 != null && n2 != null) {
+                if (n1 == n2) {
+                    return n1;
+                } else if (n1.next == null && n2.next == null) {
+                    break;
+                }
+            
+                n1 = n1.next == null ? headB : n1.next;
+                n2 = n2.next == null ? headA : n2.next;
+            }
+            return null;
         }
     }
 
