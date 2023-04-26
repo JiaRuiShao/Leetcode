@@ -1,8 +1,11 @@
 import helper.ListNode;
 
+/**
+ * 92. Reverse Linked List II.
+ */
 public class _92 {
 
-    public static class Solution1 {
+    public static class Solution1_Iterative_Two_Pointers {
         public ListNode reverseBetween(ListNode head, int m, int n) {
             // use four nodes, pre, start, next, dummy
             // just reverse the nodes along the way
@@ -34,7 +37,7 @@ public class _92 {
         }
     }
 
-    public static class Solution2 {
+    public static class Solution2_Iterative_Two_Pointers {
         public ListNode reverseBetween(ListNode head, int left, int right) {
             int pos = 0; // points to the position of the curr node
             ListNode dummy = new ListNode(-1, head);
@@ -59,7 +62,7 @@ public class _92 {
         }
     }
 
-    static class Solution3 {
+    static class Solution3_Recursion {
 
         ListNode prev = null, last = null, end = null;
 
@@ -92,25 +95,86 @@ public class _92 {
     /**
      * Ref: https://labuladong.github.io/algo/2/17/17/
      */
-    static class Solution4 {
+    static class Solution4_Recursion {
 
-        ListNode end = null;
-
+        ListNode successor = null;
+    
+        /**
+         * A helper recursive method to reverse the front n nodes of a singly linked list.
+         *  1    ->   2   ->   3   ->   4   ->  5
+         * prev     start              end     next
+         * @param curr curr call stack ListNode
+         * @param n nth
+         * @return a list with first n nodes reversed
+         */
         ListNode reverseN(ListNode curr, int n) {
             if (n == 1) {
-                end = curr.next; // record the (n+1)th node (end)
-                return curr; // return the new head (last)
+                successor = curr.next; // record the (n+1)th node (next successor)
+                return curr; // return the new head (end)
             }
-            ListNode last = reverseN(curr.next, n - 1);
+            ListNode end = reverseN(curr.next, n - 1);
             curr.next.next = curr; // reverse, set the next node of curr.next to curr
-            curr.next = end;
-            return last;
+            curr.next = successor; // only the start.next will not be overwritten
+            return end;
         }
-
+    
+        /**
+         * Deconstruct this problem into:
+         * 1) m == 1 => use a helper method to help simplify this problem
+         * 2) m != 1 => continue traversing, set head.next to reversedHead
+         *
+         * @param head head
+         * @param m m
+         * @param n n
+         * @return reversed list
+         */
         ListNode reverseBetween(ListNode head, int m, int n) {
             if (m == 1) return reverseN(head, n);
             head.next = reverseBetween(head.next, m - 1, n - 1);
             return head;
+        }
+    }
+    
+    static class Solution5_Recursion  {
+        
+        ListNode prev, start, end, next;
+        // 1    ->   2   ->   3   ->   4   ->  5
+        // prev    start              end     next
+        public ListNode reverseBetween(ListNode head, int left, int right) {
+            if (head == null || head.next == null || left == right) {
+                return head;
+            }
+            reverse(head, left - 1, right - 1);
+            if (prev != null) {
+                prev.next = end;
+            }
+            if (start != null) {
+                start.next = next;
+            }
+            return left == 1 ? end : head;
+        }
+        
+        private void reverse(ListNode head, int left, int right) {
+            if (left == 1) {
+                prev = head;
+            }
+            if (left == 0) {
+                start = head;
+            }
+            if (right == 0) {
+                end = head;
+            }
+            if (right == -1) {
+                next = head;
+            }
+            if (head == null || head.next == null) {
+                return;
+            }
+            reverse(head.next, left - 1, right - 1);
+            if (left <= 0 && right > 0) {
+                head.next.next = head;
+                head.next = null;
+            }
         }
     }
 
@@ -120,7 +184,7 @@ public class _92 {
             curr.next = new ListNode(i);
             curr = curr.next;
         }
-        new Solution3().reverseBetween(head, 2, 4);
+        new Solution5_Recursion().reverseBetween(head, 2, 4);
     }
 
 
