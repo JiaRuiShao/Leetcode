@@ -16,6 +16,7 @@ public class _25 {
 		 * SLL | 1   ->  2  ->     3     ->  4  ->  5
 		 * REV | 1   <-  2  <-     3           4  ->  5
 		 * VAR | head         reversedHead  successor
+		 *
 		 * @param head starting node of k group
 		 * @param k k
 		 * @return a list with each k group reversed
@@ -38,6 +39,7 @@ public class _25 {
 		 * Suppose 1 is the head passed in & k is 3:
 		 * SLL | 1 -> 2 -> 3 -> 4 -> 5
 		 * K   | 3    2    1
+		 *
 		 * Notice:
 		 * 1) we need the successor of the reversed list (here is 4) to continue reversing
 		 * 2) return null if there's not enough k nodes in the following list
