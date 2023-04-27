@@ -5,6 +5,7 @@ import helper.ListNode;
  */
 public class _25 {
 	
+	// My Solution
 	public static class Solution1_Recursion {
 		
 		ListNode successor = null;
@@ -109,6 +110,7 @@ public class _25 {
 		}
 	}
 	
+	// Ref: https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-8f30d/ru-he-k-ge-d591d/
 	public static class Solution3_Recursion {
 		ListNode reverse(ListNode a) {
 			ListNode prev = null, curr = a, next = a;
