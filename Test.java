@@ -55,6 +55,8 @@ public class Test {
         System.out.println("a: " + (int) 'a');
         System.out.println("A: " + (int) 'A');
         System.out.println("a-A: " + String.valueOf('a' - 'A'));
+    
+        System.out.println("1".substring(0, 1));
     }
 
     void traverse(TreeNode root) {
