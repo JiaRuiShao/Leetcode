@@ -1,6 +1,6 @@
 **滑动窗口算法框架**
-- 修改其中更新窗口数据的地方 `...`
-- 注意：两个更新窗口数据的地方 `...`的操作是**完全对称的**
+- `...` is where we update window data
+- Note:two places where we update the window data `...` are **symmetrical**
 ```
 void slidingWindow(String s) {
     // build the freqMap
