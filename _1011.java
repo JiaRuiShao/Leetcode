@@ -54,7 +54,8 @@ public class _1011 {
 		 * This method implements a binary search between the minimum and maximum capacity.
 		 * - step 1: build f(x)
 		 * - step 2: find search range for capacity x
-		 * - step 3: left boundary binary search with capacity x & daysToShip f(x) as days to ship the packages
+		 * - step 3: check for integer overflow
+		 * - step 4: left boundary binary search with capacity x & daysToShip f(x) as days to ship the packages
 		 *
 		 * Time Complexity: O(n + nlogr) = O(nlogc) where n is the size of the weights, and c is difference between weights sum & max weight
 		 * Space Complexity: O(1)
