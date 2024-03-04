@@ -56,7 +56,7 @@ public class _110 {
         }
     }
 
-    class Solution2_DFS {
+    static class Solution2_DFS {
         private static class TreeInfo {
             int height; // the tree's height
             boolean isBalanced; // stores whether the tree at root is balanced
