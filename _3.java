@@ -27,7 +27,7 @@ public class _3 {
     }
     
     class Solution2 {
-        static final int MAX_CHAR = 256;
+        private static final int MAX_CHAR = 256;
         public int lengthOfLongestSubstring(String s) {
             int[] count = new int[MAX_CHAR];
             int left = 0, right = 0, maxLen = 0;
