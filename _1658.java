@@ -2,6 +2,7 @@ import java.util.Arrays;
 
 /**
  * 1658. Minimum Operations to Reduce X to Zero.
+ * Convert the original question to a maxLen sliding window question
  */
 public class _1658 {
 	/**
@@ -17,7 +18,7 @@ public class _1658 {
 			int left = 0, right = 0;
 			int windowSum = 0; // sum of window [left, right)
 			int maxLen = Integer.MIN_VALUE;
-			while (right < nums.length) {
+			while (right < n) {
 				// expand the window when windowSum <= target
 				windowSum += nums[right];
 				right++;
