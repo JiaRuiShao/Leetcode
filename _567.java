@@ -207,4 +207,10 @@ public class _567 {
             return false;
         }
     }
+
+    public static void main(String[] args) {
+        String t = "abcdxabcde", s = "abcdeabcdx";
+
+        new _567().new Solution4().checkInclusion(t, s);
+    }
 }

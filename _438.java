@@ -83,4 +83,40 @@ public class _438 {
 			return res;
 		}
 	}
+
+	class Solution3 {
+		public List<Integer> findAnagrams(String s, String p) {
+			return findPAnagramStartIdxInS(s, p);
+		}
+	
+		private List<Integer> findPAnagramStartIdxInS(String s, String p) {
+			char[] freq = new char[256];
+			int sizeP = p.length();
+			for (int i = 0; i < sizeP; i++) {
+				freq[p.charAt(i)]++;
+			}
+	
+			int l = 0, r = 0, need = sizeP;
+			List<Integer> idx = new ArrayList<>();
+			while (r < s.length()) {
+				char add = s.charAt(r++);
+				if (freq[add] > 0) {
+					need--;
+				}
+				freq[add]--;
+	
+				if (r - l == sizeP) {
+					if (need == 0) {
+						idx.add(l);
+					}
+					char rem = s.charAt(l++);
+					freq[rem]++;
+					if (freq[rem] > 0) {
+						need++;
+					}
+				}
+			}
+			return idx;
+		}
+	}
 }
