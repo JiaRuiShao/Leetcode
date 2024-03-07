@@ -65,11 +65,72 @@ public class _187 {
     }
 
     /**
-     * Sliding Window with window substring converted to base-4 number.
+     * Sliding Window with the window substring converted to base-10 number.
      * Time: average O(N) worst O(NL) when there're too many results
      * Space: O(N + NL)
      */
-    class Solution {
+    class Solution3_Sliding_Hash_Technique_Base10 {
+        int decimal = 10, numDigits = 10;
+    
+        public List<String> findRepeatedDnaSequences(String s) {
+            int windowLen = 10, len = s.length();
+            // convert the search String to a num array
+            int[] nums = new int[len];
+            for (int i = 0; i < len; i++) {
+                int num = 0;
+                switch (s.charAt(i)){
+                    case 'C':
+                        num = 1;
+                        break;
+                    case 'G':
+                        num = 2;
+                        break;
+                    case 'T':
+                        num = 3;
+                        break;
+                    default:
+                }
+                nums[i] = num;
+            }
+    
+            // sliding window
+            int l = 0, r = 0; 
+            long currWinNum = 0;
+            Set<Long> seen = new HashSet<>();
+            Set<String> dnaSeq = new HashSet<>();
+            while (r < len) {
+                currWinNum = addLast(currWinNum, nums[r]);
+                r++;
+    
+                while (r - l == windowLen) {
+                    if (seen.contains(currWinNum)) {
+                        dnaSeq.add(s.substring(l, r));
+                    } else {
+                        seen.add(currWinNum);
+                    }
+                    currWinNum = removeFirst(currWinNum, nums[l]);
+                    l++;
+                }
+            }
+            return new ArrayList<>(dnaSeq);
+        }
+    
+        private long addLast(long num, int digitToAdd) {
+            return Math.multiplyExact(decimal, num) + (long) digitToAdd;
+        }
+    
+        private long removeFirst(long num, int digitToRem) {
+            long sub = Math.multiplyExact((long) digitToRem, (long) Math.pow(decimal, numDigits - 1));
+            return num - sub;
+        }
+    }
+
+    /**
+     * This solution is a optimized version of previous solution with just base-4 system.
+     * Time: average O(N) worst O(NL) when there're too many results
+     * Space: O(N + NL)
+     */
+    class Solution4_Sliding_Hash_Technique_Base4 {
         int decimal = 4, numDigits = 10;
     
         public List<String> findRepeatedDnaSequences(String s) {
