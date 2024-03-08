@@ -11,7 +11,6 @@ public class _303 {
             private int[] preSum;
 
             public NumArray(int[] nums) {
-                // preSum[0] = 0, used to calculate the sum
                 preSum = new int[nums.length + 1];
                 for (int i = 0; i < nums.length; i++) {
                     preSum[i + 1] = preSum[i] + nums[i];
