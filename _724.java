@@ -27,4 +27,33 @@ public class _724 {
 			return -1;
 		}
 	}
+
+	class Solution2_PreSum {
+
+		private int[] preSum;
+	
+		public int pivotIndex(int[] nums) {
+			int n = nums.length;
+			buildPreSum(nums, n);
+			for (int i = 0; i < n; i ++) {
+				if (isPivot(i)) {
+					return i;
+				}
+			}
+			return -1;
+		}
+	
+		private void buildPreSum(int[] nums, int n) {
+			preSum = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				preSum[i + 1] = preSum[i] + nums[i];
+			}
+		}
+	
+		private boolean isPivot(int idx) {
+			int leftSum = preSum[idx];
+			int rightSum = preSum[preSum.length - 1] - preSum[idx + 1];
+			return leftSum == rightSum;
+		}
+	}
 }
