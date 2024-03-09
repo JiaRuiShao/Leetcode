@@ -4,6 +4,7 @@
  *      i - k <= r <= i + k
  *      j - k <= c <= j + k, and
  *      (r, c) is a valid position in the matrix
+ * Reference for problem 304. Range Sum Query 2D - Immutable
  */
 public class _1314 {
 	class Solution1_PreSum {
@@ -73,6 +74,42 @@ public class _1314 {
 			}
 			
 			return ans;
+		}
+	}
+
+	class Solution3_PreSum_Helper {
+		private int[][] preSum;
+	
+		public int[][] matrixBlockSum(int[][] mat, int k) {
+			int m = mat.length, n = mat[0].length;
+			buildPreSum(mat, m, n);
+			int r1 = 0, r2 = 0, c1 = 0, c2 = 0;
+			int[][] answer = new int[m][n];
+			for (int r = 0; r < m; r++) {
+				r1 = (r - k) < 0 ? 0 : (r - k);
+				r2 = (r + k) >= m ? m - 1 : (r + k);
+				for (int c = 0; c < n; c++) {
+					c1 = (c - k) < 0 ? 0 : (c - k);
+					c2 = (c + k) >= n ? n - 1 : (c + k);
+					answer[r][c] = findRangeSum(r1, r2, c1, c2);
+				}
+			}
+			return answer;
+		}
+	
+		private void buildPreSum(int[][] mat, int m, int n) {
+			preSum = new int[m + 1][n + 1];
+			for (int r = 0; r < m; r++) {
+				for (int c = 0; c < n; c++) {
+					preSum[r + 1][c + 1] = preSum[r + 1][c] + preSum[r][c + 1] - preSum[r][c] + mat[r][c];
+				}
+			}
+		}
+	
+		private int findRangeSum(int r1, int r2, int c1, int c2) {
+			r2++;
+			c2++;
+			return preSum[r2][c2] - preSum[r2][c1] - preSum[r1][c2] + preSum[r1][c1];
 		}
 	}
 }
