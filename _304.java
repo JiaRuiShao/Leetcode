@@ -1,5 +1,5 @@
 /**
- * 304. Range Sum Query 2D - Immutable。
+ * 304. Range Sum Query 2D - Immutable.
  * Implement the NumMatrix class:
  * - NumMatrix(int[][] matrix) Initializes the object with the integer matrix `matrix`
  * - int sumRegion(int row1, int col1, int row2, int col2) Returns the sum of the elements of matrix inside the rectangle
@@ -22,8 +22,8 @@ public class _304 {
 			}
 		}
 		
+		// +1 for preSum, here the updated row1 = row + 1 - 1, & col1 = col + 1 - 1 because here row1 and col1 is inclusive
 		public int sumRegion(int row1, int col1, int row2, int col2) {
-			// +1 for preSum, here the updated row1 = row + 1 - 1, & col1 = col + 1 - 1 because here row1 and col1 is inclusive
 			row2 += 1;
 			col2 += 1;
 			return preSum[row2][col2] - preSum[row1][col2] - preSum[row2][col1] + preSum[row1][col1];
