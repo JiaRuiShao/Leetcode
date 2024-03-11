@@ -7,7 +7,7 @@ import java.util.OptionalInt;
 public class _1094 {
     class Solution1 {
         /**
-         * Car Pooling.
+         * Difference Array to reduce the range update to O(1) time complexity.
          *
          * @param trips trips[i] = [numPassengersi, fromi, toi], 0 <= fromi < toi <= 1000
          * @param capacity the max passengers allowed
@@ -15,18 +15,22 @@ public class _1094 {
          * for all the given trips, or false otherwise.
          */
         public boolean carPooling(int[][] trips, int capacity) {
-            final int MAX_KILS = 1001;
-            int[] diff = new int[MAX_KILS];
+            int tripLen = Arrays.stream(trips).mapToInt(trip -> trip[2]).max().getAsInt();
+            int[] diff = new int[tripLen];
             for (int[] trip : trips) {
-                int numPassenger = trip[0], from = trip[1], to = trip[2] - 1; // passengers get on the bus at idx from, and get off at idx to, so the kills range is [from, to - 1]
-                diff[from] += numPassenger;
-                if (to + 1 < MAX_KILS) diff[to + 1] -= numPassenger;
+                int passenger = trip[0], from = trip[1], to = trip[2];
+                diff[from] += passenger;
+                if (to < tripLen) {
+                    diff[to] -= passenger;
+                }
             }
-            int[] res = new int[MAX_KILS];
-            res[0] = diff[0];
-            for (int i = 0; i < MAX_KILS; i++) {
-                if (i > 0) res[i] = res[i - 1] + diff[i];
-                if (res[i] > capacity) return false;
+    
+            int passengers = 0;
+            for (int dif : diff) {
+                passengers += dif;
+                if (passengers > capacity) {
+                    return false;
+                }
             }
             return true;
         }
@@ -65,8 +69,12 @@ public class _1094 {
         }
     }
 
+
     public static void main(String[] args) {
-        int[][] trips = new int[][]{{9,0,1},{3,3,7}};
-        new _1094().new Solution1().carPooling(trips, 4);
+        int[][] trips = new int[][]{{7,5,6}, {6,7,8}, {10,1,6}};
+        System.out.println(new _1094().new Solution1().carPooling(trips, 16)); // false
+
+        trips = new int[][]{{7,5,6}, {6,7,8}, {10,1,5}};
+        System.out.println(new _1094().new Solution1().carPooling(trips, 16)); // true
     }
 }
