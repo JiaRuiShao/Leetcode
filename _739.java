@@ -1,8 +1,19 @@
 import java.util.Deque;
 import java.util.LinkedList;
 
+/**
+ * 739. Daily Temperatures.
+ */
 public class _739 {
     static class Solution {
+        /**
+         * Monotonic Increasing Stack.
+         * Time: O(n)
+         * Space: O(n)
+         * 
+         * @param temperatures the temperatures array
+         * @return next greater temperature indexes
+         */
         public int[] dailyTemperatures(int[] temperatures) {
             // used to store the next greater temperature index
             Deque<Integer> stack = new LinkedList<>();
