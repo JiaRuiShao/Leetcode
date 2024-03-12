@@ -26,7 +26,7 @@ public class _496 {
         private int[] findNextGreaterElem(int[] nums, Map<Integer, Integer> map) {
             int n = nums.length;
             int[] ngl = new int[n];
-            Stack<Integer> stack = new Stack<>();
+            Deque<Integer> stack = new LinkedList<>();
             for (int i = n - 1; i >= 0; i--) {
                 int num = nums[i];
                 map.put(num, i);
