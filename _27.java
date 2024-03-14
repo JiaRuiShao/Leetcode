@@ -24,19 +24,16 @@ public class _27 {
         }
     }
     
-    class Solution2_Left_Right_Pointer {
+    class Solution2_Two_Pointers {
         public int removeElement(int[] nums, int val) {
-            if (nums == null || nums.length == 0) return 0;
-            int i = 0, j = nums.length - 1;
-            while (j >= i) {
-                while (i < nums.length && nums[i] != val) i++;
-                while (j >= 0 && nums[j] == val) j--;
-                if (i < j) {
-                    nums[i] = nums[j];
-                    nums[j] = val;
+            int left = -1, right = 0;
+            while (right < nums.length) {
+                if (nums[right] != val) {
+                    nums[++left] = nums[right];
                 }
+                right++;
             }
-            return j + 1;
+            return left + 1;
         }
     }
 }
