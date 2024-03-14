@@ -6,16 +6,15 @@ import helper.ListNode;
 public class _83 {
     class Solution {
         public ListNode deleteDuplicates(ListNode head) {
-            if (head == null) return null;
-            ListNode slow = head, fast = head.next;
-            while (fast != null) {
-                if (fast.val != slow.val) {
-                    slow.next = fast;
-                    slow = slow.next;
+            ListNode left = head, right = head;
+            while (right != null) {
+                if (right.val != left.val) {
+                    left.next = right;
+                    left = left.next;
                 }
-                fast = fast.next;
+                right = right.next;
             }
-            slow.next = null; // disconnect the duplicate nodes
+            if (left != null) left.next = null;
             return head;
         }
     }
