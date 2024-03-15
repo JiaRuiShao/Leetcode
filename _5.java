@@ -49,4 +49,34 @@ public class _5 {
 			return s.substring(l + 1, r);
 		}
 	}
+
+	class Solution3_Two_Pointers {
+		public String longestPalindrome(String s) {
+			int[] longestPal = new int[2]; // Stores [length, startIndex]
+			for (int i = 0; i < s.length(); i++) {
+				int[] oddPal = findPalindrome(s, i, i);
+				int[] evenPal = findPalindrome(s, i, i + 1);
+				if (oddPal[0] >= evenPal[0] && oddPal[0] > longestPal[0]) {
+					longestPal = oddPal;
+				} else if (evenPal[0] > longestPal[0]) {
+					longestPal = evenPal;
+				}
+			}
+			return s.substring(longestPal[1], longestPal[1] + longestPal[0]);
+		}
+		
+		private int[] findPalindrome(String s, int left, int right) {
+			int[] pal = new int[2];
+			while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+				int palLen = right - left + 1;
+				if (palLen > pal[0]) {
+					pal[0] = palLen;
+					pal[1] = left;
+				}
+				left--;
+				right++;
+			}
+			return pal;
+		}
+	}
 }

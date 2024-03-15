@@ -52,11 +52,18 @@ public class Test {
         arr[1] = 2;
         System.out.println(Arrays.toString(arr));*/
 
-        System.out.println("a: " + (int) 'a');
+        /* System.out.println("a: " + (int) 'a');
         System.out.println("A: " + (int) 'A');
         System.out.println("a-A: " + String.valueOf('a' - 'A'));
     
-        System.out.println("1".substring(0, 1));
+        System.out.println("1".substring(0, 1)); */
+
+        new Test().charCompare();
+    }
+
+    private void  charCompare() {
+        char a = 'a', b = 'a';
+        System.out.println("if char a == char b? " + (a == b));
     }
 
     void traverse(TreeNode root) {
