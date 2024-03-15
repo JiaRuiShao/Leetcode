@@ -61,4 +61,29 @@ public class _82 {
 			}
 		}
 	}
+
+	class Solution4 {
+		public ListNode deleteDuplicates(ListNode head) {
+			ListNode dummy = new ListNode(-101, head);
+			ListNode lastValid = dummy;
+	
+			while (lastValid != null) {
+				lastValid.next = findNext(lastValid.next);
+				lastValid = lastValid.next;
+			}
+	
+			return dummy.next;
+		}
+	
+		private ListNode findNext(ListNode curr) {
+			if (curr == null) return curr;
+			ListNode prev = curr;
+			curr = curr.next;
+			while (curr != null && curr.val == prev.val) {
+				curr = curr.next;
+			}
+			if (prev.next == curr) return prev;
+			return findNext(curr);
+		}
+	}
 }
