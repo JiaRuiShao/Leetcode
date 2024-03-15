@@ -1,26 +1,11 @@
 import java.util.HashMap;
 import java.util.Map;
+import helper.ListNode;
 
 /**
  * 1836. Remove Duplicates From an Unsorted Linked List.
  */
 public class _1836 {
-	public static class ListNode {
-		int val;
-		ListNode next;
-		
-		public ListNode() {
-		}
-		
-		public ListNode(int val) {
-			this.val = val;
-		}
-		
-		public ListNode(int val, ListNode next) {
-			this.val = val;
-			this.next = next;
-		}
-	}
 	/**
 	 * Time: O(n)
 	 * Space: O(n)
