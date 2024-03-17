@@ -3,12 +3,14 @@ import java.util.PriorityQueue;
 
 /**
  * 313. Super Ugly Number.
+ * Handle same value multiples
+ * PriorityQueue
  */
 public class _313 {
 	/**
 	 * Merge k sorted lists.
 	 */
-	class Solution_minHeap {
+	class Solution1_minHeap {
 		/**
 		 * Time: O(nlogk) where k is num of prime num in primes
 		 * Space: O(n + log(k))
@@ -54,5 +56,31 @@ public class _313 {
 				this.val = val;
 			}
 		}
+	}
+
+	class Solution2_minHeap {
+		public int nthSuperUglyNumber(int n, int[] primes) {
+			int[] ugly = new int[n];
+			// next arr = [prime, multiple, idx]
+			PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (a[1] - b[1]));
+			for (int prime : primes) {
+				pq.offer(new int[]{prime, 1, 0});
+			}
+	
+			for (int i = 0; i < n;) {
+				int[] next = pq.poll();
+				if (i == 0 || i > 0 && next[1] > ugly[i - 1]) {
+					ugly[i++] = next[1];
+				}
+				next[1] = ugly[next[2]++] * next[0];
+				pq.offer(next);
+			}
+	
+			return ugly[n - 1];
+		}
+	}
+
+	public static void main(String[] args) {
+		new _313().new Solution2_minHeap().nthSuperUglyNumber(12, new int[]{2,7,13,19});
 	}
 }
