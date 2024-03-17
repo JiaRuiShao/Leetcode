@@ -21,7 +21,7 @@ public class _1201 {
 		}
 	}
 	
-	class Solution_Memory_Limit_Exceeded {
+	class Solution2_Memory_Limit_Exceeded {
 		public int nthUglyNumber(int n, int a, int b, int c) {
 			int pa = a, pb = b, pc = c; // product head for list a, b and c
 			int p = 0; // pointer for merged ugly number list
@@ -36,8 +36,36 @@ public class _1201 {
 			return ugly[n - 1];
 		}
 	}
+
+	class Solution3_Time_Limit_Exceeded {
+		/**
+		 * We have to use long type here or there's integer overflow problem when updating the multiples & comparing three numbers.
+		 * @param n n
+		 * @param a a
+		 * @param b b
+		 * @param c c
+		 * @return nth ugly num
+		 */
+		public int nthUglyNumber(int n, int a, int b, int c) {
+			long m1 = a, m2 = b, m3 = c;
+			long ugly = 0;
+			while (n-- > 0) {
+				ugly = Math.min(Math.min(m1, m2), m3);
+				if (ugly == m1) {
+					m1 += a;
+				}
+				if (ugly == m2) {
+					m2 += b;
+				}
+				if (ugly == m3) {
+					m3 += c;
+				}
+			}
+			return (int) ugly;
+		}
+	}
 	
-	class Solution_Binary_Search {
+	class Solution4_Binary_Search {
 		/**
 		 * Use lower bound binary search to narrow down the target number (nth ugly num)
 		 * Time: O(log_2(2e9) * log(m)) where m is the max(a, b, c) = log_2(5^9) * 10 * log(m) < log_2((2^3)^9) * 10 * log(m) = 270*logm
@@ -54,7 +82,7 @@ public class _1201 {
 			// Lower bound binary search
 			while (left <= right) {
 				mid = left + (right - left) / 2;
-				if (f(mid, a, b, c) >= n) {
+				if (countUgly(mid, a, b, c) >= n) {
 					right = mid - 1;
 				} else {
 					left = mid + 1;
@@ -77,12 +105,12 @@ public class _1201 {
 		 * @param c factor c
 		 * @return # of ugly numbers within range [1, num]
 		 */
-		long f(int num, int a, int b, int c) {
+		private long countUgly(int num, int a, int b, int c) {
 			long countA = num / a, countB = num / b, countC = num / c;
-			long countAB = num / lowestCommonMultiple(a, b);
-			long countAC = num / lowestCommonMultiple(a, c);
-			long countBC = num / lowestCommonMultiple(b, c);
-			long countABC = num / lowestCommonMultiple(lowestCommonMultiple(a, b), c);
+			long countAB = num / lcm(a, b);
+			long countAC = num / lcm(a, c);
+			long countBC = num / lcm(b, c);
+			long countABC = num / lcm(lcm(a, b), c);
 			// union set：A U B U C = A + B + C - A ∩ B - A ∩ C - B ∩ C + A ∩ B ∩ C
 			return countA + countB + countC - countAB - countAC - countBC + countABC;
 		}
@@ -96,14 +124,8 @@ public class _1201 {
 		 * @param b num2
 		 * @return gcd of a and b
 		 */
-		long greatestCommonDivisor(long a, long b) {
-			if (a < b) { // make sure a >= b
-				return greatestCommonDivisor(b, a);
-			}
-			if (b == 0) {
-				return a;
-			}
-			return greatestCommonDivisor(b, a % b);
+		private long gcd(long a, long b) {
+			return (b == 0 || a == b) ? a : gcd(b, a % b);
 		}
 		
 		/**
@@ -113,8 +135,17 @@ public class _1201 {
 		 * @param b
 		 * @return
 		 */
-		long lowestCommonMultiple(long a, long b) {
-			return a * b / greatestCommonDivisor(a, b);
+		private long lcm(long a, long b) {
+			return a / gcd(a, b) * b;
 		}
+	}
+
+	public static void main(String[] args) {
+		_1201 myClass = new _1201();
+		int n = 1000000000;
+		// int a = 2, b = 217983653, c = 336916467;
+		int a = 217983653, b = 336916467, c = 2;
+		System.out.println(myClass.new Solution3_Time_Limit_Exceeded().nthUglyNumber(n, a, b, c)); // 1999999946
+		System.out.println(myClass.new Solution4_Binary_Search().nthUglyNumber(n, a, b, c)); // 1999999984
 	}
 }
