@@ -1,5 +1,8 @@
 import java.util.Arrays;
 
+/**
+ * 88. Merge Sorted Array.
+ */
 public class _88 {
     /**
      * The elements from arr1 will be overwritten by arr2 elements.
@@ -25,6 +28,24 @@ public class _88 {
             }
             if (i2 < n) {
                 System.arraycopy(nums2, i2, nums1, i3, n - i2); // [i2, n)
+            }
+        }
+    }
+
+    class Solution2_Two_Pointers_Advanced {
+        public void merge(int[] nums1, int m, int[] nums2, int n) {
+            int i1 = m - 1, i2 = n - 1, i3 = m + n - 1;
+            while (i1 >= 0 && i2 >= 0) {
+                int max = Math.max(nums1[i1], nums2[i2]);
+                if (max == nums1[i1]) {
+                    i1--;
+                } else {
+                    i2--;
+                }
+                nums1[i3--] = max;
+            }
+            if (i2 >= 0) {
+                System.arraycopy(nums2, 0, nums1, 0, i2 + 1); // [0, i2]
             }
         }
     }
