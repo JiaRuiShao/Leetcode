@@ -15,7 +15,7 @@ public class _264 {
 		 * @return the nth ugly number whose prime factor are: 2, 3, and 5
 		 */
 		public int nthUglyNumber(int n) {
-			// p is teh pointer of the merged ugly num list, and p2, p3, p5 represents the pointer for list of multiples of 2, 3, and 5
+			// p is the pointer of the merged ugly num list, and p2, p3, p5 represents the pointer for list of multiples of 2, 3, and 5
 			int p = 0, p2 = 0, p3 = 0, p5 = 0;
 			// represent the pointed val on list of multiples of 2, 3, and 5
 			// int prod1 = 2, prod2 = 3, prod3 = 5;
