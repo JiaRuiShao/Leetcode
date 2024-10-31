@@ -44,8 +44,32 @@ public class _82 {
 			return dummy.next;
 		}
 	}
+
+	class Solution3_Iterative {
+		/**
+		 * Left pointer points the the right most unique node, right pointer uses as traversal pointer.
+		 * @param head ListNode head
+		 * @return head of the list node with no dup val nodes
+		 */
+		public ListNode deleteDuplicates(ListNode head) {
+			int dummyVal = -101, prev = dummyVal;
+			ListNode dummyHead = new ListNode(dummyVal, head);
+			ListNode left = dummyHead, right = head;
+			while (right != null) {
+				int val = right.val;
+				if (val != prev && (right.next != null && right.next.val != val || right.next == null)) {
+					left.next = right;
+					left = right;
+				}
+				prev = val;
+				right = right.next;
+			}
+			left.next = null; // IMPORTANT: set next node of left pointer to null
+			return dummyHead.next;
+		}
+	}
 	
-	class Solution3_Recursive {
+	class Solution4_Recursive {
 		public ListNode deleteDuplicates(ListNode head) {
 			if (head == null || head.next == null) {
 				return head;
