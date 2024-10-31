@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -58,6 +59,10 @@ public class _313 {
 		}
 	}
 
+	/**
+	 * Time: O(mlogm + nlogm) = O((m+n)logm) where m is the size of primes
+	 * Space: O(n + m)
+	 */
 	class Solution2_minHeap {
 		public int nthSuperUglyNumber(int n, int[] primes) {
 			int[] ugly = new int[n];
@@ -77,6 +82,41 @@ public class _313 {
 			}
 	
 			return ugly[n - 1];
+		}
+	}
+
+	/**
+	 * Using long as datatype prevents integer overflow during multiplication.
+	 * Time: O(m+nm) = O(nm) where m is the size of the primes number
+	 * Space: O(n+m)
+	 */
+	class Solution3_mergeSortedList {
+		public int nthSuperUglyNumber(int n, int[] primes) {
+			long[] ugly = new long[n];
+			int[] pointers = new int[primes.length];
+			long[] multiples = new long[primes.length];
+			Arrays.fill(multiples, 1);
+		
+			for (int i = 0; i < n; i++) {
+				long nextUgly = findNextUgly(multiples);
+				ugly[i] = nextUgly;
+				for (int j = 0; j < multiples.length; j++) {
+					if (multiples[j] == nextUgly) {
+						multiples[j] = ugly[pointers[j]] * primes[j];
+						pointers[j] += 1;
+					}
+				}
+			}
+		
+			return (int) ugly[n - 1];
+		}
+		
+		private long findNextUgly(long[] multiples) {
+			long minVal = Long.MAX_VALUE;
+			for (long multiple : multiples) {
+				minVal = Math.min(minVal, multiple);
+			}
+			return minVal;
 		}
 	}
 
