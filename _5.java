@@ -79,4 +79,31 @@ public class _5 {
 			return pal;
 		}
 	}
+
+	class Solution4_Two_Pointers_Improved {
+		public String longestPalindrome(String s) {
+			int start = 0, maxLen = 1, length;
+			char[] str = s.toCharArray();
+			for (int i = 0; i < s.length(); i++) {
+				int oddLength = findLongestPalindrome(str, i, i);
+				int evenLength = findLongestPalindrome(str, i, i + 1);
+				length = Math.max(oddLength, evenLength);
+				if (length > maxLen) {
+					maxLen = length;
+					start = i - (length - 1) / 2;
+				}
+			}
+			return s.substring(start, start + maxLen);
+		}
+	
+		private int findLongestPalindrome(char[] arr, int i, int j) {
+			int maxLen = 1;
+			while (i >= 0 && j < arr.length && arr[i] == arr[j]) {
+				maxLen = Math.max(maxLen, j - i + 1);
+				i--;
+				j++;
+			}
+			return maxLen;
+		}
+	}
 }
