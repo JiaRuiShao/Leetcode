@@ -1,110 +1,87 @@
+import java.util.Stack;
+
 /**
  * 151. Reverse Words in a String.
  */
 public class _151 {
-	public String reverseWords(String s) {
-		if (s == null || s.length() == 0) return s;
-		
-		int i = 0, j = 0;
-		char[] arr = s.toCharArray();
-		
-		reverse(arr, 0, arr.length - 1);
-		
-		while (i < arr.length && ++j < arr.length) {
-			if (arr[i] == ' ') i++;
-			if (arr[j] == ' ' && arr[j - 1] != ' ') {
-				reverse(arr, i, j - 1);
-				i = j + 1;
-			}
-		}
-		
-		if (i < s.length()) {
-			reverse(arr, i, s.length() - 1);
-		}
-		
-		int end = removeDupSpaces(arr);
-		return new String(arr).substring(0, end);
-	}
-	
-	private void reverse(char[] arr, int i, int j) {
-		while (i < j) {
-			char temp = arr[i];
-			arr[i] = arr[j];
-			arr[j] = temp;
-			i++;
-			j--;
-		}
-	}
-	
-	private int removeDupSpaces(char[] arr) {
-		int i = 0;
-		for (int j = 0; j < arr.length; j++) {
-			if (arr[j] !=  ' ') {
-				if (j > 0 && arr[j - 1] == ' ' && i != 0) { // start a new word, but no leading spaces
-					arr[i] = ' ';
-					i++;
+	class Solution1_Stack {
+		public String reverseWords(String s) {
+			// if allow using trim(), leading & trailing spaces are removed
+			s = s.trim();
+			StringBuilder sb = new StringBuilder();
+			Stack<Character> stk = new Stack<>();
+			
+			char prev = ' ';
+			for (int i = s.length() - 1; i >= 0; i--) {
+				char c = s.charAt(i);
+				if (c != ' ') stk.push(c);
+				else if (prev != ' ') {
+					while (!stk.isEmpty()) {
+						sb.append(stk.pop());
+					}
+					sb.append(' ');
 				}
-				arr[i] = arr[j];
-				i++;
+				prev = c;
 			}
+			while (!stk.isEmpty()) {
+				sb.append(stk.pop());
+			}
+			return sb.toString();
 		}
-		return i;
 	}
 
-	class Solution {
+	class Solution2_Two_Pointers {
+
+		private static final char BLANK_SPACE = ' ';
+    
 		public String reverseWords(String s) {
-			char[] arr = s.toCharArray();
-			int len = arr.length;
-			reverse(arr, 0, len - 1);
-	
-			int left = 0, right = 0;
-			while (right < len) {
-				while (right < len && arr[right] != ' ') {
-					right++;
-				}
-				reverse(arr, left, right - 1);
-				while (right < len && arr[right] == ' ') {
-					right++;
-				}
+			char[] words = s.toCharArray();
+
+			// 1- reverse the entire arr
+			swap(words, 0, words.length - 1);
+
+			// 2- reverse the words
+			reverseEachWord(words);
+
+			// 3- remove dup white spaces
+			return removeDupSpace(words);
+		}
+
+		private void swap(char[] arr, int left, int right) {
+			while (left < right) {
+				char tmp = arr[left];
+				arr[left] = arr[right];
+				arr[right] = tmp;
+				left++;
+				right--;
+			}
+		}
+
+		private void reverseEachWord(char[] words) {
+			int left = 0, right = 0, len = words.length;
+			while (left < len) {
+				while (left < len && words[left] == BLANK_SPACE) left++;
+				right = left;
+				while (right < len && words[right] != BLANK_SPACE) right++;
+				if (left < len && right - 1 < len) swap(words, left, right - 1);
 				left = right;
 			}
-			if (left + 1 < len) {
-				reverse(arr, left, len - 1);
-			}
-			
-			int end = removeDupSpace(arr);
-			return new String(arr).substring(0, end);
 		}
-	
-		private void reverse(char[] arr, int l, int r) {
-			while (l < r) {
-				char temp = arr[r];
-				arr[r] = arr[l];
-				arr[l] = temp;
-				l++;
-				r--;
-			}
-		}
-	
-		private int removeDupSpace(char[] arr) {
-			int len = arr.length;
-			int l = 0, r = 0;
-			while (r < len) {
-				while (r < len && arr[r] == ' ') {
-					r++;
-				}
-				if (l > 0 && r < len) {
-					arr[l++] = ' ';
-				}
-				while (r < len && arr[r] != ' ') {
-					arr[l++] = arr[r++];
+
+		private String removeDupSpace(char[] words) {
+			int left = 0, right = 0, len = words.length;
+			while (right < len) {
+				while (right < len && words[right] == BLANK_SPACE) right++;
+				if (right < len && left > 0) words[left++] = BLANK_SPACE;
+				while (right < len && words[right] != BLANK_SPACE) {
+					words[left++] = words[right++];
 				}
 			}
-			return l;
+			return new String(words).substring(0, left);
 		}
 	}
 
 	public static void main(String[] args) {
-		System.out.println(new _151().new Solution().reverseWords("  hello world  "));
+		System.out.println(new _151().new Solution2_Two_Pointers().reverseWords("  hello world  "));
 	}
 }
