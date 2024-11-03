@@ -43,47 +43,49 @@ public class _378 {
          * variable target num with search range as [matrix[0][0], matrix[m-1][n-1]]
          * function is num of elems in the matrix that <= target
          * goal is to find the lower bound of variable num under the given function value k
-         * 
-         * Time: O(nlog(2e9))
+         *
+         * Time: O((m+n)log(2e9)) = O(nlog(2e9))
          * Space: O(1)
          * @param matrix
          * @param k
          * @return
          */
         public int kthSmallest(int[][] matrix, int k) {
-            int row = matrix.length, col = matrix[0].length;
-            int lo = matrix[0][0], hi = matrix[row - 1][col - 1];
-            while (lo <= hi) {
-                int mid = lo + (hi - lo) / 2;
-                int count = findCount(matrix, mid);
-                if (count >= k) {
-                    hi = mid - 1;
+            int n = matrix.length;
+            int left = matrix[0][0], right = matrix[n - 1][n - 1], mid = 0;
+            // search range: [left, right]
+            // f(x) = # of elem <= x in given matrix, monotonic increase
+            while (left <= right) {
+                mid = left + (right - left) / 2;
+                int lessEqualCount = findLessEqualCount(matrix, mid);
+                if (lessEqualCount >= k) {
+                    right = mid - 1;
                 } else {
-                    lo = mid + 1;
+                    left = mid + 1;
                 }
             }
-            return lo;
-        }    
+            return left;
+        }
 
         /**
          * Find number of elements that are smaller than or equal to the given number mid.
          * We go left and down from top-right to bottom-left.
-         * This function has variable num (target) as x, & f(x) calculates the number of elements in this matrix that are smaller than or equal to the given x. This is a monotonic increasing function on variable num.
-         * 
-         * Time: O(m + n)
+         * This function has variable num (target) as x, & f(x) calculates the number of elements in this matrix that are
+         * smaller than or equal to the given x. This is a monotonic increasing function on variable num.
+         *
+         * Time: O(m + n) = O(2n) = O(n)
          * Space: O(1)
-         * 
+         *
          * @param matrix matrix
          * @param num target
          * @return # elem <= target in matrix
          */
-        private int findCount(int[][] matrix, int num) {
-            int m = matrix.length, n = matrix[0].length, count = 0;
-            for (int r = 0, c = n - 1; r < m && c >= 0; r++) {
-                while (c >= 0 && matrix[r][c] > num) c--;
-                if (c >= 0) {
-                    count += (c - 0 + 1);
-                }
+        private int findLessEqualCount(int[][] mtx, int x) {
+            int n = mtx.length, r = n - 1, c = 0, count = 0;
+            while (r >= 0 && c < n) {
+                while (r >= 0 && mtx[r][c] > x) r--;
+                count += r + 1;
+                c++;
             }
             return count;
         }
