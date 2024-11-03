@@ -48,6 +48,46 @@ public class _360 {
         }
     }
 
+    /**
+     * - a > 0, two ends are larger than the center
+     * - a < 0, two ends are smaller than the center
+     * - a = 0, this quadratic function becomes a linear function, which is mono increase/decrease, so b's sign is not important
+     */
+    class Solution2_Two_Pointers_Improved {
+        public int[] sortTransformedArray(int[] nums, int a, int b, int c) {
+            int n = nums.length, left = 0, right = n - 1;
+            int[] sorted = new int[n];
+            int idx = a > 0 ? n - 1 : 0;
+    
+            while (left <= right) {
+                int leftQuad = quadratic(a, b, c, nums[left]);
+                int rightQuad = quadratic(a, b, c, nums[right]);
+                if (a > 0) {
+                    if (leftQuad > rightQuad) {
+                        sorted[idx--] = leftQuad;
+                        left++;
+                    } else {
+                        sorted[idx--] = rightQuad;
+                        right--;
+                    }
+                } else {
+                    if (leftQuad < rightQuad) {
+                        sorted[idx++] = leftQuad;
+                        left++;
+                    } else {
+                        sorted[idx++] = rightQuad;
+                        right--;
+                    }
+                }
+            }
+            return sorted;
+        }
+    
+        private int quadratic(int a, int b, int c, int x) {
+            return a * x * x + b * x + c;
+        }
+    }
+
     public static void main(String[] args) {
         // int[] nums = new int[]{-4,-2,2,4};
         // int a = 1, b = 3, c = 5;
