@@ -42,20 +42,26 @@ public class _525 {
 		 * @return longest contiguous subarray that contains the equal number of 1 and 0
 		 */
 		public int findMaxLength(int[] nums) {
-			int n = nums.length, maxLen = 0;
-			// 1 - convert the 0 to -1, problem becomes find the longest subarray whose sum is 0
-			int[] preSum = new int[n + 1];
-			for (int i = 0; i < n; i++) {
-				preSum[i + 1] = preSum[i] + (nums[i] == 0 ? -1 : 1);
+			int len = nums.length;
+			// 1 - build a prefix sum array, convert the 0 to -1, problem becomes find the longest subarray whose sum is 0
+
+			int[] sum = new int[len + 1];
+			for (int i = 0; i < len; i++) {
+				int val = nums[i] == 0 ? -1 : 1;
+				sum[i + 1] = sum[i] + val;
 			}
-			// 2 - hashmap to store the presum & the index of each element
+	
+			// 2 - hashmap to store the preSum & the index of each element
 			Map<Integer, Integer> map = new HashMap<>();
-			// 3 - update the len when the presum is already added in the map
-			for (int i = 0; i < preSum.length; i++) { // pay attention to the index range here, we add the presum[0] here as the starting sum, and the end index should be n
-				if (!map.containsKey(preSum[i])) {
-					map.put(preSum[i], i);
+
+			// 3 - update the len when the preSum is already added in the map
+			int maxLen = 0;
+			for (int i = 0; i <= len; i++) { // NOTE: index range is [0, len] not [0, len - 1] since we're traversing prefix sum array
+				int preSum = sum[i];
+				if (map.containsKey(preSum)) {
+					maxLen = Math.max(maxLen, i - map.get(preSum));
 				} else {
-					maxLen = Math.max(maxLen, i - map.get(preSum[i]));
+					map.put(preSum, i);
 				}
 			}
 			return maxLen;
@@ -64,7 +70,7 @@ public class _525 {
 		/**
 		 * Prefix Sum + HashMap.
 		 * Time: O(n)
-		 * Space: O(1) improve the previous approach by replacing the prefix sum array to a prefix sum int
+		 * Space: O(n) improve the previous approach by replacing the prefix sum array to a prefix sum int
 		 * @param nums input numbers array
 		 * @return longest contiguous subarray that contains the equal number of 1 and 0
 		 */
@@ -88,5 +94,10 @@ public class _525 {
 			}
 			return maxLen;
 		}
+	}
+
+	public static void main(String[] args) {
+		int[] nums = new int[]{0,0,1,0,0,0,1,1};
+		System.out.println(new _525().new Solution2_PrefixSum_HashMap().findMaxLength(nums));
 	}
 }
