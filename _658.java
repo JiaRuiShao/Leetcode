@@ -8,7 +8,7 @@ import java.util.List;
  * 2. Initialize the two pointers start range with an empty range
  */
 public class _658 {
-	class Solution_Binary_Search_Left_Right_Pointers {
+	class Solution1_Binary_Search_Left_Right_Pointers {
 		/**
 		 * Time: O(logn + k) where n is the number of elements in given arr
 		 * Space: O(1)
@@ -59,7 +59,7 @@ public class _658 {
 		}
 	}
 
-	class Solution2 {
+	class Solution2_Binary_Search_Improved {
 		public List<Integer> findClosestElements(int[] arr, int k, int x) {
 			int xIdx = findLeftX(arr, x);
 			return findKClosestElements(arr, k, x, xIdx);
@@ -69,8 +69,7 @@ public class _658 {
 			int lo = 0, hi = arr.length - 1;
 			while (lo <= hi) {
 				int mid = lo + (hi - lo) / 2;
-				int val = arr[mid];
-				if (val >= x) {
+				if (arr[mid] >= x) {
 					hi = mid - 1;
 				} else {
 					lo = mid + 1;
@@ -80,20 +79,20 @@ public class _658 {
 		}
 
 		private List<Integer> findKClosestElements(int[] arr, int k, int x, int idx) {
-			List<Integer> elements = new ArrayList<>(k);
-			int len = arr.length, left = idx - 1, right = idx;
-			while (right - left - 1 < k) {
+			List<Integer> res = new LinkedList<>();
+			int left = idx - 1, right = idx;
+			while (k-- > 0) {
 				if (left < 0) {
-					elements.add(arr[right++]);
-				} else if (right == len) {
-					elements.addFirst(arr[left--]);
+					res.addLast(arr[right++]);
+				} else if (right >= arr.length) {
+					res.addFirst(arr[left--]);
 				} else if (Math.abs(arr[left] - x) <= Math.abs(arr[right] - x)) {
-					elements.addFirst(arr[left--]);
+					res.addFirst(arr[left--]);
 				} else {
-					elements.add(arr[right++]);
+					res.addLast(arr[right++]);       
 				}
 			}
-			return elements;
+			return res;
 		}
 	}
 }
