@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,13 +82,13 @@ public class _658 {
 			int left = idx - 1, right = idx;
 			while (k-- > 0) {
 				if (left < 0) {
-					res.addLast(arr[right++]);
+					res.add(arr[right++]);
 				} else if (right >= arr.length) {
-					res.addFirst(arr[left--]);
+					res.add(0, arr[left--]);
 				} else if (Math.abs(arr[left] - x) <= Math.abs(arr[right] - x)) {
-					res.addFirst(arr[left--]);
+					res.add(0, arr[left--]);
 				} else {
-					res.addLast(arr[right++]);       
+					res.add(arr[right++]);
 				}
 			}
 			return res;
