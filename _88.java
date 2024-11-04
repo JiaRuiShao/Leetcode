@@ -32,20 +32,19 @@ public class _88 {
         }
     }
 
-    class Solution2_Two_Pointers_Advanced {
+    class Solution2_Two_Pointers_Improved {
         public void merge(int[] nums1, int m, int[] nums2, int n) {
-            int i1 = m - 1, i2 = n - 1, i3 = m + n - 1;
-            while (i1 >= 0 && i2 >= 0) {
-                int max = Math.max(nums1[i1], nums2[i2]);
-                if (max == nums1[i1]) {
-                    i1--;
+            int idx = m + n - 1, p1 = m - 1, p2 = n - 1;
+            while (idx >= 0) {
+                if (p1 < 0) {
+                    nums1[idx--] = nums2[p2--];
+                } else if (p2 < 0) {
+                    nums1[idx--] = nums1[p1--];
+                } else if (nums1[p1] >= nums2[p2]) {
+                    nums1[idx--] = nums1[p1--];
                 } else {
-                    i2--;
+                    nums1[idx--] = nums2[p2--];
                 }
-                nums1[i3--] = max;
-            }
-            if (i2 >= 0) {
-                System.arraycopy(nums2, 0, nums1, 0, i2 + 1); // [0, i2]
             }
         }
     }
