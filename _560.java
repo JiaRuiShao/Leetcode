@@ -1,5 +1,7 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 560. Subarray Sum Equals K.
@@ -63,7 +65,6 @@ public class _560 {
 			return subarrayCount;
 		}
 		
-		// Space complexity reduced to O(1)
 		public int subarraySumImproved(int[] nums, int k) {
 			// pre[i] - pre[j] == k, && i > j
 			int n = nums.length;
@@ -82,5 +83,28 @@ public class _560 {
 			}
 			return subarrayCount;
 		}
+	}
+
+	static class Solution3_PrefixSum_HashMap_Wrong_Answer {
+		public int subarraySum(int[] nums, int k) {
+			int len = nums.length;
+			int[] sum = new int[len + 1];
+			for (int i = 0; i < len; i++) {
+				sum[i + 1] = sum[i] + nums[i];
+			}
+
+			Set<Integer> set = new HashSet<>();
+			int count = 0;
+			for (int i = 0; i <= len; i++) {
+				int target = sum[i] - k; // val - x = k, x = val - k
+				if (set.contains(target)) count++;
+				if (!set.contains(sum[i])) set.add(sum[i]);
+			}
+			return count;
+		}
+	}
+
+	public static void main(String[] args) {
+		System.out.println(new Solution3_PrefixSum_HashMap_Wrong_Answer().subarraySum(new int[]{1,-1,0}, 0)); // 3
 	}
 }
