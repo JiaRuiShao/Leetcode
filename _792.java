@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 792. Number of Matching Subsequences.
@@ -77,9 +78,16 @@ public class _792 {
         }
     }
 
+    /**
+     * Improved Solution: Queue Bucket
+     * Instead of processing each word individually, process all words simultaneously as we iterate through s.
+     * Create an array of queues for each lowercase letter, each queue holds iterators (or indices) to track the progress of words waiting for that character.
+     * Time: O(W + N + TL) where W is the number of word in words, N is the number of characters in s, TL is the total length of words, worst case it could be WL
+     * Space: O(W) where W is words arr length, here O(W) is auxiliary space; total space would be O(W + TL) since the input words as String takes O(Total Length of Words) = O(TL) = O(WL) space
+     */
     class Solution2_Queue {
         public int numMatchingSubseq(String s, String[] words) {
-            // Array of queues for each lowercase letter
+            // Array of queues for each lowercase letter, each bucket contains pair of (word, index) where index is index's position in this word
             List<Node>[] buckets = new ArrayList[26];
             for (int i = 0; i < 26; i++) {
                 buckets[i] = new ArrayList<>();
