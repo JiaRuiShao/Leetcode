@@ -78,6 +78,51 @@ public class _792 {
     }
 
     class Solution2_Queue {
-
+        public int numMatchingSubseq(String s, String[] words) {
+            // Array of queues for each lowercase letter
+            List<Node>[] buckets = new ArrayList[26];
+            for (int i = 0; i < 26; i++) {
+                buckets[i] = new ArrayList<>();
+            }
+        
+            // Initialize the buckets with the words
+            for (String word : words) {
+                char firstChar = word.charAt(0);
+                buckets[firstChar - 'a'].add(new Node(word, 0));
+            }
+        
+            int res = 0;
+            // Iterate through the string s
+            for (char c : s.toCharArray()) {
+                // Get the current bucket and create a new list for iteration
+                List<Node> currentBucket = buckets[c - 'a'];
+                buckets[c - 'a'] = new ArrayList<>(); // Reset the bucket
+        
+                for (Node node : currentBucket) {
+                    node.index++; // Move to the next character in the word
+                    if (node.index == node.word.length()) {
+                        // Word is fully matched
+                        res++;
+                    } else {
+                        // Add the node to the bucket of the next character needed
+                        char nextChar = node.word.charAt(node.index);
+                        buckets[nextChar - 'a'].add(node);
+                    }
+                }
+            }
+        
+            return res;
+        }
+        
+        // Helper class to store the word and current index
+        class Node {
+            String word;
+            int index;
+        
+            public Node(String word, int index) {
+                this.word = word;
+                this.index = index;
+            }
+        }        
     }
 }
