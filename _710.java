@@ -1,11 +1,78 @@
 import java.util.*;
 
+/**
+ * 710. Random Pick with Blacklist.
+ */
 public class _710 {
-    class Solution1 {
 
+    /**
+     * The reason this solution doesn't work is that the saved up backup valid number could be a blacklist number.
+     */
+    class Solution1_Wrong_Solution {
+
+        private Map<Integer, Integer> blToValidMap;
+        private int valid;
+        private Random random;
+
+        public Solution1_Wrong_Solution(int n, int[] blacklist) {
+            // valid = n - blacklist.length;
+            random = new Random();
+            valid = n - 1;
+            blToValidMap = new HashMap<>();
+            for (int invalid : blacklist) {
+                blToValidMap.put(invalid, valid--); // here is the problem
+            }
+        }
+
+        public int pick() {
+            int pickup = random.nextInt(valid + 1);
+            return blToValidMap.getOrDefault(pickup, pickup);
+        }
+    }
+
+    /**
+     * Swap blacklist elements with the numbers at the end of the imaginary array so that all blacklist numbers are stored in range [n - m, n),
+     * where m is the size of the blacklist.
+     * Numbers within range [0, n - m) will be picked up for randomly access.
+     * Time: O(m)
+     * Space: O(m)
+     */
+    class Solution {
+        private Map<Integer, Integer> map;
+        private int length;
+        private Random random;
+
+        public Solution(int n, int[] blacklist) {
+            random = new Random();
+            length = n - blacklist.length; // length = n = m, this is the size of the valid numbers
+            map = new HashMap<>();
+
+            // mark all blacklist elems
+            for (int invalid : blacklist) {
+                map.put(invalid, -1);
+            }
+
+            // swap the number in blacklist if it's in range [0, length), use map to save the swapped num
+            int index = n - 1;
+            for (int invalid : blacklist) {
+                // this index is a blacklist number, we need to skip it
+                while (map.containsKey(index)) index--;
+                // do nothing if black number is already in its right place [length, n)
+                if (invalid >= length) continue;
+                // make sure invalid is in range [0, length) && index points to a valid number
+                map.put(invalid, index--);
+            }
+        }
+
+        public int pick() {
+            int pickup = random.nextInt(length);
+            return map.getOrDefault(pickup, pickup);
+        }
+    }
+
+    class Solution1 {
         List<Integer> list;
         Random random;
-
         public Solution1(int n, int[] blacklist) {
             Set<Integer> whitelist = new HashSet<>();
             list = new ArrayList<>();
@@ -26,49 +93,4 @@ public class _710 {
             return list.get(random.nextInt(list.size()));
         }
     }
-
-    class Solution {
-        int length;
-        HashMap<Integer, Integer> map; // used to store the blacklist num & the swapped number
-        Random random;
-
-        public Solution(int n, int[] blacklist) {
-            random = new Random();
-            // 因为黑名单都在n中，所以，随机数在[0,length)中取
-            length = n - blacklist.length;
-            map = new HashMap<>();
-
-            // 标记黑名单
-            for (int b : blacklist) {
-                map.put(b, -1);
-            }
-
-            int index = length;
-
-            // swap the number in blacklist if in range [length, n), use map to save the num
-            for (int black : blacklist) {
-                // do nothing if black number is not in range [0,length)
-                if (black >= 0 && black < length) {
-                    while (index < n) { // clean numbers in range [length, n)
-                        if (!map.containsKey(index)) { // fastest way to check
-                            map.put(black, index);
-                            index++;
-                            break;
-                        } else {
-                            index++;
-                        }
-                    }
-                }
-            }
-        }
-
-        public int pick() {
-            int i = random.nextInt(length);
-            if (map.containsKey(i)) { // if the num chose is in blacklist, use the swapped clean number saved in the value
-                return map.get(i);
-            }
-            return i;
-        }
-    }
-
 }
