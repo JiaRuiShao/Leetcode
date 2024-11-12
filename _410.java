@@ -12,6 +12,12 @@ public class _410 {
             return findMLS(nums, k);
         }
 
+        /**
+         * f(x) = subarrays # given largest sum x, use binary search to find min x so that f(x) = k.
+         * @param nums nums
+         * @param k k partition
+         * @return MLS of nums
+         */
         private int findMLS(int[] nums, int k) {
             int lo = Arrays.stream(nums).max().getAsInt(), hi = Arrays.stream(nums).sum();
             while (lo <= hi) {
@@ -28,15 +34,12 @@ public class _410 {
 
         private int findPartition(int[] nums, int maxSum) {
             int currSum = 0, partition = 1;
-            for (int i = 0; i < nums.length; ) {
-                int num = nums[i];
-                if (currSum + num <= maxSum) {
-                    currSum += num;
-                    i++;
-                } else {
+            for (int num : nums) {
+                if (currSum > maxSum - num) {
                     currSum = 0;
                     partition++;
                 }
+                currSum += num;
             }
             return partition;
         }
