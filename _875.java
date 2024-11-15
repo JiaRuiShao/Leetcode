@@ -6,14 +6,19 @@ import java.util.Arrays;
  * 2. Math calculation over while loop
  */
 public class _875 {
-	class Solution_Binary_Search {
+	class Solution1_Binary_Search {
 		/**
-		 * Time: O(n+nlogN) where n is num of banana piles, and N is max number of bananas
-		 * Space: O(1)
+		 * This method implements a binary search between the minimum and maximum capacity.
+		 * - step 1: build f(k) hoursToEat monotonic decreasing function as variable k increases
+		 * - step 2: find search range for speed k: [1, max(piles)]
+		 * - step 3: find min k so that f(k) == h
 		 *
-		 * @param piles int[] given piles of bananas
-		 * @param h target hours h
-		 * @return min speed to eat all bananas
+		 * Time Complexity: O(n + nlog(M - 1)) = O(nlogM) = O(n) where M is the maximum number bananas in the piles and n is the number of piles; worst case M = 2^31 - 1, O(n + log_2(2^31)*n) = O(n + 31n) = O(n)
+		 * Space Complexity: O(1)
+		 * 
+		 * @param piles given piles of bananas to search
+		 * @param h target f(k) hours to eat
+		 * @return minimum speed k that satisfies f(k) = h
 		 */
 		public int minEatingSpeed(int[] piles, int h) {
 			int lo = 1, hi = maxBananas(piles);
@@ -40,7 +45,8 @@ public class _875 {
 		
 		/**
 		 * Given current speed, calculate the hours needed to eat all piles of bananas.
-		 * IMPORTANT: use long instead of int to prevent integer overflow
+		 * INTEGER OVERFLOW: use long instead of int to prevent integer overflow:
+		 * When speed is min 1 & every pile has 10^9 bananas, the max number of hours is 10^9 * 10^4, which is 10^13 > 2^31 - 1, this will cause integer overflow.  
 		 *
 		 * @param piles given int[] piles
 		 * @param speed current speed k
@@ -56,65 +62,37 @@ public class _875 {
 		}
 	}
 
-	class Solution2 {
-		/**
-		 * This method implements a binary search between the minimum and maximum capacity.
-		 * - step 1: build f(k) hoursToEat monotonic decreasing function as variable k increases
-		 * - step 2: find search range for speed k
-		 * - step 3: check for integer overflow
-		 * - step 4: implement left boundary binary search with speed k & hoursToEat f(k)
-		 *
-		 * Time Complexity: O(n + nlog(M - 1)) = O(nlogM) where M is the maximum number bananas in the piles and n is the number of piles
-		 * Space Complexity: O(1)
-		 * 
-		 * @param piles given piles of bananas to search
-		 * @param h target f(k) hours to eat
-		 * @return minimum speed k that satisfies f(k) = h
-		 */
+	class Solution2_Binary_Search_Improved {
 		public int minEatingSpeed(int[] piles, int h) {
-			return lowerBoundBS(piles, h, 1, Arrays.stream(piles).max().getAsInt());
-		}
+			// Initialize the search boundaries
+			int lo = 1;
+			int hi = Arrays.stream(piles).max().getAsInt();
 	
-		private int lowerBoundBS(int[] piles, int h, int lo, int hi) {
+			// Binary search to find the minimum eating speed
 			while (lo <= hi) {
 				int mid = lo + (hi - lo) / 2;
-				long midHrs = hoursToEat(piles, mid);
-				if (midHrs <= (long) h) {
-					hi = mid - 1;
+				if (canEatAll(piles, mid, h)) {
+					hi = mid - 1; // Try to find a smaller speed
 				} else {
-					lo = mid + 1;
+					lo = mid + 1; // Need a larger speed
 				}
 			}
 			return lo;
 		}
+		
+		private boolean canEatAll(int[] piles, int speed, int h) {
+			int hours = 0;
+			for (int pile : piles) {
+				// Calculate hours needed for the current pile
+				int hour = (pile + speed - 1) / speed; // Equivalent to Math.ceil(pile / speed)
+				hours += hour;
 	
-		/**
-		 * A private helper method to calculate f(k) hoursToEat given k.
-		 * IMPORTANT: Notice how we change its time from O(n*(b/k)) to O(n) where n is pile size and b is max bananas in piles
-		 * 
-		 * Time: O(n) where n is pile size
-		 * Space: O(1)
-		 * 
-		 * @param piles piles given piles of bananas to search
-		 * @param speed speed k to eat bananas
-		 * @return the number of hours it takes Koko to eat all piles of bananas at speed k
-		 */
-		private long hoursToEat(int[] piles, int speed) {
-			int pile = 0, lastPile = piles.length - 1;
-			long hours = 0;
-			while (pile <= lastPile) {
-				int bananas = piles[pile++];
-				// below is too time consuming
-				// while (bananas > 0) {
-				//     bananas -= speed;
-				//     hours++;
-				// }
-				hours += (bananas / speed);
-				if (bananas % speed > 0) {
-					hours++;
+				// Early exit if hours exceed h
+				if (hours > h) {
+					return false; // Cannot finish within h hours
 				}
 			}
-			return hours;
+			return true; // Can finish within h hours
 		}
 	}
 }
