@@ -1,39 +1,45 @@
 import java.util.Random;
 
+/**
+ * 528. Random Pick with Weight.
+ */
 public class _528 {
     class Solution {
-        // 前缀和数组
-        private int[] preSum;
-        private Random rand = new Random();
+
+        private int n;
+        private int[] pre;
+        private Random random;
 
         public Solution(int[] w) {
-            int n = w.length;
-            // 构建前缀和数组，偏移一位留给 preSum[0]
-            preSum = new int[n + 1];
-            preSum[0] = 0;
-            // preSum[i] = sum(w[0..i-1])
-            for (int i = 1; i <= n; i++) {
-                preSum[i] = preSum[i - 1] + w[i - 1];
+            n = w.length;
+            pre = new int[n];
+            pre[0] = w[0];
+            for (int i = 1; i < n; i++) {
+                pre[i] = pre[i - 1] + w[i];
             }
+
+            random = new Random();
         }
 
         public int pickIndex() {
-            int n = preSum.length;
-            // 在闭区间 [1, preSum[n - 1]] 中随机选择一个数字
-            int target = rand.nextInt(preSum[n - 1]) + 1;
-            // 获取 target 在前缀和数组 preSum 中的索引
-            // 搜索左侧边界的二分搜索
-            int left = 0, right = n;
-            while (left < right) {
-                int mid = left + (right - left) / 2;
-                if (preSum[mid] < target) {
-                    left = mid + 1;
+            // int pick = random.nextInt(pre[n - 1] + 1); // [0, sum]
+            // the above code didn't work due to first index chosen range was increased by 1, e.g., 1 is index 0 number,
+            // then its range should be (0, 1] not [0, 1]
+            int pick = random.nextInt(pre[n - 1]) + 1; // [1, sum]
+            return findIndexInPreSum(pick);
+        }
+
+        private int findIndexInPreSum(int target) {
+            int lo = 0, hi = n - 1, mid = 0;
+            while (lo <= hi) {
+                mid = lo + (hi - lo) / 2;
+                if (pre[mid] >= target) {
+                    hi = mid - 1;
                 } else {
-                    right = mid;
+                    lo = mid + 1;
                 }
             }
-            // preSum 的索引偏移了一位，还原为权重数组 w 的索引
-            return left - 1;
+            return lo;
         }
     }
 
