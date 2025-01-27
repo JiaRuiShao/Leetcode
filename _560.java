@@ -65,23 +65,30 @@ public class _560 {
 			return subarrayCount;
 		}
 		
+		/**
+		 * Time: O(n)
+		 * Space: O(n)
+		 * 
+		 * @param nums
+		 * @param k
+		 * @return
+		 */
 		public int subarraySumImproved(int[] nums, int k) {
+			// demo: [-1, -2, 3, 0], k = 0, res = 3
 			// pre[i] - pre[j] == k, && i > j
-			int n = nums.length;
-			int sum = 0;
-			Map<Integer, Integer> sumFreq = new HashMap<>();
-			sumFreq.put(sum, 1);
-			int subarrayCount = 0;
-			for (int i = 1; i <= n; i++) {
-				sum += nums[i - 1];
+			int n = nums.length, preSum = 0, res = 0;
+			Map<Integer, Integer> freq = new HashMap<>();
+			for (int i = 0; i < n + 1; i++) {
+				preSum = i > 0 ? preSum + nums[i - 1] : preSum;
+				int target = preSum - k;
 				// target pre[j] == pre[i] - k
-				if (sumFreq.containsKey(sum - k)) {
-					subarrayCount += sumFreq.get(sum - k);
+				if (freq.containsKey(target)) {
+					res += freq.get(target);
 				}
 				// update the prefix sum freq
-				sumFreq.put(sum, sumFreq.getOrDefault(sum, 0) + 1);
+				freq.put(preSum, freq.getOrDefault(preSum, 0) + 1);
 			}
-			return subarrayCount;
+			return res;
 		}
 	}
 
