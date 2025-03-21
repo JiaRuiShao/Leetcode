@@ -88,6 +88,47 @@ public class _360 {
         }
     }
 
+    class Solution3_Two_Pointers_Improved {
+        public int[] sortTransformedArray(int[] nums, int a, int b, int c) {
+            // parabola: a >= 0, desc idx from n - 1; a < 0, asc idx from 0
+            int n = nums.length;
+            int[] sorted = new int[n];
+            int left = 0, right = n - 1;
+            if (a >= 0) {
+                int idx = right;
+                while (idx >= 0) {
+                    int quadLeft = quadFunc(a, b, c, nums[left]);
+                    int quadRight = quadFunc(a, b, c, nums[right]);
+                    if (quadLeft >= quadRight) {
+                        left++;
+                        sorted[idx--] = quadLeft;
+                    } else {
+                        right--;
+                        sorted[idx--] = quadRight;
+                    }
+                }
+            } else {
+                int idx = left;
+                while (idx < n) {
+                    int quadLeft = quadFunc(a, b, c, nums[left]);
+                    int quadRight = quadFunc(a, b, c, nums[right]);
+                    if (quadLeft <= quadRight) {
+                        left++;
+                        sorted[idx++] = quadLeft;
+                    } else {
+                        right--;
+                        sorted[idx++] = quadRight;
+                    }
+                }
+            }
+            return sorted;
+        }
+    
+        private int quadFunc(int a, int b, int c, int x) {
+            return a * x * x + b * x + c;
+        }
+    }
+
     public static void main(String[] args) {
         // int[] nums = new int[]{-4,-2,2,4};
         // int a = 1, b = 3, c = 5;
