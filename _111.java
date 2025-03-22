@@ -99,7 +99,32 @@ public class _111 {
         }
     }
 
-    class Solution3_DP_SubProblem {
+    class Solution3_DFS_Without_Global_Variables { // count from up to bottom level
+        public int minDepth(TreeNode root) {
+            if (root == null) {
+                return 0;
+            }
+            int minDepth = Integer.MAX_VALUE;
+            int currDepth = 0;
+            return findMinDepth(root, currDepth, minDepth);
+        }
+    
+        private int findMinDepth(TreeNode root, int currDepth, int minDepth) {
+            currDepth++;
+            if (root.left == null && root.right == null) { // reach leave node, return minDepth
+                return Math.min(minDepth, currDepth);
+            }
+            if (root.left != null) {
+                minDepth = findMinDepth(root.left, currDepth, minDepth);
+            }
+            if (root.right != null) {
+                minDepth = findMinDepth(root.right, currDepth, minDepth);
+            }
+            return minDepth;
+        }
+    }
+
+    class Solution4_DFS_Without_Global_Variables { // count from bottom to up level
         /**
          * Divide the problem into sub-problems (here is find minDepth of left and right subtree)
          * Time: O(n)
