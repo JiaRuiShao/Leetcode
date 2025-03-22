@@ -13,7 +13,7 @@ public class _797 {
     static class Solution {
 
         /**
-         * Time: O(2^n*n) where 2^(n-1) - 1 is the possible path# from node 0 to n - 1, it takes O(n) time to build a path.
+         * Time: O(2^n*n) where 2^(n-2) is the possible path# from node 0 to n - 1, it takes O(n) time to build a path.
          * Space: O(2^n*n)
          * *
          * @param graph adjacent list of an acyclic graph
