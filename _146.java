@@ -1,15 +1,115 @@
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 146. LRU Cache
  */
 public class _146 {
 	/**
+	 * LinkedList structure to maintain usage ordering; HashMap to store Key-CacheNode mapping.
+	 * Use dummy head and tail for linked list construction to avoid corner cases.
+	 * Doubly linked list: dummyHead <-> LRU ... MRU <-> dummyTail
+	 */
+	static class Solution1_HashMap_DoublyLinkedList_Implementation {
+		static class CacheNode {
+			int key;
+			int value;
+			CacheNode prev;
+			CacheNode next;
+
+			public CacheNode(int key, int value) {
+				this.key = key;
+				this.value = value;
+			}
+		}
+
+		class LRUCache {
+			CacheNode head;
+			CacheNode tail;
+			Map<Integer, CacheNode> cache;
+			final int capacity;
+
+			public LRUCache(int capacity) {
+				head = new CacheNode(-1, -1);
+				tail = new CacheNode(-1, -1);
+				head.next = tail;
+				tail.prev = head;
+				cache = new HashMap<>();
+				this.capacity = capacity;
+			}
+			
+			// get val -> move this cache node to end of list
+			public int get(int key) {
+				CacheNode node = cache.get(key);
+				if (node == null) {
+					return -1;
+				}
+				makeRecently(node);
+				return node.value;
+			}
+
+			// Moves the given node to the tail (most recently used)
+			// - delete this node and add to end of list
+    		// - update 4 * 2 times, maintain both prev and next pointers
+			private void makeRecently(CacheNode node) {
+				removeNode(node);
+				addNode(node);
+			}
+			
+			public void put(int key, int value) {
+				if (cache.containsKey(key)) {
+					CacheNode node = cache.get(key);
+					node.value = value;
+					makeRecently(node);
+				} else {
+					if (cache.size() == capacity) {
+						int removedKey = removeLRU();
+						cache.remove(removedKey);
+					}
+					CacheNode newNode = new CacheNode(key, value);
+					addNode(newNode);
+					cache.put(key, newNode);
+				}
+			}
+
+			// prev <-> node <-> next
+			// prev <-> next
+			private void removeNode(CacheNode node) {
+				CacheNode prev = node.prev;
+				CacheNode next = node.next;
+				prev.next = next;
+				next.prev = prev;
+				node.prev = null;
+				node.next = null;
+			}
+
+			// add at the end of the list
+			// prev <-> tail
+			// prev <-> node <-> tail
+			private void addNode(CacheNode node) {
+				CacheNode prev = tail.prev;
+				prev.next = node;
+				node.prev = prev;
+				node.next = tail;
+				tail.prev = node;
+			}
+
+			// Removes and returns the key of the least recently used node
+			private int removeLRU() {
+				CacheNode lru = head.next;
+				removeNode(lru);
+				return lru.key;
+			}
+		}
+
+	}
+
+	/**
 	 * Implementation using Java LinkedHashMap.
 	 */
-	static class Solution1_LinkedHashMap_Implementation {
+	static class Solution2_LinkedHashMap_Implementation {
 		static class LRUCache {
 			private final LinkedHashMap<Integer, Integer> map;
 			
@@ -50,159 +150,51 @@ public class _146 {
 			}
 		}
 	}
-	
-	/**
-	 * LinkedList structure to maintain usage ordering; HashMap to store Key-CacheNode mapping.
-	 * Use dummy head and tail for linked list construction to avoid corner cases.
-	 * Doubly linked list: dummyHead <-> LRU ... MRU <-> dummyTail
-	 */
-	static class Solution2_HashMap_DoublyLinkedList_Implementation {
-		static class CacheNode {
-			int key;
-			int value;
-			CacheNode prev;
-			CacheNode next;
 
-			public CacheNode(int key, int value) {
-				this.key = key;
-				this.value = value;
-			}
-		}
-
+	static class Solution3_LinkedHashMap_Implementation {
 		class LRUCache {
-			CacheNode head;
-			CacheNode tail;
-			Map<Integer, CacheNode> cache;
 			final int capacity;
-
-			public LRUCache(int capacity) {
-				head = new CacheNode(-1, -1);
-				tail = new CacheNode(-1, -1);
-				head.next = tail;
-				tail.prev = head;
-				cache = new HashMap<>();
+			LinkedHashMap<Integer, Integer> cache;
+		
+			public LRUCache(int capacity) { 
 				this.capacity = capacity;
+				cache = new LinkedHashMap<>();
 			}
 			
-			// get val -> move this cache node to end of list
 			public int get(int key) {
-				CacheNode node = cache.get(key);
-				if (node == null) {
+				if (!cache.containsKey(key)) {
 					return -1;
 				}
-				moveToTail(node);
-				return node.value;
-			}
-
-			// Moves the given node to the tail (most recently used)
-			// - delete this node and add to end of list
-    		// - update 4 * 2 times, maintain both prev and next pointers
-			private void moveToTail(CacheNode node) {
-				removeNode(node);
-				addNode(node);
+				makeRecently(key);
+				return cache.get(key);
 			}
 			
-			public void put(int key, int value) {
+			public void put(int key, int val) {
 				if (cache.containsKey(key)) {
-					CacheNode node = cache.get(key);
-					node.value = value;
-					moveToTail(node);
-				} else {
-					if (cache.size() == capacity) {
-						int removedKey = evictLRU();
-						cache.remove(removedKey);
-					}
-					CacheNode newNode = new CacheNode(key, value);
-					addNode(newNode);
-					cache.put(key, newNode);
+					cache.put(key, val);
+					makeRecently(key);
+					return;
 				}
+				
+				if (cache.size() >= capacity) {
+					int LRUKey = cache.keySet().iterator().next();
+					cache.remove(LRUKey);
+				}
+				cache.put(key, val);
 			}
-
-			// prev <-> node <-> next
-			// prev <-> next
-			private void removeNode(CacheNode node) {
-				CacheNode prev = node.prev;
-				CacheNode next = node.next;
-				prev.next = next;
-				next.prev = prev;
-				node.prev = null;
-				node.next = null;
+			
+			// LinkedHashMap maintain insertion order
+			// LRU <-> MRU
+			private void makeRecently(int key) {
+				int val = cache.get(key);
+				cache.remove(key);
+				cache.put(key, val);
 			}
-
-			// add at the end of the list
-			// prev <-> tail
-			// prev <-> node <-> tail
-			private void addNode(CacheNode node) {
-				CacheNode prev = tail.prev;
-				prev.next = node;
-				node.prev = prev;
-				node.next = tail;
-				tail.prev = node;
-			}
-
-			// Removes and returns the key of the least recently used node
-			private int evictLRU() {
-				CacheNode lru = head.next;
-				removeNode(lru);
-				return lru.key;
-			}
-		}
-
-	}
-	
-	static class Node {
-		private int key = 0, val = 0;
-		private Node prev = null, next = null;
-		
-		public Node (int key, int val) {
-			this.key = key;
-			this.val = val;
-			prev = null;
-			next = null;
-		}
-		
-		public Node (int key, int val, Node prev, Node next) {
-			this.key = key;
-			this.val = val;
-			this.prev = prev;
-			this.next = next;
-		}
-		
-		public int getKey() {
-			return key;
-		}
-		
-		public int getVal() {
-			return val;
-		}
-		
-		public Node getPrev() {
-			return prev;
-		}
-		
-		public Node getNext() {
-			return next;
-		}
-		
-		public void setKey(int key) {
-			this.key = key;
-		}
-		
-		public void setVal(int val) {
-			this.val = val;
-		}
-		
-		public void setPrev(Node prev) {
-			this.prev = prev;
-		}
-		
-		public void setNext(Node next) {
-			this.next = next;
 		}
 	}
 	
 	private static void testCase1() {
-		Solution1_LinkedHashMap_Implementation.LRUCache lruCache = new Solution1_LinkedHashMap_Implementation.LRUCache(2);
+		Solution1_HashMap_DoublyLinkedList_Implementation.LRUCache lruCache = new Solution1_HashMap_DoublyLinkedList_Implementation().new LRUCache(2);
 		lruCache.put(1, 1);
 		lruCache.put(2, 2);
 		assert lruCache.get(1) == 1;
@@ -215,7 +207,7 @@ public class _146 {
 	}
 	
 	private static void testCase2() {
-		Solution1_LinkedHashMap_Implementation.LRUCache lruCache = new Solution1_LinkedHashMap_Implementation.LRUCache(1);
+		Solution1_HashMap_DoublyLinkedList_Implementation.LRUCache lruCache = new Solution1_HashMap_DoublyLinkedList_Implementation().new LRUCache(1);
 		lruCache.put(2, 1);
 		assert lruCache.get(2) == 1;
 		lruCache.put(3, 2);
