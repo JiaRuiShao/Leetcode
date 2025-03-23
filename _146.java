@@ -1,8 +1,10 @@
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 146. LRU Cache
+ */
 public class _146 {
 	/**
 	 * Implementation using Java LinkedHashMap.
@@ -200,7 +202,7 @@ public class _146 {
 	}
 	
 	private static void testCase1() {
-		Solution2_HashMap_DoublyLinkedList_Implementation.LRUCache lruCache = new Solution2_HashMap_DoublyLinkedList_Implementation.LRUCache(2);
+		Solution1_LinkedHashMap_Implementation.LRUCache lruCache = new Solution1_LinkedHashMap_Implementation.LRUCache(2);
 		lruCache.put(1, 1);
 		lruCache.put(2, 2);
 		assert lruCache.get(1) == 1;
@@ -213,7 +215,7 @@ public class _146 {
 	}
 	
 	private static void testCase2() {
-		Solution2_HashMap_DoublyLinkedList_Implementation.LRUCache lruCache = new Solution2_HashMap_DoublyLinkedList_Implementation.LRUCache(1);
+		Solution1_LinkedHashMap_Implementation.LRUCache lruCache = new Solution1_LinkedHashMap_Implementation.LRUCache(1);
 		lruCache.put(2, 1);
 		assert lruCache.get(2) == 1;
 		lruCache.put(3, 2);
