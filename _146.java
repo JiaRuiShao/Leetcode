@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,80 +49,103 @@ public class _146 {
 		}
 	}
 	
+	/**
+	 * LinkedList structure to maintain usage ordering; HashMap to store Key-CacheNode mapping.
+	 * Use dummy head and tail for linked list construction to avoid corner cases.
+	 * Doubly linked list: dummyHead <-> LRU ... MRU <-> dummyTail
+	 */
 	static class Solution2_HashMap_DoublyLinkedList_Implementation {
-		/**
-		 * tail always points to the last not-null Node --> create a lot corner cases.
-		 */
-		static class LRUCache {
-			private Map<Integer, Node> LRUMap = null;
-			private int MAX_SIZE = 0;
-			private Node dummyHead = null, tail = null;
-			
+		static class CacheNode {
+			int key;
+			int value;
+			CacheNode prev;
+			CacheNode next;
+
+			public CacheNode(int key, int value) {
+				this.key = key;
+				this.value = value;
+			}
+		}
+
+		class LRUCache {
+			CacheNode head;
+			CacheNode tail;
+			Map<Integer, CacheNode> cache;
+			final int capacity;
+
 			public LRUCache(int capacity) {
-				LRUMap = new ConcurrentHashMap<>(capacity + 2, 1);
-				MAX_SIZE = capacity;
-				dummyHead = new Node(-1, -1);
-				tail = dummyHead;
+				head = new CacheNode(-1, -1);
+				tail = new CacheNode(-1, -1);
+				head.next = tail;
+				tail.prev = head;
+				cache = new HashMap<>();
+				this.capacity = capacity;
 			}
 			
+			// get val -> move this cache node to end of list
 			public int get(int key) {
-				Node node = LRUMap.get(key);
+				CacheNode node = cache.get(key);
 				if (node == null) {
 					return -1;
 				}
-				maintainAccessOrder(node);
-				return node.getVal();
+				moveToTail(node);
+				return node.value;
+			}
+
+			// Moves the given node to the tail (most recently used)
+			// - delete this node and add to end of list
+    		// - update 4 * 2 times, maintain both prev and next pointers
+			private void moveToTail(CacheNode node) {
+				removeNode(node);
+				addNode(node);
 			}
 			
-			public void put(int key, int val) {
-				Node node = LRUMap.get(key);
-				if (node == null) {
-					Node newNode = new Node(key, val, tail, null);
-					addLast(newNode);
-					LRUMap.put(key, newNode);
-					validateSize();
+			public void put(int key, int value) {
+				if (cache.containsKey(key)) {
+					CacheNode node = cache.get(key);
+					node.value = value;
+					moveToTail(node);
 				} else {
-					node.setVal(val);
-					maintainAccessOrder(node);
+					if (cache.size() == capacity) {
+						int removedKey = evictLRU();
+						cache.remove(removedKey);
+					}
+					CacheNode newNode = new CacheNode(key, value);
+					addNode(newNode);
+					cache.put(key, newNode);
 				}
 			}
-			
-			private void remove(Node node) {
-				node.getPrev().setNext(node.getNext());
-				if (node.getNext() != null) {
-					node.getNext().setPrev(node.getPrev());
-				} else {
-					tail = node.getPrev();
-				}
-				node.setNext(null);
-				node.setPrev(null);
+
+			// prev <-> node <-> next
+			// prev <-> next
+			private void removeNode(CacheNode node) {
+				CacheNode prev = node.prev;
+				CacheNode next = node.next;
+				prev.next = next;
+				next.prev = prev;
+				node.prev = null;
+				node.next = null;
 			}
-			
-			private void addLast(Node node) {
-				node.setNext(null);
-				node.setPrev(tail);
-				tail.setNext(node);
-				tail = node;
+
+			// add at the end of the list
+			// prev <-> tail
+			// prev <-> node <-> tail
+			private void addNode(CacheNode node) {
+				CacheNode prev = tail.prev;
+				prev.next = node;
+				node.prev = prev;
+				node.next = tail;
+				tail.prev = node;
 			}
-			
-			private void maintainAccessOrder(Node node) {
-				remove(node);
-				addLast(node);
-			}
-			
-			private int getSize() {
-				return LRUMap.size();
-			}
-			
-			private void validateSize() {
-				Node eldestNode = null;
-				if (getSize() <= MAX_SIZE || dummyHead == tail || (eldestNode = dummyHead.getNext()) == null) {
-					return;
-				}
-				LRUMap.remove(eldestNode.getKey());
-				remove(eldestNode);
+
+			// Removes and returns the key of the least recently used node
+			private int evictLRU() {
+				CacheNode lru = head.next;
+				removeNode(lru);
+				return lru.key;
 			}
 		}
+
 	}
 	
 	static class Node {
