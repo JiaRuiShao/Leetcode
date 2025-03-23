@@ -1,4 +1,4 @@
-- ### Inclusive Search Range: [left, right]
+ ### Inclusive Search Range: [left, right]
   - **Basic Binary Search**
     ```
     int binarySearch(int[] nums, int target) {
@@ -71,7 +71,7 @@
     - right pointer out of bound: input `nums` is `[1, 1, 1, 1]` and `target` is `0`
     - right pointer points to the `largest elem < target` if target doesn't exist: `nums[right] = largest elem less than target in nums`
     - right pointer points to the right most elem if there's many target elems in `nums`
-  - ### Other Improvements
+  - **Other Improvements**
     - To calculate the mid from given range: [left, right], we can use bitwise operation to divide a large int by 2 without needing to worry about integer overflow:
     ```java
     int mid = (low + high) >>> 1;

@@ -2,6 +2,8 @@ import helper.TreeNode;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * 111. Minimum Depth of Binary Tree
@@ -18,24 +20,30 @@ public class _111 {
          * @return
          */
         public int minDepth(TreeNode root) {
-            int currDepth = 0;
-            if (root == null) return currDepth;
-            Deque<TreeNode> q = new ArrayDeque<>();
-            q.offer(root);
+            Queue<TreeNode> queue = new LinkedList<>();
+            int depth = 0;
+            if (root != null) {
+                queue.offer(root);
+            }
 
-            TreeNode curr;
-            while (!q.isEmpty()) {
-                currDepth++;
-                int sz = q.size();
+            while (!queue.isEmpty()) {
+                depth++;
+                int sz = queue.size(); // we have to get size of queue before the for loop, or else the for loop will continue to next level nodes
                 for (int i = 0; i < sz; i++) {
-                    curr = q.poll();
-                    // check whether this node is a leaf node
-                    if (curr.left == null && curr.right == null) return currDepth;
-                    if (curr.left != null) q.offer(curr.left);
-                    if (curr.right != null) q.offer(curr.right);
+                    TreeNode curr = queue.poll();
+                    if (curr.left == null && curr.right == null) {
+                        return depth;
+                    }
+                    if (curr.left != null) {
+                        queue.offer(curr.left);
+                    }
+                    if (curr.right != null) {
+                        queue.offer(curr.right);
+                    }
                 }
             }
-            return currDepth;
+
+            return depth;
         }
     }
 
@@ -71,35 +79,33 @@ public class _111 {
     }
     
     class Solution2_DFS_Backtrack2 {
-        int depth = 0, minDepth = Integer.MAX_VALUE;
-        
+        int minDepth = Integer.MAX_VALUE;
+
         public int minDepth(TreeNode root) {
-            backtracking(root);
-            return minDepth == Integer.MAX_VALUE ? 0 : minDepth;
-        }
-        
-        private void backtracking(TreeNode root) {
+            int currDepth = 0;
             if (root == null) {
-                return;
+                return currDepth;
             }
-            depth++;
-            // base case: leaf node, update minDepth
-            if (root.left == null && root.right == null) {
-                minDepth = Math.min(depth, minDepth);
-                // continue traversing to next level/depth
-            } else if (root.left != null && root.right != null) {
-                backtracking(root.left);
-                backtracking(root.right);
-            } else if (root.left != null) {
-                backtracking(root.left);
-            } else if (root.right != null) {
-                backtracking(root.right);
+            dfs(root, currDepth);
+            return minDepth;
+        }
+    
+        private void dfs(TreeNode root, int currDepth) {
+            currDepth++;
+            if (root.left == null && root.right == null) { // pre-order dfs
+                minDepth = Math.min(minDepth, currDepth);
             }
-            depth--;
+            if (root.left != null) {
+                dfs(root.left, currDepth);
+            }
+            if (root.right != null) {
+                dfs(root.right, currDepth);
+            }
+            // we need to call currDepth-- if it's declared as a global variable
         }
     }
 
-    class Solution3_DFS_Without_Global_Variables { // count from up to bottom level
+    class Solution3_DFS_Without_Global_Variables { // count from top to bottom
         public int minDepth(TreeNode root) {
             if (root == null) {
                 return 0;
@@ -124,9 +130,9 @@ public class _111 {
         }
     }
 
-    class Solution4_DFS_Without_Global_Variables { // count from bottom to up level
+    class Solution4_DFS_Without_Global_Variables { // count from bottom to top
         /**
-         * Divide the problem into sub-problems (here is find minDepth of left and right subtree)
+         * Convert the problem into: find min depth from leaf node to root node 
          * Time: O(n)
          * Space: O(h) = O(logn) if balanced; = O(n) if skewed
          * @param root
