@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -13,12 +14,15 @@ import java.util.Queue;
  */
 public class _207 {
     class Solution1_DFS_Traverse {
-        boolean hasCycle = false;
+        boolean[] visited;
+        boolean[] onPath;
+        boolean hasCycle;
+
         /**
          * DFS Traversal.
          * 1) Build the directed graph by implementing adjacency list using input course pre-requisite arr
          * 2) Traverse the tree to detect if the graph is acyclic
-         * Time: O(V + E) + O(V^2) (if we don't have visited) where O(V + E) is the time complexity for building teh directed graph,
+         * Time: O(V + E) (+ O(V^2) if we don't have visited) where O(V + E) is the time complexity for building the directed graph,
          * * and the O(V^2) is for traversing the graph; (if we have visited) = O(V + E) + O(V) cuz we're traversing each node once
          * Space: O(V + E) + O(V)
          *
@@ -27,12 +31,16 @@ public class _207 {
          * @return true if the built graph is acyclic, false if not
          */
         public boolean canFinish(int numCourses, int[][] prerequisites) {
-            List<Integer>[] g = buildGraph(numCourses, prerequisites);
-            boolean[] visited = new boolean[numCourses];
-            boolean[] onPath = new boolean[numCourses];
+            List<Integer>[] graph = buildGraph(numCourses, prerequisites);
+
+            visited = new boolean[numCourses];
+            onPath = new boolean[numCourses];
+            hasCycle = false;
 
             for (int course = 0; course < numCourses; course++) {
-                traverseGraph(g, visited, onPath, course);
+                if (!visited[course]) {
+                    traverse(course, graph);
+                }
             }
 
             return !hasCycle;
@@ -53,35 +61,91 @@ public class _207 {
             }
 
             for (int[] edge : prerequisites) {
-                g[edge[1]].add(edge[0]); // add the dependent to its dependent node, direction from edge[1] to edge[0]
+                int nextCourse = edge[0];  // course to take
+                int prereq = edge[1];      // prerequisite course
+                g[prereq].add(nextCourse);  // edge from prereq -> nextCourse
             }
 
             return g;
         }
 
         /**
+         * We have to check onPath first before check visited and return.
          * Time: O(V)
          * Space: O(V)
          *
-         * @param g graph built
-         * @param visited visited boolean arr
-         * @param onPath onPath boolean arr
-         * @param node traversal starting node
+         * @param graph graph built
+         * @param course traversal starting node
          */
-        private void traverseGraph(List<Integer>[] g, boolean[] visited, boolean[] onPath, int node) {
-            if (onPath[node]) hasCycle = true;
-            if (visited[node] || onPath[node]) return;
-
-            visited[node] = true;
-            onPath[node] = true;
-            for (int dependent : g[node]) {
-                traverseGraph(g, visited, onPath, dependent);
+        private void traverse(int course, List<Integer>[] graph) {
+            if (onPath[course]) {
+                hasCycle = true;
             }
-            onPath[node] = false;
+            if (hasCycle || visited[course]) {
+                return;
+            }
+
+            visited[course] = true;
+            onPath[course] = true;
+
+            for (int nextCourse : graph[course]) {
+                traverse(nextCourse, graph);
+            }
+
+            onPath[course] = false;
         }
     }
 
-    class Solution2_BFS {
+    class Solution2_DFS_Without_Global_Variables {
+        class Solution {
+            public boolean canFinish(int numCourses, int[][] prerequisites) {
+                List<Integer>[] graph = buildGraph(numCourses, prerequisites);
+                boolean[] visited = new boolean[numCourses];
+                boolean[] onPath = new boolean[numCourses];
+
+                for (int course = 0; course < numCourses; course++) {
+                    if (!visited[course]) {
+                        if (hasCycle(course, graph, visited, onPath)) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            private List<Integer>[] buildGraph(int numCourses, int[][] prerequisites) {
+                List<Integer>[] graph = new LinkedList[numCourses];
+                for (int i = 0; i < numCourses; i++) {
+                    graph[i] = new LinkedList<>();
+                }
+                for (int[] edge : prerequisites) {
+                    int next = edge[0];
+                    int prereq = edge[1];
+                    graph[prereq].add(next);
+                }
+                return graph;
+            }
+
+            private boolean hasCycle(int course, List<Integer>[] graph, boolean[] visited, boolean[] onPath) {
+                if (onPath[course]) return true;
+                if (visited[course]) return false;
+
+                visited[course] = true;
+                onPath[course] = true;
+
+                for (int neighbor : graph[course]) {
+                    if (hasCycle(neighbor, graph, visited, onPath)) {
+                        return true;
+                    }
+                }
+
+                onPath[course] = false;
+                return false;
+            }
+        }
+    }
+
+    class Solution3_BFS {
         /**
          * BFS Traversal.
          * 1) Build a directed graph by implementing an adjacency list
@@ -100,38 +164,84 @@ public class _207 {
          * @return true if the built graph is acyclic, false if not
          */
         public boolean canFinish(int numCourses, int[][] prerequisites) {
-            List<Integer>[] g = buildGraph(numCourses, prerequisites);
-
+            // Step 1: Build graph and in-degree array
+            List<Integer>[] graph = new ArrayList[numCourses];
             int[] inDegree = new int[numCourses];
-            for (int[] prerequisite : prerequisites) {
-                inDegree[prerequisite[0]]++; // edge direction: prerequisite[1] --> prerequisite[0]
+            for (int i = 0; i < numCourses; i++) {
+                graph[i] = new ArrayList<>();
+            }
+            for (int[] prereq : prerequisites) {
+                int next = prereq[0], pre = prereq[1];
+                graph[pre].add(next);
+                inDegree[next]++;
             }
 
-            Queue<Integer> q = new LinkedList<>();
-            for (int node = 0; node < numCourses; node++) {
-                if (inDegree[node] == 0) q.offer(node);
-            }
-
-            int count = 0;
-            while (!q.isEmpty()) {
-                int node = q.poll();
-                count++;
-                for (int dependent : g[node]) {
-                    if (--inDegree[dependent] == 0) q.offer(dependent);
+            // Step 2: Add courses with 0 in-degree to queue
+            Queue<Integer> queue = new LinkedList<>();
+            for (int i = 0; i < numCourses; i++) {
+                if (inDegree[i] == 0) {
+                    queue.offer(i);
                 }
             }
-            return count == numCourses;
-        }
 
-        private List<Integer>[] buildGraph(int n, int[][] edges) {
-            List<Integer>[] g = new LinkedList[n];
-            for (int i = 0; i < n; i++) {
-                g[i] = new LinkedList<>();
+            // Step 3: BFS
+            int studied = 0;
+            while (!queue.isEmpty()) {
+                int curr = queue.poll();
+                studied++;
+                for (int neighbor : graph[curr]) {
+                    inDegree[neighbor]--;
+                    if (inDegree[neighbor] == 0) {
+                        queue.offer(neighbor);
+                    }
+                }
             }
-            for (int[] edge : edges) {
-                g[edge[1]].add(edge[0]); // direction: edge[1] -> edge[0] -> ...
+
+            return studied == numCourses;
+        }
+    }
+
+    class Solution4_Without_Build_Graph {
+        /**
+         * Time: O(V + E + VE) = O(VE)
+         * Space: O(V)
+         * @param numCourses V
+         * @param prerequisites E = prerequisites.length
+         * @return if there's any cycle in this graph
+         */
+        public boolean canFinish(int numCourses, int[][] prerequisites) {
+            // Step 1: Build in-degree array
+            int[] inDegree = new int[numCourses];
+            for (int[] prereq : prerequisites) {
+                int next = prereq[0], pre = prereq[1];
+                inDegree[next]++;
             }
-            return g;
+
+            // Step 2: Add courses with 0 in-degree to queue
+            Queue<Integer> queue = new LinkedList<>();
+            for (int i = 0; i < numCourses; i++) {
+                if (inDegree[i] == 0) {
+                    queue.offer(i);
+                }
+            }
+
+            // Step 3: BFS
+            int studied = 0;
+            while (!queue.isEmpty()) {
+                int curr = queue.poll();
+                studied++;
+                for (int[] prereq : prerequisites) {
+                    if (prereq[1] == curr) {
+                        int next = prereq[0];
+                        inDegree[next]--;
+                        if (inDegree[next] == 0) {
+                            queue.offer(next);
+                        }
+                    }
+                }
+            }
+
+            return studied == numCourses;
         }
     }
 }
