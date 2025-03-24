@@ -13,11 +13,55 @@ import java.util.*;
  */
 public class _210 {
     /**
+     * BFS Traverse.
+     * Time: O(V + E), would be O(VE) if we choose not to build a graph
+     * Space: O(V + E), would be O(V) if we choose not to build a graph
+     */
+    class Solution1_BFS {
+        public int[] findOrder(int numCourses, int[][] prerequisites) {
+            // Step 1: Build graph and in-degree array
+            List<Integer>[] graph = new ArrayList[numCourses];
+            int[] inDegree = new int[numCourses];
+            for (int i = 0; i < numCourses; i++) {
+                graph[i] = new ArrayList<>();
+            }
+            for (int[] prereq : prerequisites) {
+                int next = prereq[0], pre = prereq[1];
+                graph[pre].add(next);
+                inDegree[next]++;
+            }
+
+            // Step 2: Add courses with 0 in-degree to queue
+            Queue<Integer> queue = new LinkedList<>();
+            for (int i = 0; i < numCourses; i++) {
+                if (inDegree[i] == 0) {
+                    queue.offer(i);
+                }
+            }
+
+            // Step 3: BFS
+            int[] order = new int[numCourses];
+            int studied = 0;
+            while (!queue.isEmpty()) {
+                int curr = queue.poll();
+                order[studied++] = curr;
+                for (int neighbor : graph[curr]) {
+                    inDegree[neighbor]--;
+                    if (inDegree[neighbor] == 0) {
+                        queue.offer(neighbor);
+                    }
+                }
+            }
+            return studied == numCourses ? order : new int[]{};
+        }
+    }
+
+    /**
      * DFS Post-order Traversal.
      * Time: O(V + E)
      * Space: O(V + E)
      */
-    class Solution1_DFS {
+    class Solution2_DFS {
         boolean[] visited, onPath;
         boolean hasCycle = false;
 
@@ -61,61 +105,69 @@ public class _210 {
             }
 
             onPath[node] = false;
-            res.add(node);
+            res.add(node); // post-order traversal
         }
     }
 
     /**
-     * BFS Traverse.
+     * DFS Post-order Traversal without using global variables.
      * Time: O(V + E)
      * Space: O(V + E)
      */
-    class Solution2_BFS {
+    class Solution3_DFS_Improved {
         public int[] findOrder(int numCourses, int[][] prerequisites) {
-            // 1 - build the directed graph
-            List<Integer>[] g = buildGraph(numCourses, prerequisites);
+            List<Integer>[] graph = buildGraph(numCourses, prerequisites);
+            boolean[] visited = new boolean[numCourses];
+            boolean[] onPath = new boolean[numCourses];
+            List<Integer> order = new ArrayList<>();
 
-            // 2 - create an in-degree helper arr
-            int[] inDegree = new int[numCourses];
-            for (int[] edge : prerequisites) {
-                inDegree[edge[0]]++; // edge[0] depends on edge[1], direction: edge[1] -> edge[0]
-            }
-
-            // 3 - find starting nodes whose in-degree is zero, offer them into the BFS queue
-            Queue<Integer> q = new LinkedList<>();
-            for (int node = 0; node < numCourses; node++) {
-                if (inDegree[node] == 0) q.offer(node);
-            }
-
-            // create the res list, along with a counter
-            int count = 0;
-            int[] res = new int[numCourses];
-
-            // 4 - pop the node out, decrease in-degree of the nodes who depends on this node, offer the nodes into the queue if the in-degree is zero
-            while (!q.isEmpty()) {
-                int node = q.poll();
-                res[count++] = node;
-                for (int next : g[node]) {
-                    inDegree[next]--;
-                    if (inDegree[next] == 0) q.offer(next);
+            for (int course = 0; course < numCourses; course++) {
+                if (!visited[course]) {
+                    if (hasCycle(course, graph, visited, onPath, order)) {
+                        return new int[0];
+                    }
                 }
             }
 
-            // 5 - continue util the BFS queue is empty
-            // 6 - return the res if the res size == n
-            return count == numCourses ? res : new int[]{};
+            // Reverse post-order to get topological order
+            Collections.reverse(order);
+            return order.stream().mapToInt(i -> i).toArray();
         }
 
-        private List<Integer>[] buildGraph(int n, int[][] edges) {
-            List<Integer>[] g = new LinkedList[n];
-            for (int i = 0; i < n; i++) {
-                g[i] = new LinkedList<>();
+        private List<Integer>[] buildGraph(int numCourses, int[][] prerequisites) {
+            List<Integer>[] graph = new LinkedList[numCourses];
+            for (int i = 0; i < numCourses; i++) {
+                graph[i] = new LinkedList<>();
             }
-            for (int[] edge : edges) {
-                g[edge[1]].add(edge[0]); // edge[0] depends on edge[1], edge[1] -> edge[0]
+            for (int[] edge : prerequisites) {
+                int next = edge[0];
+                int pre = edge[1];
+                graph[pre].add(next);
             }
-            return g;
+            return graph;
         }
 
+        private boolean hasCycle(int course, List<Integer>[] graph, boolean[] visited, boolean[] onPath, List<Integer> order) {
+            if (onPath[course]) {
+                return true;
+            }
+            if (visited[course] || onPath[course]) {
+                return false;
+            }
+
+            visited[course] = true;
+            onPath[course] = true;
+
+            for (int neighbor : graph[course]) {
+                if (hasCycle(neighbor, graph, visited, onPath, order)) {
+                    return true;
+                }
+            }
+
+            order.add(course);
+            onPath[course] = false;
+            return false;
+        }
     }
+
 }
