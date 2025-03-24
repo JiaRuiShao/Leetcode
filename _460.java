@@ -139,6 +139,8 @@ public class _460 {
             // Mapping from key to frequency
             HashMap<Integer, Integer> kf;
             // Mapping from frequency to keys (maintained as insertion order)
+            // Q: Why we don't use other linked structure like Deque or List type here?
+            // A: We need to guarantee 1) constant time to delete a key 2) maintain insertion order 
             HashMap<Integer, LinkedHashSet<Integer>> fk;
             // Tracks the minimum frequency
             int minFreq;
