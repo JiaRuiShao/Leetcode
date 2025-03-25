@@ -1,15 +1,7 @@
 import java.util.*;
 
 /**
- * 210. Course Schedule II.
- * There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1.
- * You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that
- * * you must take course bi first if you want to take course ai.
- *
- * For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
- * Return the ordering of courses you should take to finish all courses.
- * If there are many valid answers, return any of them.
- * If it is impossible to finish all courses, return an empty array.
+ * 210. Course Schedule II
  */
 public class _210 {
     /**
@@ -123,7 +115,7 @@ public class _210 {
 
             for (int course = 0; course < numCourses; course++) {
                 if (!visited[course]) {
-                    if (hasCycle(course, graph, visited, onPath, order)) {
+                    if (dfs(course, graph, visited, onPath, order)) {
                         return new int[0];
                     }
                 }
@@ -134,12 +126,12 @@ public class _210 {
             return order.stream().mapToInt(i -> i).toArray();
         }
 
-        private List<Integer>[] buildGraph(int numCourses, int[][] prerequisites) {
-            List<Integer>[] graph = new LinkedList[numCourses];
-            for (int i = 0; i < numCourses; i++) {
-                graph[i] = new LinkedList<>();
+        private List<Integer>[] buildGraph(int numNode, int[][] edges) {
+            List<Integer>[] graph = new ArrayList[numNode];
+            for (int i = 0; i < numNode; i++) {
+                graph[i] = new ArrayList<>();
             }
-            for (int[] edge : prerequisites) {
+            for (int[] edge : edges) {
                 int next = edge[0];
                 int pre = edge[1];
                 graph[pre].add(next);
@@ -147,11 +139,11 @@ public class _210 {
             return graph;
         }
 
-        private boolean hasCycle(int course, List<Integer>[] graph, boolean[] visited, boolean[] onPath, List<Integer> order) {
+        private boolean dfs(int course, List<Integer>[] graph, boolean[] visited, boolean[] onPath, List<Integer> order) {
             if (onPath[course]) {
                 return true;
             }
-            if (visited[course] || onPath[course]) {
+            if (visited[course]) {
                 return false;
             }
 
@@ -159,7 +151,7 @@ public class _210 {
             onPath[course] = true;
 
             for (int neighbor : graph[course]) {
-                if (hasCycle(neighbor, graph, visited, onPath, order)) {
+                if (dfs(neighbor, graph, visited, onPath, order)) {
                     return true;
                 }
             }
