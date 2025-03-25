@@ -84,4 +84,48 @@ public class _224 {
         }
 
     }
+
+    class Solution3_My_Solution {
+        public int calculate(String s) {
+            // we either need this parenthesis index map or we need to use global variable to track the current index
+            Deque<Integer> stk = new LinkedList<>();
+            Map<Integer, Integer> parenthesisMap = new HashMap<>();
+            for (int i = 0; i < s.length(); i++) {
+                char c = s.charAt(i);
+                if (c == '(') {
+                    stk.push(i);
+                } else if (c == ')') {
+                    parenthesisMap.put(stk.pop(), i);
+                }
+            }
+            return calc(s, parenthesisMap, 0);
+        }
+
+        private int calc(String s, Map<Integer, Integer> parenthesisMap, int idx) {
+            int total = 0;
+            int num = 0;
+            int sign = 1;
+            while (idx < s.length()) {
+                char c = s.charAt(idx++);
+                if (c >= '0' && c <= '9') {
+                    num = num * 10 + (c - '0');
+                } else if (c == '(') {
+                    num = calc(s, parenthesisMap, idx);
+                    idx = parenthesisMap.get(idx - 1) + 1;
+                } else if (c == ')') {
+                    total += sign * num;
+                    return total; // it's safe to return because # of left parenthesis == # right parenthesis
+                } else if (c == '+') {
+                    total += sign * num;
+                    sign = 1;
+                    num = 0;
+                } else if (c == '-') {
+                    total += sign * num;
+                    sign = -1;
+                    num = 0;
+                }
+            }
+            return total + sign * num;
+        }
+    }
 }
