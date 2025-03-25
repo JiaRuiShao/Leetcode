@@ -1,5 +1,5 @@
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * 785. Is Graph Bipartite?
@@ -9,40 +9,38 @@ public class _785 {
 	 * Time: O(n+e)
 	 * Space: O(n)
 	 */
-	class Solution1_BFS {
-		
-		private boolean isBipartite = true;
-		private boolean[] visited;
-		private boolean[] inSet;
-		
+	class Solution {
 		public boolean isBipartite(int[][] graph) {
 			int n = graph.length;
-			visited = new boolean[n];
-			inSet = new boolean[n];
+			int[] color = new int[n]; // 1 , 2
+
 			for (int node = 0; node < n; node++) {
-				if (!visited[node]) traverse(graph, node);
-			}
-			return isBipartite;
-		}
-		
-		private void traverse(int[][] g, int start) {
-			Deque<Integer> q = new ArrayDeque<>();
-			q.offer(start);
-			visited[start] = true;
-			
-			while (!q.isEmpty()) {
-				int node = q.poll();
-				for (int neighbor : g[node]) {
-					if (!visited[neighbor]) {
-						visited[neighbor] = true;
-						inSet[neighbor] = !inSet[node];
-						q.offer(neighbor);
-					} else if (inSet[neighbor] == inSet[node]) {
-						isBipartite = false;
-						return;
+				if (color[node] == 0) {
+					if (!bfs(node, color, graph)) {
+						return false;
 					}
 				}
 			}
+			return true;
+		}
+
+		private boolean bfs(int node, int[] color, int[][] graph) {
+			Queue<Integer> q = new LinkedList<>();
+			color[node] = 1;
+			q.offer(node);
+
+			while (!q.isEmpty()) {
+				int curr = q.poll();
+				for (int neighbor : graph[curr]) {
+					if (color[neighbor] == 0) {
+						color[neighbor] = 3 - color[curr];
+						q.offer(neighbor);
+					} else if (color[neighbor] == color[curr]) {
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 	}
 
