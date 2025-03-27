@@ -126,20 +126,20 @@ public class _207 {
                 return graph;
             }
 
-            private boolean hasCycle(int course, List<Integer>[] graph, boolean[] visited, boolean[] onPath) {
-                if (onPath[course]) return true;
-                if (visited[course]) return false;
+            private boolean hasCycle(int curr, List<Integer>[] graph, boolean[] visited, boolean[] onPath) {
+                if (onPath[curr]) return true;
+                if (visited[curr]) return false;
 
-                visited[course] = true;
-                onPath[course] = true;
+                visited[curr] = true;
+                onPath[curr] = true;
 
-                for (int neighbor : graph[course]) {
-                    if (hasCycle(neighbor, graph, visited, onPath)) {
+                for (int nbr : graph[curr]) {
+                    if (hasCycle(nbr, graph, visited, onPath)) {
                         return true;
                     }
                 }
 
-                onPath[course] = false;
+                onPath[curr] = false;
                 return false;
             }
         }
