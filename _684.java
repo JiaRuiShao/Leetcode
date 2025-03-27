@@ -15,6 +15,8 @@ public class _684 {
             }
 
             for (int[] edge : edges) {
+                // here we use 0 index based parents[], so we need to convert 1 index based nodes to 0 based
+                // the simpler way is to use a 1-indexed parents[]
                 int n1 = edge[0] - 1;
                 int n2 = edge[1] - 1;
                 int p1 = findParent(parents, n1);
