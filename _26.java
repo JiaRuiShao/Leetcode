@@ -1,18 +1,20 @@
 /**
- * 26. Remove Duplicates from Sorted Array.
+ * 26. Remove Duplicates from Sorted Array
  */
 public class _26 {
     class Solution1_Fast_Slow_Pointers {
         public int removeDuplicates(int[] nums) {
-            // slow points to the end of the non-dup numbers, fast points to the next diff number
-            int slow = 0, fast = 0, n = nums.length;
-            while (fast < n) {
-                if (nums[fast] != nums[slow]) {
-                    nums[++slow] = nums[fast];
+            // [0, left) distinct num
+            int len = nums.length;
+            int left = 0, right = 0;
+            while (right < len) {
+                int distinct = nums[right];
+                nums[left++] = distinct;
+                while (right < len && nums[right] == distinct) {
+                    right++;
                 }
-                fast++;
             }
-            return slow + 1;
+            return left;
         }
     
         public int removeDuplicates2(int[] nums) {
