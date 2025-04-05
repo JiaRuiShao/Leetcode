@@ -1,81 +1,60 @@
 import java.util.*;
 
 /**
- * 1584. Min Cost to Connect All Points.
- * You are given an array points representing integer coordinates of some points on a 2D-plane, where points[i] = [xi, yi].
- *
- * The cost of connecting two points [xi, yi] and [xj, yj] is the manhattan distance between them: |xi - xj| + |yi - yj|,
- * where |val| denotes the absolute value of val.
- *
- * Return the minimum cost to make all points connected. All points are connected if there is exactly one simple path
- * between any two points.
+ * 1584. Min Cost to Connect All Points
  */
 public class _1584 {
     class Solution1_Kruskal {
         /**
-         * Time: O(eloge) = O(n^2*log(n^2))
-         * Space: O(n + e) = O(n^2)
+         * Time: O(eloge) 
+         * Space: O(n + e) = O(e)
          *
          * @param points given points, need to construct edges (from, to, weight) by ourselves
          * @return weight sum of the mst
          */
-        public int minCostConnectPoints(int[][] points) {
-            int n = points.length;
-            // 1 - build the edges, edges num = n - 1 + n - 2 + ... + 1 = n(n-1)/2
-            List<int[]> edges = new ArrayList<>(); // edge: int[]{from, to, weight}
-            for (int n1 = 0; n1 < n - 1; n1++) { // think each point as a node // time: O(e) = O(n^2)
-                int x1 = points[n1][0], y1 = points[n1][1]; // point 1
-                for (int n2 = n1 + 1; n2 < n; n2++) {
-                    int x2 = points[n2][0], y2 = points[n2][1]; // point 2
-                    int weight = Math.abs(x1 - x2) + Math.abs(y1 - y2);
-                    edges.add(new int[]{n1, n2, weight});
-                }
-            }
-
-            // 2 - sort the edges based on asc weight
-            Collections.sort(edges, (a, b) -> Integer.compare(a[2], b[2])); // time: O(eloge) = O(n^2*log(n^2)), space: O(loge) = O(log(n^2))
-
-            // 3 - union-find to add the edges from small weight large to ensure the built tree is acyclic
-            UnionFind uf = new UnionFind(n); // time: O(n), space: O(n)
-            int weightSum = 0;
-
-            for (int[] edge : edges) { // O(e) = O(n^2)
-                int from = edge[0], to = edge[1], weight = edge[2];
-                if (uf.union(from, to)) {
-                    weightSum += weight;
-                }
-            }
-            return uf.count() == 1 ? weightSum : -1;
-        }
-
-        private class UnionFind {
-            private int count;
-            private int[] parent;
-
-            public UnionFind(int n) {
-                count = n;
-                parent = new int[n];
+        class Solution {
+            public int minCostConnectPoints(int[][] points) {
+                int n = points.length;
+                List<int[]> edges = new ArrayList<>();
+        
+                // Step 1: Build all possible edges with Manhattan distance
                 for (int i = 0; i < n; i++) {
-                    parent[i] = i;
+                    for (int j = i + 1; j < n; j++) {
+                        int dist = Math.abs(points[i][0] - points[j][0]) + 
+                                Math.abs(points[i][1] - points[j][1]);
+                        edges.add(new int[]{i, j, dist});
+                    }
                 }
+        
+                // Step 2: Sort edges by cost
+                edges.sort((a, b) -> Integer.compare(a[2], b[2]));
+        
+                // Step 3: Kruskal's MST using Union-Find
+                int[] parent = new int[n];
+                for (int i = 0; i < n; i++) parent[i] = i;
+        
+                int connected = n, cost = 0;
+                for (int[] edge : edges) {
+                    int u = edge[0], v = edge[1], w = edge[2];
+                    int rootU = findParent(parent, u);
+                    int rootV = findParent(parent, v);
+        
+                    if (rootU != rootV) {
+                        parent[rootU] = rootV;
+                        cost += w;
+                        connected--;
+                        if (connected == 1) break;
+                    }
+                }
+        
+                return cost;
             }
-
-            public boolean union(int n1, int n2) {
-                int p1 = findParent(n1), p2 = findParent(n2);
-                if (p1 == p2) return false;
-                parent[p1] = p2;
-                count--;
-                return true;
-            }
-
-            private int findParent(int node) {
-                if (parent[node] == node) return node;
-                parent[node] = findParent(parent[node]);
+        
+            private int findParent(int[] parent, int node) {
+                if (parent[node] != node) {
+                    parent[node] = findParent(parent, parent[node]);
+                }
                 return parent[node];
-            }
-
-            public int count() {
-                return count;
             }
         }
     }
