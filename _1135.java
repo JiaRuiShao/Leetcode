@@ -1,15 +1,55 @@
 import java.util.*;
 
 /**
- * 1135. Connecting Cities With Minimum Cost.
- * There are n cities labeled from 1 to n. You are given the integer n and an array connections where
- * connections[i] = [xi, yi, costi] indicates that the cost of connecting city xi and city yi (bidirectional connection) is costi.
- *
- * Return the minimum cost to connect all the n cities such that there is at least one path between each pair of cities.
- * If it is impossible to connect all the n cities, return -1. The cost is the sum of the connections' costs used.
+ * 1135. Connecting Cities With Minimum Cost
  */
 public class _1135 {
-    class Solution1_Prim {
+    /**
+     * Kruskal's Algorithm:
+     * 1. sort the edges based on the weight from small to large
+     * 2. add the edges ascending
+     * 3. use union-find to add edges to ensure the built tree is acyclic
+     */
+    class Solution1_Kruskal {
+        /**
+         * Time: O(eloge + n + e) = O(eloge)
+         * Space: O(loge + n + e) = O(n + e) where O(log e) is for recursive stack space (quicksort)
+         * @param n num of nodes
+         * @param connections input edges
+         * @return weight sum of the built mst
+         */
+        public int minimumCost(int n, int[][] connections) {
+            Arrays.sort(connections, (a, b) -> Integer.compare(a[2], b[2]));
+            int[] parent = new int[n];
+            for (int node = 0; node < n; node++) {
+                parent[node] = node;
+            }
+    
+            int connected = n, cost = 0;
+            for (int[] edge : connections) {
+                int n1 = edge[0] - 1; // convert to base-0 index
+                int n2 = edge[1] - 1; // convert to base-0 index
+                int p1 = findParent(parent, n1);
+                int p2 = findParent(parent, n2);
+                if (p1 != p2) {
+                    parent[p1] = p2;
+                    connected--;
+                    cost += edge[2];
+                }
+            }
+    
+            return connected == 1 ? cost : -1;
+        }
+    
+        private int findParent(int[] parent, int node) {
+            if (parent[node] != node) {
+                parent[node] = findParent(parent, parent[node]);
+            }
+            return parent[node];
+        }
+    }
+
+    class Solution2_Prim {
         public int minimumCost(int n, int[][] connections) {
             Map<Integer, List<int[]>> graph = buildGraph(n, connections); // build a graph using edges
             PriorityQueue<int[]> heap = new PriorityQueue<>(Comparator.comparingInt(a -> a[1])); // min-heap based on weight asc
@@ -62,7 +102,7 @@ public class _1135 {
      * Time: O(eloge+n^2)
      * Space: (n+e)
      */
-    class Solution2_Prim_Basic { // another implementation of Prim's algorithm
+    class Solution3_Prim_Basic { // another implementation of Prim's algorithm
         public int minimumCost(int n, int[][] connections) {
             // build a graph using given edges and weights, implemented by adjacency list
             List<int[]>[] graph = buildGraph(n, connections);
@@ -153,69 +193,6 @@ public class _1135 {
                     }
                 }
                 return true;
-            }
-        }
-    }
-
-    /**
-     * Kruskal's Algorithm:
-     * 1. sort the edges based on the weight from small to large
-     * 2. add the edges ascending
-     * 3. use union-find to add edges to ensure the built tree is acyclic
-     */
-    class Solution3_Kruskal {
-        /**
-         * Time: O(eloge + n + e) = O(eloge + n)
-         * Space: O(loge + n + e) = O(n + e)
-         * @param n num of nodes
-         * @param connections input edges
-         * @return weight sum of the built mst
-         */
-        public int minimumCost(int n, int[][] connections) {
-            // 1 - sort the edges
-            Arrays.sort(connections, Comparator.comparingInt(a -> a[2])); // sort the edges based on the edge weight
-            // 2 - use union-find to add the edges to ensure there's no cycle
-            UnionFind uf = new UnionFind(n);
-            int weightSum = 0;
-            // 3- add the edges from the smallest weight
-            for (int[] edge : connections) {
-                if (uf.count() == 1) break;
-                int from = edge[0] - 1, to = edge[1] - 1, weight = edge[2]; // starting index change to 0, current is 1
-                if (uf.union(from, to)) { // connect two nodes into one component
-                    weightSum += weight;
-                }
-            }
-            return uf.count() == 1 ? weightSum : -1;
-        }
-
-        private class UnionFind {
-            int count; // record the connected components
-            int[] parent; // record the node's parent
-
-            public UnionFind(int n) {
-                count = n;
-                parent = new int[n];
-                for (int i  = 0; i < n; i++) {
-                    parent[i] = i; // default parent is themselves
-                }
-            }
-
-            public boolean union(int n1, int n2) { // return false if two nodes are already connected
-                int p1 = findParent(n1), p2 = findParent(n2);
-                if (p1 == p2) return false; // already connected
-                parent[p1] = p2; // parent[p2] = p1
-                count--;
-                return true;
-            }
-
-            private int findParent(int node) {
-                if (parent[node] == node) return node; // root node of the tree we built
-                parent[node] = findParent(parent[node]);
-                return parent[node]; // always return root node of the built tree
-            }
-
-            public int count() {
-                return count;
             }
         }
     }
