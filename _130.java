@@ -1,6 +1,9 @@
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * 130. Surrounded Regions
+ */
 public class _130 {
     // solution 1: DFS/BFS (mark edge-connected 'O' with 'E', then flip remaining Os and revert Es back to Os)
     // solution 2: Union-Find (to connect edge Os together with a dummy root node, then traverse the matrix to flip the Os that're not connected)
@@ -116,6 +119,80 @@ public class _130 {
                     queue.offer(new int[]{r, c});
                     board[r][c] = 'E';
                 }
+            }
+        }
+    }
+
+    class Solution3_Union_Find {
+        /**
+         * Union-Find implementation to connect edge Os with a dummy node, connect Os with their neighbors; then flip Os to X if not connected to the dummy node.
+         * Time: O(mn)
+         * Space: O(mn)
+         * @param board
+         */
+        public void solve(char[][] board) {
+            int m = board.length, n = board[0].length;
+            UnionFind uf = new UnionFind(m * n + 1);
+            int dummy = m * n;
+            char target = 'O';
+            int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    
+            for (int r = 0; r < m; r++) {
+                for (int c = 0; c < n; c++) {
+                    if (board[r][c] != target) {
+                        continue;
+                    }
+                    int node = r * n + c;
+                    if (r == 0 || r == m - 1 || c == 0 || c == n - 1) {
+                        uf.union(node, dummy);
+                    }
+    
+                    for (int[] direction : directions) {
+                        int row = r + direction[0];
+                        int col = c + direction[1];
+                        if (row < 0 || row >= m || col < 0 || col >= n || board[row][col] != target) {
+                            continue;
+                        }
+                        uf.union(row * n + col, node);
+                    }
+                }
+            }
+    
+            for (int r = 0; r < m; r++) {
+                for (int c = 0; c < n; c++) {
+                    if (board[r][c] == target && !uf.connected(r * n + c, dummy)) {
+                        board[r][c] = 'X';
+                    }
+                }
+            }
+        }
+    
+        class UnionFind {
+            private int[] parent;
+            public UnionFind(int size) {
+                parent = new int[size];
+                for (int i = 0; i < size; i++) {
+                    parent[i] = i;
+                }
+            }
+    
+            private int findParent(int node) {
+                if (parent[node] != node) {
+                    parent[node] = findParent(parent[node]);
+                }
+                return parent[node];
+            }
+    
+            public void union(int n1, int n2) {
+                int p1 = findParent(n1);
+                int p2 = findParent(n2);
+                if (p1 != p2) {
+                    parent[p1] = p2;
+                }
+            }
+    
+            public boolean connected(int n1, int n2) {
+                return findParent(n1) == findParent(n2);
             }
         }
     }
