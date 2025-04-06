@@ -1,31 +1,15 @@
 import java.util.LinkedList;
 import java.util.Queue;
 
+import helper.TreeNode;
+
 /**
  * 226. Invert Binary Tree
  * Given the root of a binary tree, invert the tree, and return its root.
  */
 public class _226 {
-    private static class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
 
-        TreeNode() {
-        }
-
-        TreeNode(int val) {
-            this.val = val;
-        }
-
-        TreeNode(int val, TreeNode left, TreeNode right) {
-            this.val = val;
-            this.left = left;
-            this.right = right;
-        }
-    }
-
-    class Solution1_BFS_Recursion {
+    class Solution1_Subproblem {
         /**
          * BFS Backtrack Solution.
          * Time: O(N) where N is #node in this tree
@@ -35,22 +19,11 @@ public class _226 {
          * @return
          */
         public TreeNode invertTree(TreeNode root) {
-            // base case
             if (root == null) return root;
-            // BFS Solution -- post-order
             TreeNode left = invertTree(root.left);
             TreeNode right = invertTree(root.right);
             root.right = left;
             root.left = right;
-            return root;
-        }
-
-        public TreeNode invertTreeConcise(TreeNode root) {
-            // base case
-            if (root == null) return null;
-            TreeNode temp = root.left;
-            root.left = invertTreeConcise(root.right);
-            root.right = invertTreeConcise(temp);
             return root;
         }
     }
