@@ -4,83 +4,106 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 /**
- * 1514. Path with Maximum Probability。
- *
- * You are given an undirected weighted graph of n nodes (0-indexed), represented by an edge list where
- * edges[i] = [a, b] is an undirected edge connecting the nodes a and b with a probability of success of traversing that edge succProb[i].
- *
- * Given two nodes start and end, find the path with the maximum probability of success to go from start to end
- * and return its success probability. If there is no path from start to end, return 0.
+ * 1514. Path with Maximum Probability
  */
 public class _1514 {
-    class Solution1_Dijkstra {
+    // the reason we use a helper class here is because node is of int type and succProb is of double type
+    class Solution1_Dijkstra_Without_AdjList {
 
-        /**
-         * A helper class to record current node id and its probability.
-         */
-        private class State {
-            int id; // node id
-            double prob; // prob from starting node
-
-            public State(int id, double prob) {
-                this.id = id;
-                this.prob = prob;
+        class Pair {
+            public int node;
+            public double succRate;
+            public Pair(int node, double succRate) {
+                this.node = node;
+                this.succRate = succRate;
             }
         }
-
-        /**
-         * Time: O(n+e+eloge+n) = O(n+eloge)
-         * Space: O(n+e+e+n) = O(n+e)
-         * *
-         * @param n num of nodes
-         * @param edges edges of the graph
-         * @param succProb prob array for each edge
-         * @param start start node
-         * @param end end node
-         * @return max probability from start node to end node; if no path from start to end, return 0
-         */
-        public double maxProbability(int n, int[][] edges, double[] succProb, int start, int end) {
-            // 1 - build the graph using the given edges
-            List<double[]>[] g = new ArrayList[n]; // double[]{end, prob}
-            for (int i = 0; i < n; i++) {
-                g[i] = new ArrayList<>();
-            }
-            for (int i = 0; i < edges.length; i++) {
-                int[] edge = edges[i];
-                g[edge[0]].add(new double[]{edge[1], succProb[i]});
-                g[edge[1]].add(new double[]{edge[0], succProb[i]});
-            }
-
-            // 2 - create the max-heap of the nodes, create a prob array
-            PriorityQueue<State> maxHeap = new PriorityQueue<>(edges.length, (a, b) -> Double.compare(b.prob, a.prob));
-            // 3 - create the prob table to store the best probability for each node during the traverse
+    
+        public double maxProbability(int n, int[][] edges, double[] succProb, int start_node, int end_node) {
             double[] prob = new double[n];
-            Arrays.fill(prob, -1);
-
-            // 4 - start the traverse from the start node, notice the initialized probability for start node is 1 instead of 0
-            prob[start] = 1;
-            maxHeap.offer(new State(start, 1));
-
-            // 5 - BFS traverse
-            while (!maxHeap.isEmpty()) {
-                State state = maxHeap.poll(); // poll the starting node with the largest edge
-                int curNode = state.id;
-                double curProb = state.prob;
-                if (curNode == end) return prob[end];
-                if (curProb < prob[curNode])
-                    continue;  // ignore this edge if the starting node already has a larger probability
-
-                for (double[] edge : g[curNode]) {
-                    double nextProb = curProb * edge[1];
-                    int nextNode = (int) edge[0];
-                    if (nextProb > prob[nextNode]) {
-                        prob[nextNode] = nextProb;
-                        maxHeap.offer(new State(nextNode, nextProb));
+            Arrays.fill(prob, 0);
+    
+            PriorityQueue<Pair> pq = new PriorityQueue<>((a, b) -> Double.compare(b.succRate, a.succRate));
+            pq.offer(new Pair(start_node, 1));
+            prob[start_node] = 1;
+    
+            while(!pq.isEmpty()) {
+                Pair pair = pq.poll();
+                int curr = pair.node;
+                double succRate = pair.succRate;
+                if (curr == end_node) {
+                    return succRate;
+                }
+                if (succRate < prob[curr] || succRate == 0) continue;
+                for (int i = 0; i < edges.length; i++) {
+                    int next = -1;
+                    if (edges[i][0] == curr) {
+                        next = edges[i][1];
+                    } else if (edges[i][1] == curr) {
+                        next = edges[i][0];
+                    }
+                    if (next != -1) {
+                        double nextSuccRate = succRate * succProb[i];
+                        if (nextSuccRate > prob[next]) {
+                            pq.offer(new Pair(next, nextSuccRate));
+                            prob[next] = nextSuccRate;
+                        }
                     }
                 }
             }
             return 0;
         }
+    }
 
+    class Solution2_Dijkstra_With_AdjList {
+
+        class Pair {
+            public int node;
+            public double succRate;
+            public Pair(int node, double succRate) {
+                this.node = node;
+                this.succRate = succRate;
+            }
+        }
+    
+        public double maxProbability(int n, int[][] edges, double[] succProb, int start_node, int end_node) {
+            List<Pair>[] graph = new ArrayList[n];
+            for (int node = 0; node < n; node++) {
+                graph[node] = new ArrayList<>();
+            }
+            for (int i = 0; i < edges.length; i++) {
+                int[] edge = edges[i];
+                double succRate = succProb[i];
+                int from = edge[0], to = edge[1];
+                graph[from].add(new Pair(to, succRate));
+                graph[to].add(new Pair(from, succRate));
+            }
+            
+            double[] prob = new double[n];
+            Arrays.fill(prob, 0);
+    
+            PriorityQueue<Pair> pq = new PriorityQueue<>((a, b) -> Double.compare(b.succRate, a.succRate));
+            pq.offer(new Pair(start_node, 1));
+            prob[start_node] = 1;
+    
+            while(!pq.isEmpty()) {
+                Pair pair = pq.poll();
+                int curr = pair.node;
+                double succRate = pair.succRate;
+                if (curr == end_node) {
+                    return succRate;
+                }
+                if (succRate < prob[curr] || succRate == 0) continue;
+                for (Pair nextPair : graph[curr]) {
+                    int next = nextPair.node;
+                    double nextSuccRate = succRate * nextPair.succRate; 
+                    if (nextSuccRate > prob[next]) {
+                        pq.offer(new Pair(next, nextSuccRate));
+                        prob[next] = nextSuccRate;
+                    }
+                }
+            }
+            return 0;
+        }
     }
 }
