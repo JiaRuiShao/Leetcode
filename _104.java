@@ -2,10 +2,6 @@ import java.util.*;
 
 /**
  * 104. Maximum Depth of Binary Tree
- * Given the root of a binary tree, return its maximum depth.
- *
- * A binary tree's maximum depth is the number of nodes along the longest path
- * from the root node down to the farthest leaf node.
  */
 public class _104 {
     private static final class TreeNode {
@@ -27,37 +23,27 @@ public class _104 {
          */
         public int maxDepth(TreeNode root) {
             if (root == null) return 0;
-            int left  = maxDepth(root.left);
-            int right  = maxDepth(root.right);
-            return Math.max(left, right) + 1;
+            return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
         }
     }
 
     class Solution2_DFS {
-        int height, maxHeight;
+        int maxDepth = 0;
 
-        /**
-         * Classic BFS Backtrack.
-         * @param root
-         * @return
-         */
         public int maxDepth(TreeNode root) {
-            traverse(root);
-            return maxHeight;
+            traverse(root, 0);
+            return maxDepth;
         }
-
-        /**
-         * Time: O(n)
-         * Space: O(h) = O(n)
-         * @param curr current TreeNode
-         */
-        private void traverse(TreeNode curr) {
-            if (curr == null) return;
-            height++;
-            if (height > maxHeight) maxHeight = height; // pre-order traverse
-            traverse(curr.left);
-            traverse(curr.right);
-            height--;
+    
+        private void traverse(TreeNode node, int depth) {
+            if (node == null) {
+                maxDepth = Math.max(maxDepth, depth);
+                return;
+            }
+    
+            depth++;
+            traverse(node.left, depth);
+            traverse(node.right, depth);        
         }
     }
 
