@@ -1,19 +1,10 @@
-class _654 {
-    /* Binary Tree Node */
-    static class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-        TreeNode() {}
-        TreeNode(int val) {this.val = val;}
-        TreeNode(int val, TreeNode left, TreeNode right) {
-            this.val = val;
-            this.left = left;
-            this.right = right;
-        }
-    }
+import helper.TreeNode;
 
-    static class Solution {
+/**
+ * 654. Maximum Binary Tree
+ */
+class _654 {
+    class Solution1 {
         public TreeNode constructMaximumBinaryTree(int[] nums) {
             return build(nums, 0, nums.length - 1);
         }
@@ -48,6 +39,28 @@ class _654 {
             root.left = build(nums, lo, index - 1);
             root.right = build(nums, index + 1, hi);
 
+            return root;
+        }
+    }
+
+    class Solution2 {
+        public TreeNode constructMaximumBinaryTree(int[] nums) {
+            return build(0, nums.length, nums);
+        }
+    
+         // [left, right)
+        private TreeNode build(int left, int right, int[] nums) {
+            if (left >= right) return null;
+            int max = -1, idx = 0;
+            for (int i = left; i < right; i++) {
+                if (nums[i] > max) {
+                    max = nums[i];
+                    idx = i;
+                }
+            }
+            TreeNode root = new TreeNode(max);
+            root.left = build(left, idx, nums);
+            root.right = build(idx + 1, right, nums);
             return root;
         }
     }
