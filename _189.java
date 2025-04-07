@@ -1,33 +1,54 @@
 /**
  * 189. Rotate Array
+    // s0: brute force: nested for loop
+    // s1: allocate space for a duplicate array
+    // s2: recursion, visited[] or Set<> visited
+    // s3: use a larger mutiplier as the key to encode the original val and the rotated value; however here the number could be too large
+    // s4: circular update
+    // s5: reverse 3 times: reverse entire array, reverse first k, reverse remaining (n - k)
  */
 public class _189 {
-    class Solution1_Optimal {
+    class Solution1_Reverse {
+        public void rotate(int[] nums, int k) {
+            int n = nums.length;
+            k = k % n;
+            reverse(nums, 0, n - 1);
+            reverse(nums, 0, k - 1);
+            reverse(nums, k, n - 1);
+        }
+    
+        // reverse nums array in range [l, r]
+        private void reverse(int[] nums, int l, int r) {
+            if (l >= r) return;
+            while (l < r) {
+                int temp = nums[l];
+                nums[l] = nums[r];
+                nums[r] = temp;
+                l++;
+                r--;
+            }
+        }
+    }
+    
+    class Solution2_Circular_Update {
         // s0: brute force: nested for loop
         // s1: allocate space for a duplicate array
         // s2: recursion, visited[] or Set<> visited
         // s3: this solution
         public void rotate(int[] nums, int k) {
-            int rotate = 0;
-            int len = nums.length;
-            k = k % len;
-
-            for (int idx = 0; rotate < len; idx++) {
-                int num = nums[idx];
-                int nextIdx = idx;
-                while (true) {
-                    nextIdx = (nextIdx + k) % nums.length;
-                    num = rotate(nums, k, nextIdx, num);
-                    rotate++;
-                    if (nextIdx == idx || rotate == len) break; // move to another index when this cycle complete
-                }
+            k = k % nums.length;
+            int n = nums.length, rotated = 0;
+    
+            for (int start = 0; start < n && rotated < n; start++) {
+                int curr = start, prev = nums[curr];
+                do {
+                    int next = (curr + k) % n, temp = nums[next];
+                    nums[next] = prev;
+                    prev = temp;
+                    curr = next;
+                    rotated++;
+                } while (curr != start);
             }
-        }
-
-        private int rotate(int[] nums, int k, int nextIdx, int num) {
-            int nextNum = nums[nextIdx];
-            nums[nextIdx] = num;
-            return nextNum;
         }
 
     }
