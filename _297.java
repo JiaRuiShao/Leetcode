@@ -2,20 +2,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import helper.TreeNode;
+import helper.TreePrinter;
+
+/**
+ * 297. Serialize and Deserialize Binary Tree
+ */
 public class _297 {
-    private static class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode() {
-        }
-
-        TreeNode(int val) {
-            this.val = val;
-        }
-    }
-
     /**
      * Solution 1: Pre-order Traversal.
      * When we deserialize, first find left subtree, and then find right one.
@@ -131,30 +124,37 @@ public class _297 {
      * Level-Order Traversal / BFS.
      */
     public class Solution4 {
+        // for input [1,2,3,null,null,4,5], the String version would be [1,2,3,#,#,4,5,#,#,#,#]
         public String serialize(TreeNode root) {
-            if (root == null) return "";
             StringBuilder sb = new StringBuilder();
-            Queue<TreeNode> q = new LinkedList<>();
-            TreeNode curr;
-            q.offer(root);
+            String delimiter = ",", nullNode = "#";
 
-            while (!q.isEmpty()) {
-                curr = q.poll();
-                if (curr == null) {
-                    sb.append("#").append(",");
-                    continue;
+            if (root == null) return sb.toString();
+
+            Queue<TreeNode> queue = new LinkedList<>();
+            queue.offer(root);
+            while (!queue.isEmpty()) {
+                int sz = queue.size();
+                for (int i = 0; i < sz; i++) {
+                    TreeNode curr = queue.poll();
+                    if (curr == null) {
+                        sb.append(nullNode).append(delimiter);
+                        continue;
+                    }
+                    // qq: do we need to add null childs for null node? Here I didn't
+                    sb.append(curr.val).append(delimiter);
+                    queue.offer(curr.left);
+                    queue.offer(curr.right);
                 }
-                sb.append(curr.val).append(",");
-                q.offer(curr.left);
-                q.offer(curr.right);
             }
-
             return sb.toString();
         }
 
+        // each not null node have left & right childs saved in data
         public TreeNode deserialize(String data) {
-            if (data.equals("")) return null;
-            String[] nodes = data.split(",");
+            if (data.isEmpty()) return null;
+            String delimiter = ",", nullNode = "#";
+            String[] nodes = data.split(delimiter);
             int idx = 0;
             TreeNode curr;
             TreeNode root = new TreeNode(Integer.parseInt(nodes[idx++]));
@@ -162,19 +162,19 @@ public class _297 {
             q.offer(root);
 
             String left, right;
-            while (idx < nodes.length - 1) {
+            while (!q.isEmpty() && idx < nodes.length) {
                 curr = q.poll();
                 left = nodes[idx++];
                 right = nodes[idx++];
 
-                if (left.equals("#")) {
+                if (left.equals(nullNode)) {
                     curr.left = null;
                 } else {
                     curr.left = new TreeNode(Integer.parseInt(left));
-                    q.offer(curr.left); // add the node to the q if not null
+                    q.offer(curr.left);
                 }
 
-                if (right.equals("#")) {
+                if (right.equals(nullNode)) {
                     curr.right = null;
                 } else {
                     curr.right = new TreeNode(Integer.parseInt(right));
@@ -184,5 +184,29 @@ public class _297 {
 
             return root;
         }
+    }
+
+    public static void main(String[] args) {
+        // root = [1,2,3,null,null,4,5]
+        //      1
+        //     / \
+        //    2   3
+        //       / \
+        //      4   5
+        // Build root = [1,2,3,null,null,4,5]
+        TreeNode root = new TreeNode(1);
+        root.left = new TreeNode(2);
+        root.right = new TreeNode(3);
+        root.right.left = new TreeNode(4);
+        root.right.right = new TreeNode(5);
+
+        // Call the function you want to test
+        // For example:
+        _297 solution = new _297();
+        TreePrinter.print(root);
+        String serializedTree = solution.new Solution4().serialize(root);
+        System.out.println(serializedTree);
+        TreeNode deNode = solution.new Solution4().deserialize(serializedTree);
+        TreePrinter.print(deNode);
     }
 }
