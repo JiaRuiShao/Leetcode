@@ -51,49 +51,40 @@ public class _1135 {
 
     class Solution2_Prim {
         public int minimumCost(int n, int[][] connections) {
-            Map<Integer, List<int[]>> graph = buildGraph(n, connections); // build a graph using edges
-            PriorityQueue<int[]> heap = new PriorityQueue<>(Comparator.comparingInt(a -> a[1])); // min-heap based on weight asc
-            Set<Integer> visited = new HashSet<>(); // store the nodes that are added to mst
-            int costs = 0;
+            List<int[]>[] graph = new ArrayList[n];
+            for (int i = 0; i < n; i++) {
+                graph[i] = new ArrayList<>();
+            }
 
-            // add the 1st node into the mst. here index starts from 1
-            heap.add(new int[]{1, 0});
-            // traverse the edges
-            while (!heap.isEmpty()) {
-                int[] conn = heap.poll();
-                int end = conn[0], cost = conn[1];
-                // add edges starting from current end node if it hasn't been added to the mst
-                if (!visited.contains(end)) {
-                    costs += cost;
-                    visited.add(end);
-                    for (int[] edge : graph.get(end)) {
-                        heap.add(new int[]{edge[0], edge[1]});
+            for (int[] connection : connections) {
+                int from = connection[0] - 1;
+                int to = connection[1] - 1;
+                int cost = connection[2];
+                graph[from].add(new int[]{to, cost});
+                graph[to].add(new int[]{from, cost});
+            }
+    
+            boolean[] visited = new boolean[n];
+            PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));
+            pq.offer(new int[]{0, 0});
+            int costs = 0, count = 0;
+    
+            while (!pq.isEmpty()) {
+                int[] pair = pq.poll();
+                int curr = pair[0];
+                int cost = pair[1];
+                if (visited[curr]) continue;
+                visited[curr] = true;
+                costs += cost;
+                count++;
+                for (int[] nbrPair : graph[curr]) {
+                    int nbr = nbrPair[0];
+                    if (!visited[nbr]) {
+                        pq.offer(nbrPair);
                     }
                 }
             }
-
-            return visited.size() == n ? costs : -1;
-        }
-
-        /**
-         * In this built graph:
-         * - key: starting node
-         * - value: a list of int arr [endNode, weight]
-         *
-         * @param n
-         * @param connections
-         * @return
-         */
-        private Map<Integer, List<int[]>> buildGraph(int n, int[][] connections) {
-            Map<Integer, List<int[]>> graph = new HashMap<>();
-            for (int[] conn : connections) {
-                int n1 = conn[0], n2 = conn[1], cost = conn[2];
-                graph.computeIfAbsent(n1, k -> new ArrayList<>());
-                graph.computeIfAbsent(n2, k -> new ArrayList<>());
-                graph.get(n1).add(new int[]{n2, cost});
-                graph.get(n2).add(new int[]{n1, cost});
-            }
-            return graph;
+            return count == n ? costs : -1;
         }
     }
 
