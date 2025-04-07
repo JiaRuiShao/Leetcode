@@ -1,61 +1,35 @@
+import java.util.HashMap;
+import java.util.Map;
+
+import helper.TreeNode;
+
+/**
+ * 105. Construct Binary Tree from Preorder and Inorder Traversal
+ */
 public class _105 {
-
-    private static class TreeNode {
-
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode() {
+    class Solution {
+        public TreeNode buildTree(int[] preorder, int[] inorder) {
+            int n = inorder.length;
+            Map<Integer, Integer> nodeToIdx = new HashMap<>();
+            for (int i = 0; i < n; i++) {
+                nodeToIdx.put(inorder[i], i);
+            }
+            return build(preorder, 0, n - 1, nodeToIdx, 0, n - 1);
         }
 
-        TreeNode(int val) {
-            this.val = val;
+        private TreeNode build(int[] pre, int preLo, int preHi, Map<Integer, Integer> in, int inLo, int inHi) {
+            if (preLo > preHi || inLo > inHi) return null;
+            int val = pre[preLo];
+            TreeNode root = new TreeNode(val);
+
+            int inorderIdx = in.get(val);
+            int leftLength = inorderIdx - inLo;
+            int preLeft = preLo + 1;
+            int preRight = preLeft + leftLength - 1;
+
+            root.left = build(pre, preLeft, preRight, in, inLo, inorderIdx - 1);
+            root.right = build(pre, preRight + 1, preHi, in, inorderIdx + 1, inHi);
+            return root;
         }
-
-        TreeNode(int val, TreeNode left, TreeNode right) {
-            this.val = val;
-            this.left = left;
-            this.right = right;
-        }
-    }
-
-    /**
-     * A private helper method to build a binary tree based on the given pre-order & in-order array.
-     * Time: O(n)
-     * Space: O(H) -- O(N)
-     *
-     * @param pre pre-order arr
-     * @param ps pre-order arr start idx
-     * @param pe pre-order arr end idx
-     * @param in in-order arr
-     * @param is in-order arr start idx
-     * @param ie in-order arr end idx
-     * @param n arr length - 1; the last valid index
-     * @return the root of the binary tree
-     */
-    private TreeNode build(int[] pre, int ps, int pe, int[] in, int is, int ie, int n) {
-        // base case
-        if (ps > pe || is > ie || ps > n || pe > n || is > n || ie > n) return null;
-
-        int rootVal = pre[ps];
-        TreeNode root = new TreeNode(rootVal);
-        // find root index in in-order traversal array
-        int rootIdx = -1;
-        for (int i = is; i <= ie; i++) {
-            if (in[i] == rootVal) rootIdx = i;
-        }
-
-        int leftLength = rootIdx - is;
-
-        root.left = build(pre, ps + 1, ps + leftLength, in, is, rootIdx - 1, n);
-        root.right = build(pre, ps + leftLength + 1 , pe, in, rootIdx + 1, ie, n);
-
-        return root;
-    }
-
-    public TreeNode buildTree(int[] preorder, int[] inorder) {
-        int n = preorder.length - 1;
-        return build(preorder, 0, n, inorder, 0, n, n);
     }
 }
