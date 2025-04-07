@@ -1,65 +1,36 @@
+import java.util.HashMap;
+import java.util.Map;
+
+import helper.TreeNode;
+
+/**
+ * 889. Construct Binary Tree from Preorder and Postorder Traversal
+ */
 public class _889 {
-    private static class TreeNode {
-
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode() {
-        }
-
-        TreeNode(int val) {
-            this.val = val;
-        }
-
-        TreeNode(int val, TreeNode left, TreeNode right) {
-            this.val = val;
-            this.left = left;
-            this.right = right;
-        }
-    }
-
     class Solution {
-
-        /**
-         * Recursively Build a binary tree based on the given preorder[preStart..preEnd] and postorder[postStart..postEnd] arr.
-         * Time: O(N)
-         * Space: O(H) -- O(N)
-         *
-         * @param pre pre-order arr
-         * @param ps pre-order arr start idx
-         * @param pe pre-order arr end idx
-         * @param post post-order arr
-         * @param pos post-order arr start idx
-         * @param poe post-order arr end idx
-         * @return the root node of the built binary tree
-         */
-        private TreeNode build(int[] pre, int ps, int pe, int[] post, int pos, int poe) {
-            // base cases
-            if (ps > pe || pos > poe) return null;
-            TreeNode root = new TreeNode(pre[ps]); // or post[poe]
-            if (ps == pe) return root; // if preorder start idx is the last valid idx
-
-            int leftVal = pre[ps + 1]; // left root val
-            // find the left root in post order arr, thus find the left subtree length, which is left idx - pos
-            int leftIdx = -1;
-            for (int i = pos; i <= poe; i++) {
-                if (post[i] == leftVal) {
-                    leftIdx = i;
-                    break;
-                }
+        public TreeNode constructFromPrePost(int[] preorder, int[] postorder) {
+            int n = preorder.length;
+            Map<Integer, Integer> nodeToIdx = new HashMap<>();
+            for (int i = 0; i < n; i++) {
+                nodeToIdx.put(postorder[i], i);
             }
-            int leftLength = leftIdx - pos;
-            // recursively build the left subtree & right subtree
-            root.left = build(pre, ps + 1, ps + 1 + leftLength, post, pos, leftIdx);
-            root.right = build(pre, ps + 2 + leftLength, pe, post, leftIdx + 1, poe);
-            return root;
+            return build(preorder, 0, n - 1, nodeToIdx, 0, n - 1);
         }
 
-        public TreeNode constructFromPrePost(int[] preorder, int[] postorder) {
-            if (preorder == null || postorder == null || preorder.length == 0 || postorder.length == 0) return null;
-            int n = preorder.length - 1;
-            return build(preorder, 0, n, postorder, 0, n);
+        private TreeNode build(int[] pre, int preS, int preE, Map<Integer, Integer> post, int postS, int postE) {
+            if (preS > preE || postS > postE) return null;
+            int rootVal = pre[preS];
+            TreeNode root = new TreeNode(rootVal);
+            int leftLen = 0;
+            if (preS + 1 < preE) { // ✅ use preE instead of pre.length, we could not have any right subtree
+                int leftRoot = pre[preS + 1];
+                leftLen = post.get(leftRoot) - postS + 1;
+            }
+            // pre: [preS + 1, preS + leftLen], [preS + leftLen + 1, preE]
+            // post: [postS, postS + leftLen - 1], [postS + leftLen, postE -1]
+            root.left = build(pre, preS + 1, preS + leftLen, post, postS, postS + leftLen - 1);
+            root.right = build(pre, preS + leftLen + 1, preE, post, postS + leftLen, postE - 1);
+            return root;
         }
     }
 }
