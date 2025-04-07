@@ -83,18 +83,18 @@ public class _1584 {
             q.offer(new int[]{0, 0}); // add a dummy edge where start & end node are both node 0 and its weight is 0
 
             int weightSum = 0, edgeAdd = 0;
-            boolean[] mst = new boolean[n];// store the added nodes
-            while (!q.isEmpty() || edgeAdd < n) { // O(eloge)
+            boolean[] visited = new boolean[n];// store the added nodes
+            while (!q.isEmpty() || edgeAdd < n) {
                 int[] edge = q.poll();
-                int end = edge[0], weight = edge[1];
-                if (!mst[end]) {
+                int curr = edge[0], weight = edge[1];
+                if (!visited[curr]) {
                     // add this end node to the mst set, & update the weight sum
-                    mst[end] = true;
+                    visited[curr] = true;
                     weightSum += weight;
                     edgeAdd++;
                     // add the edges whose start node is this end node to the queue
-                    for (int[] nextEdge : g[end]) {
-                        q.offer(nextEdge); // O(loge)
+                    for (int[] next : g[curr]) {
+                        q.offer(next); // O(loge)
                     }
                 }
             }
