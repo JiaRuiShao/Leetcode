@@ -43,4 +43,19 @@ public class _309 {
             return dp[n][0];
         }
     }
+
+    class Solution2_DP_Without_Memo {
+        public int maxProfit(int[] prices) {
+            int notHold = 0, prevNotHold = 0, hold = Integer.MIN_VALUE; // Equivalent to -infinity or -1001
+    
+            for (int price : prices) {
+                int temp = notHold;
+                notHold = Math.max(notHold, hold + price);
+                hold = Math.max(hold, prevNotHold - price);
+                prevNotHold = temp;
+            }
+    
+            return notHold;
+        }
+    }
 }
