@@ -28,8 +28,9 @@ public class _121 {
     }
 
     /**
-     * dp[i][0]: Max profit on day i when not holding a stock
-     * dp[i][1]: Max profit on day i when holding a stock
+     * [i, buy/sell] - here buy/sell will be represented using boolean 0/1
+     * dp[i][0]: Max profit on day i when not holding a stock (sell)
+     * dp[i][1]: Max profit on day i when holding a stock (buy / cool down)
      */
     class Solution2_DP {
         int maxProfit(int[] prices) {
@@ -57,8 +58,8 @@ public class _121 {
     
             for (int i = 0; i < n; i++) {
                 int day = i + 1;
-                dp[day][0] = Math.max(dp[day - 1][0], dp[day - 1][1] + prices[i]); // sell (if there's any) or wait to buy in future
-                dp[day][1] = Math.max(dp[day - 1][1], -prices[i]); // buy at lowest or keep the stock
+                dp[day][0] = Math.max(dp[day - 1][0], dp[day - 1][1] + prices[i]); // sell
+                dp[day][1] = Math.max(dp[day - 1][1], -prices[i]); // buy
             }
             return dp[n][0];
         }
