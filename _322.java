@@ -84,19 +84,16 @@ public class _322 {
     class Solution4_DP_Iterative {
         static final int INF = Integer.MAX_VALUE;
         
-        public int coinChange(int[] coins, int amount) {
-            if (amount == 0) return 0;
-    
+        public int coinChange(int[] coins, int amount) {    
             int[] memo = new int[amount + 1]; // size  = amount + 1
             Arrays.fill(memo, INF);
+            memo[0] = 0; // base case
             int currAmount = 0, leftAmount = 0;
     
             while (++currAmount <= amount) {
                 for (int coin : coins) {
                     leftAmount = currAmount - coin;
-                    if (leftAmount == 0) {
-                        memo[currAmount] = 1;
-                    } else if (leftAmount > 0 && memo[leftAmount] != INF) {
+                    if (leftAmount >= 0 && memo[leftAmount] != INF) {
                         memo[currAmount] = Math.min(memo[currAmount], memo[leftAmount] + 1);
                     }
                 }
