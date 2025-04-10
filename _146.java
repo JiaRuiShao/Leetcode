@@ -13,7 +13,7 @@ public class _146 {
 	 * Doubly linked list: dummyHead <-> LRU ... MRU <-> dummyTail
 	 */
 	static class Solution1_HashMap_DoublyLinkedList_Implementation {
-		static class CacheNode {
+		class CacheNode {
 			int key;
 			int value;
 			CacheNode prev;
@@ -124,7 +124,7 @@ public class _146 {
 				 *  As a convention, the size of the hashtable is doubled. In order to prevent that & also have good performance,
 				 *  we can use initialCapacity as capacity / 0.6 + 1, so that even each key is in different bucket, the loadFactor < 0.6.
 				 */
-				map = new LinkedHashMap<>((capacity / 3) * 5 + 1, 0.6f, true) {
+				map = new LinkedHashMap<>((capacity / 3) * 5 + 1, 0.6f, true) { // accessOrder - the ordering mode - true for access-order, false for insertion-order
 					/**
 					 * Returns true if this map should remove its eldest entry.
 					 * This method is invoked by put and putAll after inserting a new entry into the map.
