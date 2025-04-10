@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 import helper.TreeNode;
@@ -10,41 +11,44 @@ import helper.TreePrinter;
  */
 public class _297 {
     /**
-     * Solution 1: Pre-order Traversal.
+     * Solution 1: DFS Pre-order Traversal.
      * When we deserialize, first find left subtree, and then find right one.
      */
     public class Solution1 {
 
-        private void preorderSerialize(TreeNode root, StringBuilder sb) {
+        public String serialize(TreeNode root) {
+            StringBuilder sb = new StringBuilder();
+            dfsSerialize(root, sb);
+            return sb.toString();
+        }
+
+        private void dfsSerialize(TreeNode root, StringBuilder sb) {
             if (root == null) {
                 sb.append("#").append(",");
                 return;
             }
             sb.append(root.val).append(",");
-            preorderSerialize(root.left, sb);
-            preorderSerialize(root.right, sb);
+            dfsSerialize(root.left, sb);
+            dfsSerialize(root.right, sb);
         }
 
-        public String serialize(TreeNode root) {
-            StringBuilder sb = new StringBuilder();
-            preorderSerialize(root, sb);
-            return sb.toString();
-        }
-
-        private TreeNode preorderDeserialize(LinkedList<String> data) {
-            // base cases
-            if (data.isEmpty()) return null;
-            String nodeVal = data.removeFirst();
-            if (nodeVal.equals("#")) return null;
-            TreeNode root = new TreeNode(Integer.parseInt(nodeVal));
-            root.left = preorderDeserialize(data);
-            root.right = preorderDeserialize(data);
-
-            return root;
-        }
-
+        // For example 1 where root = [1,2,3,null,null,4,5], our serialized str is: [1,2,#,#,3,4,#,#,5,#,#]
         public TreeNode deserialize(String data) {
-            return preorderDeserialize(new LinkedList<String>(Arrays.asList(data.split(","))));
+            List<String> nodes = new LinkedList<>();
+            for (String node : data.split(",")) {
+                nodes.add(node); // addLast
+            }
+            return dfsDeserialize(nodes);
+        }
+
+        private TreeNode dfsDeserialize(List<String> nodes) {
+            if (nodes.isEmpty()) return null;
+            String currVal = nodes.remove(0); // removeFirst
+            if (currVal.equals("#")) return null;
+            TreeNode root = new TreeNode(Integer.valueOf(currVal));
+            root.left = dfsDeserialize(nodes);
+            root.right = dfsDeserialize(nodes);
+            return root;
         }
     }
 
