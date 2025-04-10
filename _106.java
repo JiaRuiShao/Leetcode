@@ -10,23 +10,22 @@ public class _106 {
     class Solution {
         public TreeNode buildTree(int[] inorder, int[] postorder) {
             int n = inorder.length;
-            Map<Integer, Integer> nodeToIndex = new HashMap<>();
+            Map<Integer, Integer> inorderMap = new HashMap<>();
             for (int i = 0; i < n; i++) {
-                nodeToIndex.put(inorder[i], i);
+                inorderMap.put(inorder[i], i);
             }
-            return build(postorder, 0, n - 1, nodeToIndex, 0, n - 1);
+            return dfsBuild(inorderMap, 0, n - 1, postorder, 0, n - 1);
         }
-
-        private TreeNode build(int[] post, int ps, int pe, Map<Integer, Integer> in, int is, int ie) {
-            if (ps > pe || is > ie) return null;
-            int rootVal = post[pe];
-            int inIdx = in.get(rootVal); // inorder: [is, inIdx - 1], [inIdx + 1, ie]
-            int leftLen = inIdx - is;
-            int postRight = ps + leftLen; // postorder: [ps, postRight - 1], [postRight, pe - 1]
-            
+    
+        private TreeNode dfsBuild(Map<Integer, Integer> inorder, int inL, int inR, int[] post, int postL, int postR) {
+            if (inL > inR || postL > postR) {
+                return null;
+            }
+            int rootVal = post[postR];
             TreeNode root = new TreeNode(rootVal);
-            root.left = build(post, ps, postRight - 1, in, is, inIdx - 1);
-            root.right = build(post, postRight, pe - 1, in, inIdx + 1, ie);
+            int leftLen = inorder.get(rootVal) - inL;
+            root.left = dfsBuild(inorder, inL, inL + leftLen - 1, post, postL, postL + leftLen - 1);
+            root.right = dfsBuild(inorder, inL + leftLen + 1, inR, post, postL + leftLen, postR - 1);
             return root;
         }
     }
