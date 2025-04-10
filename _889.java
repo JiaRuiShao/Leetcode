@@ -10,26 +10,26 @@ public class _889 {
     class Solution {
         public TreeNode constructFromPrePost(int[] preorder, int[] postorder) {
             int n = preorder.length;
-            Map<Integer, Integer> nodeToIdx = new HashMap<>();
+            Map<Integer, Integer> postMap = new HashMap<>();
             for (int i = 0; i < n; i++) {
-                nodeToIdx.put(postorder[i], i);
+                postMap.put(postorder[i], i);
             }
-            return build(preorder, 0, n - 1, nodeToIdx, 0, n - 1);
+            return dfsBuild(preorder, 0, n - 1, postMap, 0, n - 1);
         }
-
-        private TreeNode build(int[] pre, int preS, int preE, Map<Integer, Integer> post, int postS, int postE) {
-            if (preS > preE || postS > postE) return null;
-            int rootVal = pre[preS];
+    
+        private TreeNode dfsBuild(int[] pre, int preL, int preR, Map<Integer, Integer> post, int postL, int postR) {
+            if (preL > preR || postL > postR) {
+                return null;
+            }
+            int rootVal = pre[preL];
             TreeNode root = new TreeNode(rootVal);
             int leftLen = 0;
-            if (preS + 1 < preE) { // ✅ use preE instead of pre.length, we could not have any right subtree
-                int leftRoot = pre[preS + 1];
-                leftLen = post.get(leftRoot) - postS + 1;
+            if (preL + 1 <= preR) { // suppose we have a left subtree
+                int leftRootVal = pre[preL + 1];
+                leftLen = post.get(leftRootVal) - postL + 1;
             }
-            // pre: [preS + 1, preS + leftLen], [preS + leftLen + 1, preE]
-            // post: [postS, postS + leftLen - 1], [postS + leftLen, postE -1]
-            root.left = build(pre, preS + 1, preS + leftLen, post, postS, postS + leftLen - 1);
-            root.right = build(pre, preS + leftLen + 1, preE, post, postS + leftLen, postE - 1);
+            root.left = dfsBuild(pre, preL + 1, preL + 1 + leftLen - 1, post, postL, postL + leftLen - 1);
+            root.right = dfsBuild(pre, preL + 1 + leftLen - 1 + 1, preR, post, postL + leftLen - 1 + 1, postR - 1);
             return root;
         }
     }
