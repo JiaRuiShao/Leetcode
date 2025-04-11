@@ -48,6 +48,61 @@ public class _210 {
         }
     }
 
+    class FollowUpReturnAllPossibleOrders {
+        public List<List<Integer>> findAllOrders(int numCourses, int[][] prerequisites) {
+            List<Integer>[] graph = buildGraph(numCourses, prerequisites);
+            int[] inDegree = new int[numCourses];
+        
+            for (int[] pre : prerequisites) {
+                inDegree[pre[0]]++;
+            }
+        
+            List<List<Integer>> result = new ArrayList<>();
+            boolean[] visited = new boolean[numCourses];
+            backtrack(numCourses, graph, inDegree, new ArrayList<>(), result, visited);
+            return result;
+        }
+        
+        private void backtrack(int n, List<Integer>[] graph, int[] inDegree, List<Integer> path, List<List<Integer>> result, boolean[] visited) {
+            if (path.size() == n) {
+                result.add(new ArrayList<>(path));
+                return;
+            }
+        
+            for (int node = 0; node < n; node++) {
+                if (!visited[node] && inDegree[node] == 0) {
+                    // choose
+                    visited[node] = true;
+                    path.add(node);
+                    for (int neighbor : graph[node]) {
+                        inDegree[neighbor]--;
+                    }
+        
+                    // explore
+                    backtrack(n, graph, inDegree, path, result, visited);
+        
+                    // un-choose
+                    visited[node] = false;
+                    path.remove(path.size() - 1);
+                    for (int neighbor : graph[node]) {
+                        inDegree[neighbor]++;
+                    }
+                }
+            }
+        }
+        
+        private List<Integer>[] buildGraph(int numCourses, int[][] prerequisites) {
+            List<Integer>[] graph = new ArrayList[numCourses];
+            for (int i = 0; i < numCourses; i++) {
+                graph[i] = new ArrayList<>();
+            }
+            for (int[] pre : prerequisites) {
+                graph[pre[1]].add(pre[0]);
+            }
+            return graph;
+        }
+    }
+
     /**
      * DFS Post-order Traversal.
      * Time: O(V + E)
