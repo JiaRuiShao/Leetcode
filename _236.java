@@ -1,12 +1,6 @@
 import helper.TreeNode;
 
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * 236. Lowest Common Ancestor of a Binary Tree
@@ -79,7 +73,7 @@ public class _236 {
         root.right.left = new TreeNode(0);
         root.right.right = new TreeNode(8);
 
-        TreeNode res = new _236().new Solution1_BFS_Backtrack().lowestCommonAncestor(root, new TreeNode(5), new TreeNode(1));
+        TreeNode res = new _236().new Solution1_DFS().lowestCommonAncestor(root, new TreeNode(5), new TreeNode(1));
         System.out.println(res.val);
     }
 }
