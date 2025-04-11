@@ -45,15 +45,17 @@ public class _114 {
             dfs(root, null);
         }
     
-        private TreeNode dfs(TreeNode node, TreeNode prev) {
-            if (node == null) return prev;
-            TreeNode left = node.left, right = node.right;
-            if (prev != null) { // pre-order flatten
-                prev.right = node;
+        private TreeNode dfs(TreeNode curr, TreeNode prev) {
+            if (curr == null) return prev;
+            TreeNode left = curr.left, right = curr.right;
+            if (prev != null) {
+                prev.right = curr;
                 prev.left = null;
             }
-            prev = dfs(left, node);
-            return dfs(right, prev);
+            prev = curr;
+            prev = dfs(left, prev);
+            prev = dfs(right, prev);
+            return prev;
         }
     }
 
