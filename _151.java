@@ -5,7 +5,7 @@ import java.util.Stack;
  */
 public class _151 {
 	
-	class Solution1_Regex_With_StringBuilder {
+	class Solution1_Trim_With_Split {
 		public String reverseWords(String s) {
 			String[] words = s.trim().split("\\s+"); // had to trim empty spaces from both ends before split
 			StringBuilder sb = new StringBuilder();
@@ -91,6 +91,6 @@ public class _151 {
 
 	public static void main(String[] args) {
 		System.out.println(new _151().new Solution2_Two_Pointers().reverseWords("  hello world  "));
-		System.out.println(new _151().new Solution3_Regex_With_StringBuilder().reverseWords("  hello world  "));
+		System.out.println(new _151().new Solution1_Trim_With_Split().reverseWords("  hello world  "));
 	}
 }
