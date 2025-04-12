@@ -5,7 +5,7 @@ import java.util.LinkedList;
  * 227. Basic Calculator II
  */
 public class _227 {
-    class Solution {
+    class Solution1 {
         public int calculate(String s) {
             if (s == null || s.length() == 0) return 0;
             int i = 0, total = 0, prev = 0, curr = 0;
