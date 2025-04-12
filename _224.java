@@ -9,39 +9,26 @@ import java.util.*;
  */
 public class _224 {
     public static class Solution1_Recursion {
-        int pos;
-
+        int i = 0;
         public int calculate(String s) {
-            pos = 0;
-            return calcExpr(s);
-        }
-
-        private int calcExpr(String s) {
-            int res = 0;
-            int curNum = 0;
-            int sign = 1;
-            while (pos < s.length()) {
-                char c = s.charAt(pos++);
-                if (c == ' ') {
-                    continue; // skip spaces
-                }
-                if (c >= '0' && c <= '9') { // check if char is a valid digit, only used for ASCII characters
-                    curNum = curNum * 10 + c - '0';
+            if (s == null || s.length() == 0) return 0;
+            int total = 0, num = 0, sign = 1;
+            while (i < s.length()) {
+                char c = s.charAt(i++);
+                if (Character.isDigit(c)) {
+                    num = 10 * num + (c - '0');
                 } else if (c == '(') {
-                    // start a new recursion for brackets expression
-                    curNum = calcExpr(s);
+                    num = calculate(s);
                 } else if (c == ')') {
-                    // end of current subexpression, return the result
-                    return res + sign * curNum;
-                } else if (c == '+' || c == '-') {
-                    res += sign * curNum;
-                    curNum = 0;
-                    sign = (c == '-') ? -1 : 1;
+                    break;
+                } else if (c != ' ') {
+                    total += sign * num;
+                    num = 0;
+                    sign = c == '-' ? -1 : 1;
                 }
             }
-            return res + sign * curNum;
+            return total + sign * num;
         }
-
     }
 
     public static class Solution2_Iterative_Stack {
