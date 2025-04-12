@@ -30,6 +30,7 @@ public class _772 {
             }
             return total + cal(prev, curr, operator);
         }
+        
         private int cal(int prev, int curr, char opr) {
             if (opr == '+') return prev + curr;
             else if (opr == '-') return prev - curr;
@@ -37,6 +38,7 @@ public class _772 {
             else return prev / curr;
         }
     }
+
     class Solution3_My_Original_Solution {
         int i = 0;
         public int calculate(String s) {
