@@ -7,9 +7,7 @@ import java.util.LinkedList;
 public class _227 {
     class Solution1_Without_Stack {
         public int calculate(String s) {
-            int res = 0;
-            int curr = 0;
-            int last = 0;
+            int total = 0, curr = 0, prev = 0;
             char lastOpr = '+';
 
             for (int pos = 0; pos < s.length(); pos++) {
@@ -20,25 +18,25 @@ public class _227 {
                 if (isOperator(c) || pos + 1 == s.length()) {
                     switch (lastOpr) {
                         case '+':
-                            res += last;
-                            last = curr;
+                            total += prev;
+                            prev = curr;
                             break;
                         case '-':
-                            res += last;
-                            last = -curr;
+                            total += prev;
+                            prev = -curr;
                             break;
                         case '*':
-                            last *= curr;
+                            prev *= curr;
                             break;
                         case '/':
-                            last /= curr;
+                            prev /= curr;
                             break;
                     }
                     curr = 0;
                     lastOpr = c;
                 }
             }
-            return res + last;
+            return total + prev;
         }
 
         private boolean isOperator(char c) {
@@ -49,7 +47,6 @@ public class _227 {
     class Solution2_With_Stack {
         public int calculate(String s) {
             Deque<Integer> st = new LinkedList<>();
-
             int num = 0;
             char lastOpr = '+';
 
