@@ -48,7 +48,7 @@ public class _224 {
 
         public int calculate(String s) {
             Deque<Integer> stack = new LinkedList<>();
-            int res = 0;
+            int total = 0;
             int curNum = 0;
             int sign = 1;
 
@@ -57,30 +57,30 @@ public class _224 {
                 if (c >= '0' && c <= '9') {
                     curNum = 10 * curNum  + (c - '0');
                 } else if (c == '+') {
-                    res += sign * curNum;
+                    total += sign * curNum;
                     curNum = 0;
                     sign = 1;
                 } else if (c == '-') {
-                    res += sign * curNum;
+                    total += sign * curNum;
                     curNum = 0;
                     sign = -1;
                 } else if (c == '(') {
                     // push result & sign to stack
-                    stack.push(res);
+                    stack.push(total);
                     stack.push(sign);
                     // reset result & sign for the expression in the parenthesis
                     sign = 1;
-                    res = 0;
+                    total = 0;
                 } else if (c == ')'){
-                    res += sign * curNum;
+                    total += sign * curNum;
                     curNum = 0;
-                    res *= stack.pop();
-                    res += stack.pop();
+                    total *= stack.pop();
+                    total += stack.pop();
 
                 }
             }
-            if (curNum != 0) res += sign * curNum;
-            return res;
+            if (curNum != 0) total += sign * curNum;
+            return total;
         }
 
     }
