@@ -58,7 +58,7 @@ public class _1631 {
     }
 
     class Solution2_Binary_Search_BFS {
-        // Time: O(log(10^6)mn)
+        // Time: O(log(10^6)mn) = O(mn)
         public int minimumEffortPath(int[][] heights) {
             int m = heights.length, n = heights[0].length;
             int left = 0, right = 1_000_000;
@@ -104,7 +104,7 @@ public class _1631 {
     }
 
     class Solution2_Binary_Search_DFS {
-        // Time: O(log(10^6)mn)
+        // Time: O(log(10^6)mn) = O(mn)
         public int minimumEffortPath(int[][] heights) {
             int m = heights.length, n = heights[0].length;
             int left = 0, right = 1_000_000;
