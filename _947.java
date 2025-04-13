@@ -134,49 +134,79 @@ public class _947 {
     }
 
     class Solution3_Union_Find_Improved_Bitwise {
-        public class Solution {
-            public int removeStones(int[][] stones) {
-                UnionFind uf = new UnionFind();
-        
-                for (int[] stone : stones) {
-                    int x = stone[0];
-                    int y = ~stone[1]; // bitwise NOT to differentiate y from x
-                    uf.union(x, y);
-                }
-        
-                // number of connected components = number of unique parents
-                // answer = total stones - number of components
-                return stones.length - uf.getComponentCount();
+        public int removeStones(int[][] stones) {
+            UnionFind uf = new UnionFind();
+    
+            for (int[] stone : stones) {
+                int x = stone[0];
+                int y = ~stone[1]; // bitwise NOT to differentiate y from x
+                uf.union(x, y);
             }
-        
-            class UnionFind {
-                Map<Integer, Integer> parent = new HashMap<>();
-                int components = 0;
-        
-                public int find(int x) {
-                    if (!parent.containsKey(x)) {
-                        parent.put(x, x);
-                        components++;
-                    }
-                    if (parent.get(x) != x) {
-                        parent.put(x, find(parent.get(x))); // path compression
-                    }
-                    return parent.get(x);
+    
+            // number of connected components = number of unique parents
+            // answer = total stones - number of components
+            return stones.length - uf.getComponentCount();
+        }
+    
+        class UnionFind {
+            Map<Integer, Integer> parent = new HashMap<>();
+            int components = 0;
+    
+            public int find(int x) {
+                if (!parent.containsKey(x)) {
+                    parent.put(x, x);
+                    components++;
                 }
-        
-                public void union(int x, int y) {
-                    int px = find(x);
-                    int py = find(y);
-                    if (px != py) {
-                        parent.put(px, py);
-                        components--;
-                    }
+                if (parent.get(x) != x) {
+                    parent.put(x, find(parent.get(x))); // path compression
                 }
-        
-                public int getComponentCount() {
-                    return components;
+                return parent.get(x);
+            }
+    
+            public void union(int x, int y) {
+                int px = find(x);
+                int py = find(y);
+                if (px != py) {
+                    parent.put(px, py);
+                    components--;
                 }
+            }
+    
+            public int getComponentCount() {
+                return components;
             }
         }        
+    }
+
+    // Time: O(n^2)
+    class Solution4_DFS {
+        public int removeStones(int[][] stones) {
+            int n = stones.length;
+            boolean[] visited = new boolean[n];
+            int components = 0;
+        
+            for (int i = 0; i < n; i++) {
+                if (!visited[i]) {
+                    dfs(stones, visited, i);
+                    components++; // one new connected component found
+                }
+            }
+        
+            return n - components; // max stones that can be removed
+        }
+        
+        private void dfs(int[][] stones, boolean[] visited, int curr) {
+            visited[curr] = true;
+        
+            for (int i = 0; i < stones.length; i++) {
+                if (!visited[i] && isConnected(stones[curr], stones[i])) {
+                    dfs(stones, visited, i);
+                }
+            }
+        }
+        
+        private boolean isConnected(int[] a, int[] b) {
+            return a[0] == b[0] || a[1] == b[1]; // same row or same column
+        }
     }
 }
