@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public class _460 {
             // Doubly linked list node modified from 146 LRU question.
             // The list is maintained in order:
             // [LFU & LRU ... LFU & MRU] <-> [MFU & LRU ... MFU & MRU]
-            static class CacheNode {
+            class CacheNode {
                 int key;
                 int value;
                 int freq;    // Frequency counter.
@@ -133,85 +134,59 @@ public class _460 {
     }
 
     static class Solution2_LinkedHashSet_Implementation {
+        // freqKeys is to save mappings from frequency to keys (maintained as insertion order)
+        // Q: Why we don't use other linked structure like Deque or List type here?
+        // A: We need to guarantee 1) constant time to delete a key 2) maintain insertion order 
         class LFUCache {
-            // Mapping from key to value
-            HashMap<Integer, Integer> kv;
-            // Mapping from key to frequency
-            HashMap<Integer, Integer> kf;
-            // Mapping from frequency to keys (maintained as insertion order)
-            // Q: Why we don't use other linked structure like Deque or List type here?
-            // A: We need to guarantee 1) constant time to delete a key 2) maintain insertion order 
-            HashMap<Integer, LinkedHashSet<Integer>> fk;
-            // Tracks the minimum frequency
-            int minFreq;
-            // Maximum capacity of the LFU cache
-            int capacity;
+            Map<Integer, Integer> keyVal;
+            Map<Integer, Integer> keyFreq;
+            Map<Integer, HashSet<Integer>> freqKeys;
+            int capacity, minFreq;
 
             public LFUCache(int capacity) {
-                kv = new HashMap<>();
-                kf = new HashMap<>();
-                fk = new HashMap<>();
                 this.capacity = capacity;
-                this.minFreq = 0;
+                minFreq = 0;
+                keyVal = new HashMap<>();
+                keyFreq = new HashMap<>();
+                freqKeys = new HashMap<>();
             }
-
+            
             public int get(int key) {
-                if (!kv.containsKey(key)) {
+                Integer val = keyVal.get(key);
+                if (val == null) {
                     return -1;
                 }
-                increaseFreq(key);
-                return kv.get(key);
+                increaseUsage(key);
+                return val;
             }
 
-            public void put(int key, int val) {
-                if (this.capacity <= 0) return;
-
-                // If the key already exists, update its value and frequency
-                if (kv.containsKey(key)) {
-                    kv.put(key, val);
-                    increaseFreq(key);
-                    return;
+            private void increaseUsage(int key) {
+                int freq = keyFreq.getOrDefault(key, 0);
+                keyFreq.put(key, freq + 1);
+                freqKeys.computeIfAbsent(freq, k -> new LinkedHashSet<>()).remove(key);
+                freqKeys.computeIfAbsent(freq + 1, k -> new LinkedHashSet<>()).add(key);
+                if (freqKeys.get(freq).isEmpty() && freq == minFreq) {
+                    minFreq++;
                 }
-
-                // When cache is full, remove the key with the lowest frequency
-                if (this.capacity <= kv.size()) {
-                    removeMinFreqKey();
+            }
+            
+            public void put(int key, int value) {
+                boolean existInMap = keyVal.containsKey(key);
+                keyVal.put(key, value);
+                increaseUsage(key);
+                if (!existInMap) {
+                    evictLFU();
+                    minFreq = 1;
                 }
-
-                // Insert the new key with initial frequency 1
-                kv.put(key, val);
-                kf.put(key, 1);
-                fk.putIfAbsent(1, new LinkedHashSet<>());
-                fk.get(1).add(key);
-                // Reset minFreq to 1 for the new key
-                this.minFreq = 1;
             }
 
-            private void removeMinFreqKey() {
-                // Get the set of keys with the minimum frequency
-                LinkedHashSet<Integer> keyList = fk.get(this.minFreq);
-                // Remove the oldest key from that set
-                int deletedKey = keyList.iterator().next();
-                keyList.remove(deletedKey);
-                if (keyList.isEmpty()) {
-                    fk.remove(this.minFreq);
-                    // No need to update minFreq here; it will be reset on insertion
-                }
-                kv.remove(deletedKey);
-                kf.remove(deletedKey);
-            }
-
-            private void increaseFreq(int key) {
-                int freq = kf.get(key);
-                kf.put(key, freq + 1);
-                fk.get(freq).remove(key);
-                fk.putIfAbsent(freq + 1, new LinkedHashSet<>());
-                fk.get(freq + 1).add(key);
-                if (fk.get(freq).isEmpty()) {
-                    fk.remove(freq);
-                    if (freq == this.minFreq) {
-                        this.minFreq++;
-                    }
+            private void evictLFU() {
+                if (keyVal.size() > capacity) {
+                    HashSet<Integer> keysWithLeastFrequency = freqKeys.get(minFreq);
+                    int remove = keysWithLeastFrequency.iterator().next();
+                    keysWithLeastFrequency.remove(remove);
+                    keyVal.remove(remove);
+                    keyFreq.remove(remove);
                 }
             }
         }
