@@ -2,25 +2,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/* 
-Problem:
-Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
-
-Example 1:
-Input: nums = [1,2,3]
-Output: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
-
-Example 2:
-Input: nums = [0,1]
-Output: [[0,1],[1,0]]
-
-Example 3:
-Input: nums = [1]
-Output: [[1]]
-
-DFS/Backtrack
-*/
-
+/**
+ * 46. Permutations
+ */
 public class _46 {
 
     /**
@@ -88,12 +72,12 @@ public class _46 {
             int num = nums[i];
             // illegal selection when the current num is already in the path, move on to the next element
             if (used[i]) continue; // O(1)
-            // **select
+            // **select**
             path.add(num);
             used[i] = true;
-            // **move on to the next call stack in decision tree
+            // **move on to the next call stack in decision tree**
             backtrack2(nums, used, path, result);
-            // **deselect
+            // **deselect**
             path.remove(path.size() - 1);
             used[i] = false;
         }
