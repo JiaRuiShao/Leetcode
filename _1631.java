@@ -10,6 +10,8 @@ import java.util.Queue;
  * 1631. Path With Minimum Effort
  */
 public class _1631 {
+    // Time: O(mnlog(mn))
+    // Space: O(mn)
     class Solution1_Dijkstra {
         public int minimumEffortPath(int[][] heights) {
             int m = heights.length, n = heights[0].length;
