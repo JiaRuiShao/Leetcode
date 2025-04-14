@@ -185,7 +185,7 @@ public class _227 {
     }
 
     public static void main(String[] args) {
-        Solution1_Without_Stack solution = new _227().new Solution1_Without_Stack();
+        Solution1 solution = new _227().new Solution1();
         System.out.println(solution.calculate("3-2*2")); // -1
         System.out.println(solution.calculate(" 3/2 ")); // 1.5
         System.out.println(solution.calculate(" 3+5 / 2 ")); // 5.5
