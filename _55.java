@@ -61,11 +61,11 @@ public class _55 {
             int n = nums.length;
             int[] canJump = new int[n]; // 0 means unreachable, 1 means reachable
             canJump[n - 1] = 1;
-            for (int start = n - 2; start >= 0; start--) {
-                int reach = Math.min(start + nums[start], n - 1);
-                for (int jump = start + 1; jump <= reach; jump++) {
+            for (int pos = n - 2; pos >= 0; pos--) {
+                int reach = Math.min(pos + nums[pos], n - 1);
+                for (int jump = pos + 1; jump <= reach; jump++) {
                     if (canJump[jump] == 1) {
-                        canJump[start] = 1;
+                        canJump[pos] = 1;
                         break;
                     }
                 }
