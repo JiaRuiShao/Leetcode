@@ -6,7 +6,7 @@ import java.util.List;
  * 47. Permutations II
  */
 public class _47 {
-    class Solution1_Backtrack {
+    class Solution1 {
         public List<List<Integer>> permuteUnique(int[] nums) {
             Arrays.sort(nums);
             List<List<Integer>> res = new ArrayList<>();
@@ -28,6 +28,37 @@ public class _47 {
                 if (i > 0 && num == nums[i - 1] && !used[i - 1]) continue;
                 selected.add(num);
                 used[i] = true;
+                backtrack(nums, used, selected, res);
+                selected.remove(selected.size() - 1);
+                used[i] = false;
+            }
+        }
+    }
+
+    class Solution2 {
+        public List<List<Integer>> permuteUnique(int[] nums) {
+            Arrays.sort(nums);
+            List<List<Integer>> res = new ArrayList<>();
+            List<Integer> selected = new ArrayList<>();
+            boolean[] used = new boolean[nums.length];
+            backtrack(nums, used, selected, res);
+            return res;
+        }
+    
+        private void backtrack(int[] nums, boolean[] used, List<Integer> selected, List<List<Integer>> res) {
+            if (selected.size() == nums.length) {
+                res.add(new ArrayList<>(selected));
+                return;
+            }
+    
+            int prev = Integer.MIN_VALUE;
+            for (int i = 0; i < nums.length; i++) {
+                if (used[i]) continue;
+                int num = nums[i];
+                if (num == prev) continue;
+                selected.add(num);
+                used[i] = true;
+                prev = num;
                 backtrack(nums, used, selected, res);
                 selected.remove(selected.size() - 1);
                 used[i] = false;
