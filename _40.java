@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -35,15 +34,16 @@ public class _40 {
 	}
 
 	public static void main(String[] args) {
+		Solution1_Backtrack s = new _40().new Solution1_Backtrack();
 		int[] testCandidates1 = new int[] {10,1,2,7,6,1,5};
 		int target1 = 8;
-		List<List<Integer>> results1 = combinationSum2(testCandidates1, target1);
+		List<List<Integer>> results1 = s.combinationSum2(testCandidates1, target1);
 		results1.stream().forEach(System.out::print); // [[1,1,6],[1,2,5],[1,7],[2,6]]
 		System.out.println();
 
 		int[] testCandidates2 = new int[] {2,5,2,1,2};
 		int target2 = 5;
-		List<List<Integer>> results2 = combinationSum2(testCandidates2, target2);
+		List<List<Integer>> results2 = s.combinationSum2(testCandidates2, target2);
 		results2.stream().forEach(System.out::print); // [1,2,2],[5]
 	}
 }
