@@ -66,8 +66,7 @@ public class _169 {
         private int count(int[] nums, int target, int left, int right) {
             int count = 0;
             for (int i = left; i <= right; i++) {
-                if (nums[i] == target)
-                    count++;
+                if (nums[i] == target) count++;
             }
             return count;
         }
