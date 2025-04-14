@@ -21,15 +21,15 @@ public class _45 {
             int n = nums.length;
             int[] steps = new int[n];
             steps[n - 1] = 0;
-            for (int start = n - 2; start >= 0; start--) {
-                int reach = Math.min(start + nums[start], n - 1);
+            for (int i = n - 2; i >= 0; i--) {
+                int reach = Math.min(i + nums[i], n - 1);
                 int minStep = n;
-                for (int jump = start + 1; jump <= reach; jump++) {
+                for (int jump = i + 1; jump <= reach; jump++) {
                     if (steps[jump] < minStep) {
                         minStep = steps[jump];
                     }
                 }
-                steps[start] = minStep + 1;
+                steps[i] = minStep + 1;
             }
             return steps[0];
         }
