@@ -59,18 +59,17 @@ public class _46 {
             }
 
             // recursive rule
-            for (int i = 0; i < nums.length; i++) {
-                int num = nums[i];
-                // illegal selection when the current num is already in the path, move on to the next element
-                if (used[i]) continue; // O(1)
+            for (int select = 0; select < nums.length; select++) {
+                int num = nums[select];
+                if (used[select]) continue;
                 // **select**
                 path.add(num);
-                used[i] = true;
+                used[select] = true;
                 // **move on to the next call stack in decision tree**
                 backtrack(nums, used, path, result);
                 // **deselect**
                 path.remove(path.size() - 1);
-                used[i] = false;
+                used[select] = false;
             }
         }
     }
