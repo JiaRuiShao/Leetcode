@@ -2,36 +2,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/*
-Problem:
-
-Given a set of candidate numbers (C) (without duplicates) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
-
-The same repeated number may be chosen from C unlimited number of times.
-
-Note:
-All numbers (including target) will be positive integers. The solution set must not contain duplicate combinations.
-
-Example 1:
-Input: candidates = [2,3,6,7], target = 7
-Output: [[2,2,3],[7]]
-Explanation:
-2 and 3 are candidates, and 2 + 2 + 3 = 7. Note that 2 can be used multiple times.
-7 is a candidate, and 7 = 7.
-These are the only two combinations.
-
-Example 2:
-Input: candidates = [2,3,5], target = 8
-Output: [[2,2,2,2],[2,3,3],[3,5]]
-
-Example 3:
-Input: candidates = [2], target = 1
-Output: []
-
-Combination
-DFS/Backtrack
-*/
-
+/**
+ * 39. Combination Sum
+ */
 public class _39 {
 
 	private static void dfs(int[] candidates, int target, int index, List<Integer> temp, List<List<Integer>> results) {
@@ -76,6 +49,30 @@ public class _39 {
 		dfs(candidates, target, 0, temp, results);
 
 		return results;
+	}
+
+	// Time: O(n^(T / min(nums)))
+	// Space: O(T / min(nums))
+	class Solution1_Backtrack {
+		public List<List<Integer>> combinationSum(int[] candidates, int target) {
+			List<List<Integer>> res = new ArrayList<>();
+			List<Integer> selected = new ArrayList<>();
+			backtrack(candidates, target, 0, 0, selected, res);
+			return res;
+		}
+	
+		private void backtrack(int[] nums, int k, int start, int selectedSum, List<Integer> selected, List<List<Integer>> res) {
+			if (selectedSum > k) return;
+			if (selectedSum == k) {
+				res.add(new ArrayList<>(selected));
+			}
+			for (int i = start; i < nums.length; i++) {
+				int num = nums[i];
+				selected.add(num);
+				backtrack(nums, k, i, selectedSum + num, selected, res);
+				selected.remove(selected.size() - 1);
+			}
+		}
 	}
 
 	public static void main(String[] args) {
