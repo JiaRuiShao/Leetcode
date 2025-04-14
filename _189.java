@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 /**
  * 189. Rotate Array
     // s0: brute force: nested for loop
@@ -12,6 +14,7 @@ public class _189 {
         public void rotate(int[] nums, int k) {
             int n = nums.length;
             k = k % n;
+            if (k < 0) k += n; /** followup: if k < 0 */
             reverse(nums, 0, n - 1);
             reverse(nums, 0, k - 1);
             reverse(nums, k, n - 1);
@@ -75,5 +78,24 @@ public class _189 {
                 nums[0] = tmp;
             }
         }
+    }
+
+    public static void main(String[] args) {
+        Solution1_Reverse solution = new _189().new Solution1_Reverse();
+        int[] nums = {1,2,3,4,5,6,7};
+        solution.rotate(nums, -1);
+        System.out.println(Arrays.toString(nums)); // [2, 3, 4, 5, 6, 7, 1]
+
+        nums = new int[]{1,2,3,4,5,6,7};
+        solution.rotate(nums, -8);
+        System.out.println(Arrays.toString(nums)); // [2, 3, 4, 5, 6, 7, 1]
+
+        nums = new int[]{1,2,3,4,5,6,7};
+        solution.rotate(nums, 6);
+        System.out.println(Arrays.toString(nums)); // [2, 3, 4, 5, 6, 7, 1]
+
+        nums = new int[]{1,2,3,4,5,6,7};
+        solution.rotate(nums, -2);
+        System.out.println(Arrays.toString(nums)); // [3, 4, 5, 6, 7, 1, 2]
     }
 }
