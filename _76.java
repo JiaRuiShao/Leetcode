@@ -2,66 +2,67 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 76. Minimum Window Substring.
+ * 76. Minimum Window Substring
  */
 public class _76 {
 	class Solution1 {
 		public String minWindow(String s, String t) {
-			Map<Character, Integer> freq = new HashMap<>(); // stores the chars and count for given String t
-			for (int i = 0; i < t.length(); i++) {
-				freq.put(t.charAt(i), freq.getOrDefault(t.charAt(i), 0) + 1);
+			if (t == null || s == null || t.length() > s.length()) {
+				return "";
 			}
-			
-			int start = 0, end = Integer.MAX_VALUE, left = 0, right = 0, valid = 0, size = t.length();
-			while (right < s.length()) { // window [left, right)
-				char c = s.charAt(right);
-				right++;
-				if (freq.containsKey(c)) {
-					freq.put(c, freq.get(c) - 1);
-					if (freq.get(c) >= 0) valid++;
+
+			Map<Character, Integer> tMap = new HashMap<>();
+			for (int i = 0 ; i < t.length(); i++) {
+				char c = t.charAt(i);
+				tMap.put(c, tMap.getOrDefault(c, 0) + 1);
+			}
+	
+			int left = 0, right = 0, required = t.length(), minWindowLen = s.length() + 1, winLeft = 0;
+			while (right < s.length()) {
+				char add = s.charAt(right++);
+				if (tMap.containsKey(add)) {
+					if (tMap.get(add) > 0) required--;
+					tMap.put(add, tMap.get(add) - 1);
 				}
-				
-				while (valid == size) {
-					// satisfy requirement(include all elements in t), update minimum window
-					if (right - left < end - start) { // [start, end)
-						end = right;
-						start = left;
+
+				while (required == 0) {
+					if (right - left < minWindowLen) {
+						minWindowLen = right - left;
+						winLeft = left;
 					}
-					c = s.charAt(left);
-					left++;
-					if (freq.containsKey(c)) {
-						freq.put(c, freq.get(c) + 1);
-						if (freq.get(c) > 0) valid--;
+
+					char rem = s.charAt(left++);
+					if (tMap.containsKey(rem)) {
+						tMap.put(rem, tMap.get(rem) + 1);
+						if (tMap.get(rem) > 0) required++;
 					}
 				}
 			}
-			
-			return end - start == Integer.MAX_VALUE ? "" : s.substring(start, end);
+			return minWindowLen == s.length() + 1 ? "" : s.substring(winLeft, winLeft + minWindowLen);
 		}
 	}
 	
 	static class Solution2 {
-		static final int MAX_CHAR = 256;
-		
+		// use size as 128 for standard ASCII encoded English letters
 		public String minWindow(String s, String t) {
-			int[] count = new int[256]; // ASCII size counter array
+			int[] count = new int[128]; // standard ASCII size
 			for (char c : t.toCharArray()) count[c]++;
-			int counter = t.length(); // num of chars needed
+			int needed = t.length(); // # chars needed
 			int left = 0, right = 0, minLen = s.length() + 1, minStart = -1;
 			while (right < s.length()) {
 				// move right pointer
 				char newChar = s.charAt(right++);
-				if (count[newChar] > 0) counter--;
+				if (count[newChar] > 0) needed--;
 				count[newChar]--; // decrease the freq of this char in the counter array
 				
 				// keep shrinking the left window [left, right)
-				while (counter == 0) {
+				while (needed == 0) {
 					if (right - left < minLen) {
 						minLen = right - left;
 						minStart = left;
 					}
 					// move left pointer
-					if (++count[s.charAt(left++)] > 0) counter++;
+					if (++count[s.charAt(left++)] > 0) needed++;
 				}
 			}
 			return minStart == -1 ? "" : s.substring(minStart, minStart + minLen);
