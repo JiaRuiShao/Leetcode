@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 560. Subarray Sum Equals K.
+ * 560. Subarray Sum Equals K
  * Given an array of integers nums and an integer k, return the total number of subarrays whose sum equals to k.
  * A subarray is a contiguous non-empty sequence of elements within an array.
  */
@@ -64,6 +64,28 @@ public class _560 {
 			}
 			return subarrayCount;
 		}
+
+		// input: [2], k = 2
+		public int subarraySum2(int[] nums, int k) {
+			// nums[i] + ... + nums[j] == k, j >= i
+			// sum(j) - sum(i - 1) == k
+			// sum(j) - k == sum(i), j > i
+			int[] preSum = new int[nums.length]; // preSum[i] = sum(nums[0..i])
+			preSum[0] = nums[0];
+			Map<Integer, Integer> sumToFreq = new HashMap<>();
+			sumToFreq.put(0, 1); // base case
+			int subarray = 0;
+	
+			for (int i = 0; i < nums.length; i++) {
+				if (i > 0) preSum[i] = preSum[i - 1] + nums[i];
+				int target = preSum[i] - k;
+				if (sumToFreq.containsKey(target)) {
+					subarray += sumToFreq.get(target);
+				}
+				sumToFreq.put(preSum[i], sumToFreq.getOrDefault(preSum[i], 0) + 1);
+			}
+			return subarray;
+		}
 		
 		/**
 		 * Time: O(n)
@@ -73,22 +95,20 @@ public class _560 {
 		 * @param k
 		 * @return
 		 */
-		public int subarraySumImproved(int[] nums, int k) {
-			// demo: [-1, -2, 3, 0], k = 0, res = 3
-			// pre[i] - pre[j] == k, && i > j
-			int n = nums.length, preSum = 0, res = 0;
-			Map<Integer, Integer> freq = new HashMap<>();
-			for (int i = 0; i < n + 1; i++) {
-				preSum = i > 0 ? preSum + nums[i - 1] : preSum;
-				int target = preSum - k;
-				// target pre[j] == pre[i] - k
-				if (freq.containsKey(target)) {
-					res += freq.get(target);
+		public int subarraySum3(int[] nums, int k) {
+			int sum = 0, subarray = 0;
+			Map<Integer, Integer> sumToFreq = new HashMap<>();
+			sumToFreq.put(0, 1);
+	
+			for (int i = 0; i < nums.length; i++) {
+				sum += nums[i];
+				int target = sum - k;
+				if (sumToFreq.containsKey(target)) {
+					subarray += sumToFreq.get(target);
 				}
-				// update the prefix sum freq
-				freq.put(preSum, freq.getOrDefault(preSum, 0) + 1);
+				sumToFreq.put(sum, sumToFreq.getOrDefault(sum, 0) + 1);
 			}
-			return res;
+			return subarray;
 		}
 	}
 
@@ -108,6 +128,28 @@ public class _560 {
 				if (!set.contains(sum[i])) set.add(sum[i]);
 			}
 			return count;
+		}
+	}
+
+	class Solution4_Wrong_Answer {
+		public int subarraySum(int[] nums, int k) {
+			// nums[i] + ... + nums[j] == k, j >= i
+			// sum(j) - sum(i - 1) == k
+			// sum(j) == k + sum(i), j > i
+			int[] preSum = new int[nums.length]; // preSum[i] = sum(nums[0..i])
+			preSum[0] = nums[0];
+			Map<Integer, Integer> sumToFreq = new HashMap<>();
+			sumToFreq.put(preSum[0] + k, 1);
+			int subarray = 0;
+	
+			for (int i = 1; i < nums.length; i++) {
+				preSum[i] = preSum[i - 1] + nums[i];
+				if (sumToFreq.containsKey(preSum[i])) {
+					subarray += sumToFreq.get(preSum[i]);
+				}
+				sumToFreq.put(preSum[i] + k, sumToFreq.getOrDefault(preSum[i] + k, 0) + 1);
+			}
+			return subarray;
 		}
 	}
 
