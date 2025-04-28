@@ -8,13 +8,12 @@ import java.util.Map;
 public class _169 {
     class Solution1_Majority_Voting {
         public int majorityElement(int[] nums) {
-            // freq > len / 2
             int vote = 0;
             int candidate = 0;
             for (int num : nums) {
-                if (vote == 0) { // when vote for last candidate became 0, we set curr num as new candidate
+                if (vote <= 0) { // when vote for last candidate became 0, we set curr num as new candidate
                     candidate = num;
-                    vote++;
+                    vote = 1;
                 } else if (candidate == num) {
                     vote++;
                 } else {
