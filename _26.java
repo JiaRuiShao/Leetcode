@@ -4,29 +4,14 @@
 public class _26 {
     class Solution1_Fast_Slow_Pointers {
         public int removeDuplicates(int[] nums) {
-            // [0, left) distinct num
-            int len = nums.length;
             int left = 0, right = 0;
-            while (right < len) {
-                int distinct = nums[right];
-                nums[left++] = distinct;
-                while (right < len && nums[right] == distinct) {
+            while (right < nums.length) {
+                while (right < nums.length - 1 && nums[right] == nums[right + 1]) {
                     right++;
                 }
+                nums[left++] = nums[right++];
             }
             return left;
-        }
-    
-        public int removeDuplicates2(int[] nums) {
-            if (nums == null || nums.length == 0) return 0;
-            int slow = 0, fast = 0; // unique nums are records at the slow (& equal to) of the slow fast
-            while (++fast < nums.length) {
-                if (nums[fast] != nums[slow]) {
-                    slow++;
-                    if (slow != fast) nums[slow] = nums[fast];
-                }
-            }
-            return slow + 1;
         }
     }
 
