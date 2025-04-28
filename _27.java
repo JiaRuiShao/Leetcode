@@ -17,15 +17,16 @@ public class _27 {
     }
     
     class Solution2_Two_Pointers {
+        // [l, r); all numbers to the left of left pointer are != val
         public int removeElement(int[] nums, int val) {
-            int left = -1, right = 0;
-            while (right < nums.length) {
-                if (nums[right] != val) {
-                    nums[++left] = nums[right];
-                }
-                right++;
+            int n = nums.length;
+            int left = 0, right = 0;
+            while (right < n) {
+                int num = nums[right++];
+                if (num == val) continue;
+                nums[left++] = num;
             }
-            return left + 1;
+            return left;
         }
     }
 }
