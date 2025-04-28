@@ -44,4 +44,42 @@ public class _410 {
             return partition;
         }
     }
+
+    class Solution2_Binary_Search_Prefix_Sum {
+        public int splitArray(int[] nums, int k) {
+            // f(x) = # subarrays given max sum x
+            // lower bound binary search to find smallest x so that f(x) = k
+            int maxNum = 0, n = nums.length;
+            int[] preSum = new int[n + 1];
+            preSum[0] = 0;
+            for (int i = 0; i < n; i++) {
+                int num = nums[i];
+                preSum[i + 1] = preSum[i] + num;
+                maxNum = Math.max(maxNum, num);
+            }
+            
+            int lo = maxNum, hi = preSum[n], mid = 0;
+            while (lo <= hi) {
+                mid = lo + (hi - lo) / 2;
+                if (canSplit(preSum, k, mid)) {
+                    hi = mid - 1;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+            return lo;
+        }
+        
+        // Helper function: can we split into <= k parts where each part sum <= maxSum?
+        private boolean canSplit(int[] preSum, int k, int maxSum) {
+            int lastIdx = 0, parts = 1;
+            for (int i = 0; i < preSum.length; i++) {
+                if (preSum[i] - preSum[lastIdx] > maxSum) {
+                    parts++;
+                    lastIdx = i - 1;
+                }
+            }
+            return parts <= k;
+        }
+    }
 }
