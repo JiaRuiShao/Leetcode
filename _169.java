@@ -87,4 +87,25 @@ public class _169 {
             return -1; // per problem, this will never happen
         }
     }
+
+    class Solution_Bit_Counting {
+        public int majorityElement(int[] nums) {
+            int n = nums.length, majority = 0, mask = 1;
+    
+            for (int i = 0; i < 32; i++) {
+                int maskCount = 0;
+                for (int num : nums) {
+                    if ((num & mask) == mask) {
+                        maskCount++;
+                    }
+                }
+                if (maskCount > (n / 2)) {
+                    majority |= mask;
+                }
+                mask <<= 1;
+            }
+    
+            return majority;
+        }
+    }
 }
