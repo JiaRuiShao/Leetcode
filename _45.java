@@ -14,6 +14,18 @@ public class _45 {
             }
             return steps;
         }
+
+        public int jump2(int[] nums) {
+            int furthest = 0, jumpIdx = 0, steps = 0;
+            for (int i = 0; i < nums.length - 1; i++) {
+                furthest = Math.max(furthest, i + nums[i]);
+                if (jumpIdx == i) {
+                    steps++;
+                    jumpIdx = furthest;
+                }
+            }
+            return steps;
+        }
     }
 
     class Solution2_DP_Iterative_Bottom_Up_With_Memo { // Skip the DP top-down recursive solution here
