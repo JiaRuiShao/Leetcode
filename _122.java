@@ -35,16 +35,13 @@ public class _122 {
     }
 
     class Solution3_DP_Without_Memo {
-        int maxProfit(int[] prices) {
-            int n = prices.length;
-            int yesterdayNotHold = 0, yesterdayHolding = Integer.MIN_VALUE;
-            for (int i = 0; i < n; i++) {
-                int todayNotHold = Math.max(yesterdayNotHold, yesterdayHolding + prices[i]);
-                int todayHolding = Math.max(yesterdayHolding, yesterdayNotHold - prices[i]);
-                yesterdayNotHold = todayNotHold;
-                yesterdayHolding = todayHolding;
+        public int maxProfit(int[] prices) {
+            int n = prices.length, notHold = 0, hold = -prices[0] - 1;
+            for (int day = 0; day < n; day++) {
+                notHold = Math.max(notHold, hold + prices[day]);
+                hold = Math.max(hold, notHold - prices[day]);
             }
-            return yesterdayNotHold;
+            return notHold;
         }
     }
 }
