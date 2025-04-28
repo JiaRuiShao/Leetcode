@@ -1,13 +1,13 @@
 import java.util.Arrays;
 
 /**
- * 410. Split Array Largest Sum.
+ * 410. Split Array Largest Sum
  * Redefine this problem to a similar problem like 1011. Capacity To Ship Packages Within D Days
  * Find minimized largest sum of the split given by k split --> find lower boundary of sub-array sum that associated with target k splits
  * The biggest challenge here is to think the largest sum as the capacity
  */
 public class _410 {
-    static class Solution {
+    static class Solution1_Binary_search {
         public int splitArray(int[] nums, int k) {
             return findMLS(nums, k);
         }
