@@ -26,7 +26,7 @@ public class _274 {
         // Counting sort (bucket sort)
         public int hIndex(int[] citations) {
             int n = citations.length;
-            int[] papers = new int[n + 1];
+            int[] papers = new int[n + 1]; // papers[i] is paper count for citation i
             for (int citation : citations) {
                 if (citation >= n) {
                     papers[n]++;
