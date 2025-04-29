@@ -2,6 +2,7 @@
  * 275. H-Index II
  */
 public class _275 {
+    // Time: O(logn )
     class Solution1_Binary_Search_Intuitive {
         // find max(x) such that at least x number of elems >= x
         public int hIndex(int[] citations) { // upper bound BS
@@ -32,19 +33,33 @@ public class _275 {
         }
     }
 
-    class Solution2_Binary_Search_Not_Intuitive {
+    class Solution2_Binary_Search_Improved {
         public int hIndex(int[] citations) { // lower bound BS
             int n = citations.length;
-            int left = 0, right = n - 1;
-            while (left <= right) {
-                int mid = left + (right - left) / 2;
+            int lo = 0, hi = n - 1;
+            while (lo <= hi) {
+                int mid = lo + (hi - lo) / 2;
                 if (citations[mid] >= (n - mid)) {
-                    right = mid - 1;
+                    hi = mid - 1;
                 } else {
-                    left = mid + 1;
+                    lo = mid + 1;
                 }
             }
-            return n - left;
+            return n - lo;
+        }
+    }
+
+    // Time: O(n)
+    class Solution3_Linear_Search {
+        public int hIndex(int[] citations) {
+            int n = citations.length;
+            for (int i = 0; i < n; i++) {
+                int papers = n - i;
+                if (citations[i] >= papers) {
+                    return papers;
+                }
+            }
+            return 0;
         }
     }
 }
