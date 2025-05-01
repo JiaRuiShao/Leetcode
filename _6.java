@@ -29,25 +29,27 @@ public class _6 {
         }
     }
 
-    public class Solution2 {
+    class Solution2 {
         public String convert(String s, int numRows) {
-            if (numRows == 1 || numRows >= s.length()) return s;
-
-            StringBuilder[] rows = new StringBuilder[Math.min(numRows, s.length())];
-            for (int i = 0; i < rows.length; i++) rows[i] = new StringBuilder();
-            
-            int curRow = 0;
-            boolean goingDown = false;
-    
-            for (char c : s.toCharArray()) {
-                rows[curRow].append(c);
-                if (curRow == 0 || curRow == numRows - 1) goingDown = !goingDown;
-                curRow += goingDown ? 1 : -1;
+            if (numRows == 1 || s.length() < numRows) return s;
+            StringBuilder[] lines = new StringBuilder[numRows];
+            for (int i = 0; i < numRows; i++) {
+                lines[i] = new StringBuilder();
             }
     
-            StringBuilder result = new StringBuilder();
-            for (StringBuilder row : rows) result.append(row);
-            return result.toString();
+            boolean goDown = false;
+            int row = 0;
+            for (int i = 0; i < s.length(); i++) {
+                lines[row].append(s.charAt(i));
+                if (row == 0 || row == numRows - 1) goDown = !goDown; // numRows >= 2
+                row += goDown ? 1 : -1;
+            }
+    
+            StringBuilder zigzag = new StringBuilder();
+            for (StringBuilder line : lines) {
+                zigzag.append(line);
+            }
+            return zigzag.toString();
         }
     }
 }
