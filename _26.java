@@ -2,7 +2,7 @@
  * 26. Remove Duplicates from Sorted Array
  */
 public class _26 {
-    class Solution1_Fast_Slow_Pointers {
+    class Solution1_Two_Pointers {
         public int removeDuplicates(int[] nums) {
             int left = 0, right = 0;
             while (right < nums.length) {
@@ -17,14 +17,15 @@ public class _26 {
 
     class Solution2_Two_Pointers {
         public int removeDuplicates(int[] nums) {
-            int left = 0, right = 0;
+            int n = nums.length, left = 0, right = 0;
             while (right < nums.length) {
-                if (nums[right] != nums[left]) {
-                    nums[++left] = nums[right];
+                int distinct = nums[right];
+                nums[left++] = distinct;
+                while (right < n && nums[right] == distinct) {
+                    right++;
                 }
-                right++;
             }
-            return left + 1;
+            return left;
         }
     }
 }
