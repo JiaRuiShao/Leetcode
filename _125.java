@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 /**
- * 125. Valid Palindrome.
+ * 125. Valid Palindrome
  */
 public class _125 {
     static class Solution1_Two_Pointers {
