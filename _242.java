@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 242. Valid Anagram.
+ * 242. Valid Anagram
  */
 public class _242 {
     static class Solution1_HashTable {
@@ -58,7 +58,7 @@ public class _242 {
         }
     }
 
-    static class Solution3 {
+    static class Solution3_Sorting {
         /**
          * Time: O(3n+2nlogn) = O(nlogn)
          * Space: O(2n + 2logn) = O(n), here Arrays.sort uses quicksort cuz char is primitive type
