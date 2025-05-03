@@ -35,7 +35,7 @@ public class _242 {
 
     static class Solution2_Array {
         /**
-         * Preferred than using hashmap because the worst time complexity of oeprations in hashmap is O(logn).
+         * Preferred than using hashmap because the worst time complexity of operations in hashmap is O(logn) (when there's collision).
          * Time: O(2n)
          * Space: O(n)
          * @param s str1
