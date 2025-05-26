@@ -1,125 +1,186 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 792. Number of Matching Subsequences.
+ * 792. Number of Matching Subsequences
  */
 public class _792 {
-    class Solution1_Binary_Search {
+    // Time: O(NW) where N is number of chars in s and W is number of word in words
+    // Space: O(W)
+    class Solution0_Brute_Force_TLE {
+        public int numMatchingSubseq(String s, String[] words) {
+            int n = s.length(), wordsLen = words.length;
+            int matchingSubSeq = 0;
+            int[] wordsIdx = new int[wordsLen];
+            for (int i = 0; i < n; i++) {
+                char c = s.charAt(i);
+                for (int j = 0; j < wordsLen; j++) {
+                    String word = words[j];
+                    int wordIdx = wordsIdx[j];
+                    if (wordIdx < word.length() && word.charAt(wordIdx) == c) {
+                        if (++wordsIdx[j] == word.length()) {
+                            matchingSubSeq++;
+                        }
+                    }
+                }
+            }
+            return matchingSubSeq;
+        }
+    }
+    
+    class Solution1_Binary_Search_Array {
         /**
          * Process s to build an array of ArrayList with array index as char val, the following list as this char's occurrence in s.
-         * Then process each word in words, use binary search to find the next occurrence of each character in the word within s, starting from the current index j.
+         * Then process each word in words, use binary search to find the next occurrence of each character in the word within s, starting from the previous index + 1.
          * 
-         * Time: O(N + W * L * log N) where N is length of s, W is words size, L is the worst word length.
+         * Time: O(N + M * log N) where N is length of s, M is the total characters in all words
+         * Space: O(N)
          * Notice that the binary search's time complexity should be O(log k), where k is the number of occurrences of the searched character in s;
          * however, the worst case is that a word only contains one char, e.g. [aaaaaaaaaaaaaaaa], then k -> N
-         * 
-         * @param s string to be compared
-         * @param words given String arr
-         * @return number of words who are considered to be subsequence of s
          */
         public int numMatchingSubseq(String s, String[] words) {
             // pre-process s to build a list of indexes of each char in s
-            ArrayList<Integer>[] charToIndexes = new ArrayList[256];
+            final int CHAR_MAX_SIZE = 26;
+            final char a = 'a';
+            List<Integer>[] charIndices = new ArrayList[CHAR_MAX_SIZE];
+            for (int i = 0; i < CHAR_MAX_SIZE; i++) {
+                charIndices[i] = new ArrayList<>();
+            }
             for (int i = 0; i < s.length(); i++) {
-                char c = s.charAt(i);
-                if (charToIndexes[c] == null) {
-                    charToIndexes[c] = new ArrayList<>();
-                }
-                charToIndexes[c].add(i);
+                int c = s.charAt(i) - a;
+                charIndices[c].add(i);
             }
     
-            int res = 0;
+            int matching = 0;
             for (String word : words) {
-                // pointer i on the string word
-                int i = 0;
-                // pointer j on the string s
-                int j = 0;
-                // now determine if word is a subsequence of s
-                // use charToIndexes to find the index of each character in word within s
-                while (i < word.length()) {
-                    char c = word.charAt(i);
-                    // s does not contain the character word[i] at all
-                    if (charToIndexes[c] == null) {
+                char[] chars = word.toCharArray();
+                int prevIndexInS = -1;
+                boolean matches = true;
+                for (int i = 0; i < chars.length; i++) {
+                    int nextIndexInS = binarySearch(charIndices, chars[i] - a, ++prevIndexInS);
+                    if (nextIndexInS == -1) {
+                        matches = false;
                         break;
                     }
-                    // binary search for the smallest index greater than or equal to j
-                    // search for the smallest index equal to word[i] in s[j..]
-                    int pos = leftBoundBS(charToIndexes[c], j);
-                    if (pos == charToIndexes[c].size()) {
-                        break;
-                    }
-                    j = charToIndexes[c].get(pos);
-                    // if found, i.e., word[i] == s[j], continue to match the next one
-                    j++;
-                    i++;
+                    prevIndexInS = nextIndexInS;
                 }
-                // if word is fully matched, then it is a subsequence of s
-                if (i == word.length()) {
-                    res++;
-                }
+                matching += matches ? 1 : 0;
             }
     
-            return res;
+            return matching;
         }
     
-        // binary search for the left boundary
-        int leftBoundBS(ArrayList<Integer> arr, int target) {
-            int left = 0, right = arr.size();
-            while (left < right) {
-                int mid = left + (right - left) / 2;
-                if (target > arr.get(mid)) {
-                    left = mid + 1;
+        // lower bound binary search
+        private int binarySearch(List<Integer>[] charIndices, int c, int start) {
+            List<Integer> indices = charIndices[c];
+            int n = indices.size();
+            int lo = 0, hi = n - 1, mid = 0;
+            while (lo <= hi) {
+                mid = lo + (hi - lo) / 2;
+                if (indices.get(mid) >= start) {
+                    hi = mid - 1;
                 } else {
-                    right = mid;
+                    lo = mid + 1;
                 }
             }
-            return left;
+            return lo == n ? -1 : indices.get(lo);
+        }
+    }
+    
+    // Pre-process String s using a HashMap; only used when the chars in given String is encoded in Unicode
+    class Solution2_Binary_Search_Map {
+        public int numMatchingSubseq(String s, String[] words) {
+            int matching = 0;
+            Map<Character, List<Integer>> charIndices = new HashMap<>();
+            for (int i = 0; i < s.length(); i++) {
+                charIndices.computeIfAbsent(s.charAt(i), k -> new ArrayList<>()).add(i);
+            }
+            
+            for (String word : words) {
+                char[] chars = word.toCharArray();
+                int prevIndexInS = -1;
+                boolean matches = true;
+                for (int i = 0; i < chars.length; i++) {
+                    int nextIndexInS = binarySearch(charIndices, chars[i], ++prevIndexInS);
+                    if (nextIndexInS == -1) {
+                        matches = false;
+                        break;
+                    }
+                    prevIndexInS = nextIndexInS;
+                }
+                matching += matches ? 1 : 0;
+            }
+            return matching;
+        }
+        
+        private int binarySearch(Map<Character, List<Integer>> charIndices, char c, int start) {
+            List<Integer> indices = charIndices.get(c);
+            // this char doesn't exist in s
+            if (indices == null) {
+                return -1;
+            }
+            
+            int n = indices.size(), last = indices.get(n - 1);
+            if (start > last) return -1;
+            
+            int lo = 0, hi = n - 1, mid = 0;
+            while (lo <= hi) {
+                mid = lo + (hi - lo) / 2;
+                if (indices.get(mid) >= start) {
+                    hi = mid - 1;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+            return lo == n ? -1 : indices.get(lo);
         }
     }
 
     /**
-     * Improved Solution: Queue Bucket
      * Instead of processing each word individually, process all words simultaneously as we iterate through s.
-     * Create an array of queues for each lowercase letter, each queue holds iterators (or indices) to track the progress of words waiting for that character.
-     * Time: O(W + N + TL) where W is the number of word in words, N is the number of characters in s, TL is the total length of words, worst case it could be WL
-     * Space: O(W) where W is words arr length, here O(W) is auxiliary space; total space would be O(W + TL) since the input words as String takes O(Total Length of Words) = O(TL) = O(WL) space
+     * Create an array of queues for each lowercase letter, each queue holds indices to track the progress of words waiting for that character.
+     * Time: O(N + M) where N is the number of characters in s, M is the total characters in all words
+     * Space: O(W) where W is words arr length
      */
-    class Solution2_Queue {
+    class Solution3_Bucket_By_Next_Char {
         public int numMatchingSubseq(String s, String[] words) {
+            final int CHAR_MAX_SIZE = 26;
+            final char a = 'a';
             // Array of queues for each lowercase letter, each bucket contains pair of (word, index) where index is index's position in this word
-            List<Node>[] buckets = new ArrayList[26];
-            for (int i = 0; i < 26; i++) {
+            List<Node>[] buckets = new ArrayList[CHAR_MAX_SIZE];
+            for (int i = 0; i < CHAR_MAX_SIZE; i++) {
                 buckets[i] = new ArrayList<>();
             }
         
             // Initialize the buckets with the words
             for (String word : words) {
                 char firstChar = word.charAt(0);
-                buckets[firstChar - 'a'].add(new Node(word, 0));
+                buckets[firstChar - a].add(new Node(word, 0));
             }
         
-            int res = 0;
+            int matching = 0;
             // Iterate through the string s
             for (char c : s.toCharArray()) {
                 // Get the current bucket and create a new list for iteration
                 List<Node> currentBucket = buckets[c - 'a'];
-                buckets[c - 'a'] = new ArrayList<>(); // Reset the bucket
+                buckets[c - a] = new ArrayList<>(); // **IMPORTANT: Reset the bucket**
         
                 for (Node node : currentBucket) {
                     node.index++; // Move to the next character in the word
                     if (node.index == node.word.length()) {
                         // Word is fully matched
-                        res++;
+                        matching++;
                     } else {
                         // Add the node to the bucket of the next character needed
                         char nextChar = node.word.charAt(node.index);
-                        buckets[nextChar - 'a'].add(node);
+                        buckets[nextChar - a].add(node);
                     }
                 }
             }
         
-            return res;
+            return matching;
         }
         
         // Helper class to store the word and current index
