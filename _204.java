@@ -1,7 +1,5 @@
-import java.util.Arrays;
-
 /*
- * 204. Count Primes.
+ * 204. Count Primes
  */
 public class _204 {
 
@@ -50,43 +48,39 @@ public class _204 {
 
     class Solution3_Sieve_of_Eratosthenes {
         public int countPrimes(int n) {
-            int primeCount = 0;
-            boolean[] isPrime = new boolean[n];
-            Arrays.fill(isPrime, true);
-            for (int num = 2; num < n; num++) {
-                if (isPrime[num]) {
-                    primeCount++;
-                    for (int multipleBy = 2; multipleBy * num < n; multipleBy++) {
-                        isPrime[multipleBy * num] = false;
-                    }
+            int count = 0;
+            boolean[] visited = new boolean[n];
+            for (int i = 2; i < n; i++) {
+                if (visited[i]) continue; // not a prime if visited
+                count++;
+                for (int j = i * 2; j < n; j += i) {
+                    visited[j] = true;
                 }
             }
-            return primeCount;
+            return count;
         }
     }
 
     class Solution4_Sieve_of_Eratosthenes_Improved {
         /**
-         * Improved the search range of prime counter i and non prime counter j.
+         * Improved the search range of prime counter i and non-prime counter j.
          * - Time: O(N * loglogN)
-         * - Space: O(n)
-         * @param n n
+         * - Space: O(N)
+         * @param n N
          * @return # of prime numbers within given n
          */
         public int countPrimes(int n) {
-            boolean[] isPrime = new boolean[n];
-            Arrays.fill(isPrime, true);
-            for (int i = 2; i * i <= n; i++) {
-                if (isPrime[i]) {
-                    for (int j = i * i; j < n; j += i) {
-                        isPrime[j] = false;
-                    }
+            boolean[] visited = new boolean[n];
+            for (int i = 2; i * i <= n; i++) { // sqrt(n) = O(n)
+                if (visited[i]) continue;
+                for (int j = i * i; j < n; j += i) { // O(loglogn)
+                    visited[j] = true;
                 }
             }
 
             int count = 0;
             for (int i = 2; i < n; i++) { // start counting from num 2
-                if (isPrime[i]) {
+                if (!visited[i]) {
                     count++;
                 }
             }
