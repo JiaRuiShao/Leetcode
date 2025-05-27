@@ -1,20 +1,20 @@
 import java.util.*;
 
 /**
- * 710. Random Pick with Blacklist.
+ * 710. Random Pick with Blacklist
  */
 public class _710 {
 
     /**
      * The reason this solution doesn't work is that the saved up backup valid number could be a blacklist number.
      */
-    class Solution1_Wrong_Solution {
+    class Solution0_Wrong_Solution {
 
         private Map<Integer, Integer> blToValidMap;
         private int valid;
         private Random random;
 
-        public Solution1_Wrong_Solution(int n, int[] blacklist) {
+        public Solution0_Wrong_Solution(int n, int[] blacklist) {
             // valid = n - blacklist.length;
             random = new Random();
             valid = n - 1;
@@ -37,43 +37,43 @@ public class _710 {
      * Time: O(m)
      * Space: O(m)
      */
-    class Solution {
+    class Solution1_HashMap {
+        private int valid;
         private Map<Integer, Integer> map;
-        private int length;
         private Random random;
 
-        public Solution(int n, int[] blacklist) {
+        public Solution1_HashMap(int n, int[] blacklist) {
             random = new Random();
-            length = n - blacklist.length; // length = n = m, this is the size of the valid numbers
+            valid = n - blacklist.length; // the size of the valid numbers; notice if the given blacklist contains duplicates, then we need to build the hashset/map first and then use their size instead of blacklist.length
             map = new HashMap<>();
 
-            // mark all blacklist elems
+            // mark all blacklist elems, function as a HashSet
             for (int invalid : blacklist) {
                 map.put(invalid, -1);
             }
 
             // swap the number in blacklist if it's in range [0, length), use map to save the swapped num
-            int index = n - 1;
+            int lastValid = n - 1;
             for (int invalid : blacklist) {
-                // this index is a blacklist number, we need to skip it
-                while (map.containsKey(index)) index--;
                 // do nothing if black number is already in its right place [length, n)
-                if (invalid >= length) continue;
+                if (invalid >= valid) continue;
+                // this index is a blacklist number, we need to skip it
+                while (map.containsKey(lastValid)) lastValid--;
                 // make sure invalid is in range [0, length) && index points to a valid number
-                map.put(invalid, index--);
+                map.put(invalid, lastValid--);
             }
         }
 
         public int pick() {
-            int pickup = random.nextInt(length);
-            return map.getOrDefault(pickup, pickup);
+            int pick = random.nextInt(valid);
+            return map.getOrDefault(pick, pick);
         }
     }
 
-    class Solution1 {
+    class Solution2 {
         List<Integer> list;
         Random random;
-        public Solution1(int n, int[] blacklist) {
+        public Solution2(int n, int[] blacklist) {
             Set<Integer> whitelist = new HashSet<>();
             list = new ArrayList<>();
             random = new Random();
