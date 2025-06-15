@@ -5,7 +5,7 @@ public class _188 {
     class Solution1_DP {
         public int maxProfit(int k, int[] prices) {
             int n = prices.length;
-            int[][][] profits = new int[n + 1][k][2];
+            int[][][] profits = new int[n + 1][k][2]; // maxProfits gained at end of day i [0...n-1] when having transCount [0...k-1] transactions ; holding a stock at end of the day (represents by 0) or not holding a stock at end of the day
             for (int transCount = 0; transCount < k; transCount++) {
                 profits[0][transCount][0] = 0;
                 profits[0][transCount][1] = -prices[0] - 1;
