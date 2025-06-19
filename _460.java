@@ -2,6 +2,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 460. LFU Cache
@@ -192,21 +193,91 @@ public class _460 {
         }
     }
 
+    static class MyLFUCache {
+        // why not use TreeMap - because it uses Red-Black Tree under the hood and its operation is logrithmic time
+        Map<Integer, Integer> keyVal;
+        Map<Integer, Integer> keyFreq;
+        Map<Integer, LinkedHashSet<Integer>> freqMap;
+        int minFreq, capacity;
+
+        public MyLFUCache(int capacity) {
+            minFreq = 1;
+            this.capacity = capacity;
+            keyVal = new HashMap<>();
+            keyFreq = new HashMap<>();
+            freqMap = new HashMap<>();
+        }
+        
+        public int get(int key) {
+            if (!keyVal.containsKey(key)) return -1;
+            updateFreq(key);
+            return keyVal.get(key);
+        }
+        
+        public void put(int key, int value) {
+            if (!keyVal.containsKey(key)) {
+                if (keyVal.size() == capacity) {
+                    Set<Integer> freqSet = freqMap.get(minFreq);
+                    int keyToRem = freqSet.iterator().next();
+                    freqSet.remove(keyToRem);
+                    if (freqSet.isEmpty()) {
+                        freqMap.remove(minFreq);
+                    }
+                    keyFreq.remove(keyToRem);
+                    keyVal.remove(keyToRem);
+                }
+                minFreq = 1; // update minFreq to 1 whenever there's a new pair
+            }
+            keyVal.put(key, value);
+            updateFreq(key);
+        }
+
+        private void updateFreq(int key) {
+            int freq = keyFreq.getOrDefault(key, 0);
+            keyFreq.put(key, freq + 1);
+            freqMap.computeIfAbsent(freq + 1, k -> new LinkedHashSet<>()).add(key);
+            LinkedHashSet<Integer> freqSet = freqMap.get(freq);
+            if (freqSet != null && !freqSet.isEmpty()) freqSet.remove((Integer)key);
+            if (freqSet != null && freqSet.isEmpty()) {
+                if (freq == minFreq) minFreq++;
+                freqMap.remove(freq);
+            }
+        }
+    }
+
+    static void testLFUCache() {
+        MyLFUCache lfu = new MyLFUCache(3);
+        lfu.put(2, 2);
+        lfu.put(1, 1);
+        lfu.get(2); // returns 2
+        lfu.get(1); // returns 1
+        lfu.get(2); // returns 2
+        lfu.put(3, 3);
+        lfu.put(4, 4); // evicts LFU key
+
+        lfu.get(3); // returns -1 (evicted)
+        lfu.get(2);  // returns 2
+        lfu.get(1);  // returns 1
+        lfu.get(4);  // returns 4
+    }
+
     public static void main(String[] args) {
         // Test case:
         // ["LFUCache","put","put","get","put","get","get","put","get","get","get"]
         // [[2],[1,1],[2,2],[1],[3,3],[2],[3],[4,4],[1],[3],[4]]
-        Solution1_HashMap_DoublyLinkedList_Implementation.LFUCache cache = new Solution1_HashMap_DoublyLinkedList_Implementation().new LFUCache(2);
+        // Solution1_HashMap_DoublyLinkedList_Implementation.LFUCache cache = new Solution1_HashMap_DoublyLinkedList_Implementation().new LFUCache(2);
 
-        cache.put(1, 1);
-        cache.put(2, 2);
-        System.out.println(cache.get(1)); // Expected output: 1
-        cache.put(3, 3);                  // Evicts key 2.
-        System.out.println(cache.get(2)); // Expected output: -1 (not found)
-        System.out.println(cache.get(3)); // Expected output: 3
-        cache.put(4, 4);                  // Evicts key 1.
-        System.out.println(cache.get(1)); // Expected output: -1 (not found)
-        System.out.println(cache.get(3)); // Expected output: 3
-        System.out.println(cache.get(4)); // Expected output: 4
+        // cache.put(1, 1);
+        // cache.put(2, 2);
+        // System.out.println(cache.get(1)); // Expected output: 1
+        // cache.put(3, 3);                  // Evicts key 2.
+        // System.out.println(cache.get(2)); // Expected output: -1 (not found)
+        // System.out.println(cache.get(3)); // Expected output: 3
+        // cache.put(4, 4);                  // Evicts key 1.
+        // System.out.println(cache.get(1)); // Expected output: -1 (not found)
+        // System.out.println(cache.get(3)); // Expected output: 3
+        // System.out.println(cache.get(4)); // Expected output: 4
+
+        testLFUCache();
     }
 }
