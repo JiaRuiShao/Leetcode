@@ -14,7 +14,7 @@ public class _523 {
 	/**
 	 * Time: O(n)
 	 * Space: O(n)
-	 * (preSum[j] - preSum[i]) % k == 0 ==> preSum[j] % k == preSum[i] % k
+	 * (preSum[j] - preSum[i]) % k == 0 ==> preSum[j] % k == preSum[i] % k`
 	 */
 	class Solution1_PrefixSum_HashMap {
 		public boolean checkSubarraySum(int[] nums, int k) {
@@ -71,6 +71,25 @@ public class _523 {
 				}
 			}
 			return false;
+		}
+	}
+
+	class FollowUp_CountGoodSubarray { // this logic is wrong, check further
+		public int countSubarraySum(int[] nums, int k, int j) {
+			int sum = 0, count = 0;
+			Map<Integer, Integer> sumModKToIdx = new HashMap<>();
+			Map<Integer, Integer> sumModKFreq = new HashMap<>();
+			for (int i = 0; i <= nums.length; i++) {
+				if (i > 0) sum += nums[i - 1];
+				int mod = sum % k;
+				if (sumModKToIdx.containsKey(mod) && i >= sumModKToIdx.get(mod) + 2) {
+					
+					j += sumModKFreq.get(mod);
+				}
+				sumModKToIdx.putIfAbsent(mod, i);
+				sumModKFreq.put(mod, sumModKFreq.getOrDefault(mod, 0) + 1);
+			}
+			return count;
 		}
 	}
 }
