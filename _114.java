@@ -1,5 +1,3 @@
-import java.util.Stack;
-
 /**
  * 114. Flatten Binary Tree to Linked List
  */
@@ -77,31 +75,26 @@ public class _114 {
         }
     }
 
+    /**
+     * Follow-Up: Can you flatten the tree in-place (with O(1) extra space)?
+     * Time: O(n) Each node in the tree is used as rightMostLeaf at most once.
+     * Space: O(1)
+     */
     class Solution4_Iterative {
-        void flatten(TreeNode root) {
-            // base case
-            if (root == null) return;
-            
-            TreeNode node = root;
-            while (node != null) {
-                
-                // If the node has a left child
-                if (node.left != null) {
-                    
-                    // Find the rightmost node in root's left sub tree
-                    TreeNode rightmost = node.left;
-                    while (rightmost.right != null) {
-                        rightmost = rightmost.right;
+        public void flatten(TreeNode root) {
+            TreeNode curr = root;
+            while (curr != null) {
+                TreeNode left = curr.left;
+                if (left != null) {
+                    TreeNode rightMostLeaf = left;
+                    while (rightMostLeaf.right != null) {
+                        rightMostLeaf = rightMostLeaf.right;
                     }
-                    
-                    // rewire the connections
-                    rightmost.right = node.right;
-                    node.right = node.left;
-                    node.left = null;
+                    rightMostLeaf.right = curr.right;
+                    curr.left = null;
+                    curr.right = left;
                 }
-                
-                // move on to the right side of the tree
-                node = node.right;
+                curr = curr.right;
             }
         }
     }
