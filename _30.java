@@ -5,8 +5,9 @@ import java.util.*;
  */
 public class _30 {
     // credit: https://leetcode.com/problems/substring-with-concatenation-of-all-words/solutions/1753357/clear-solution-easy-to-understand-with-diagrams-o-n-x-w-approach
+    // Time: O(wordLen · (n/wordLen * wordLen)) = O(n*wordLen)
     class Solution1_Sliding_Window_Reuse_Freq_Map {
-        // words are of the same length
+        // words are of the same length, seen them as one 'char'
         public List<Integer> findSubstring(String s, String[] words) {
             List<Integer> permutationIndices = new ArrayList<>();
             if (s == null || words == null || words.length == 0 || words[0].length() == 0) return permutationIndices;
@@ -51,7 +52,7 @@ public class _30 {
                 }
                 System.out.printf("Current Idx: %d; required: %d; freqMap: %s%n", i, required, freq);
             }
-            permutationIndices.sort(Comparator.naturalOrder());
+            // permutationIndices.sort(Comparator.naturalOrder());
             return permutationIndices;
         }
     }
