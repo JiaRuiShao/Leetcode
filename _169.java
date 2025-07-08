@@ -6,7 +6,7 @@ import java.util.Map;
  * 169. Majority Element
  */
 public class _169 {
-    class Solution1_Majority_Voting {
+    class Solution1_Boyer_Moore {
         public int majorityElement(int[] nums) {
             int vote = 0;
             int candidate = 0;
