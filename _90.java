@@ -4,6 +4,8 @@ import java.util.List;
 
 /**
  * 90. Subsets II
+ * Time: O(nlogn + n*2^n)
+ * Space: O(logn + n) = O(n)
  */
 public class _90 {
     class Solution1 {
@@ -35,7 +37,7 @@ public class _90 {
             backtrack(nums, 0, selected, res);
             return res;
         }
-    
+
         private void backtrack(int[] nums, int start, List<Integer> selected, List<List<Integer>> res) {
             res.add(new ArrayList<>(selected));
             int prev = 11;
