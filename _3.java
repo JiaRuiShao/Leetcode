@@ -12,11 +12,11 @@ public class _3 {
             Map<Character, Integer> charFreq = new HashMap<>();
             int left = 0, right = 0, maxWinLen = 0;
             while (right < s.length()) {
-                char toAdd = s.charAt(right++);
-                charFreq.put(toAdd, charFreq.getOrDefault(toAdd, 0) + 1);
-                while (charFreq.get(toAdd) > 1) {
-                    char toRemove = s.charAt(left++);
-                    charFreq.put(toRemove, charFreq.get(toRemove) - 1);
+                char add = s.charAt(right++);
+                charFreq.put(add, charFreq.getOrDefault(add, 0) + 1);
+                while (charFreq.get(add) > 1) {
+                    char rem = s.charAt(left++);
+                    charFreq.put(rem, charFreq.get(rem) - 1);
                 }
                 maxWinLen = Math.max(maxWinLen, right - left);
             }
@@ -27,17 +27,17 @@ public class _3 {
     class Solution2_HashSet {
         public int lengthOfLongestSubstring(String s) {
             Set<Character> winChars = new HashSet<>();
-            int left = 0, right = 0, maxWin = 0;
+            int left = 0, right = 0, maxWinLen = 0;
             while (right < s.length()) {
                 char add = s.charAt(right++);
                 while (winChars.contains(add)) {
                     char rem = s.charAt(left++);
                     winChars.remove(rem);
                 }
-                maxWin = Math.max(maxWin, right - left);
+                maxWinLen = Math.max(maxWinLen, right - left);
                 winChars.add(add);
             }
-            return maxWin;
+            return maxWinLen;
         }
     }
     
@@ -62,6 +62,6 @@ public class _3 {
     }
 
     public static void main(String[] args) {
-        System.out.println(new _3().new Solution2().lengthOfLongestSubstring("pwwkew"));
+        System.out.println(new _3().new Solution1_HashMap().lengthOfLongestSubstring("pwwkew"));
     }
 }
