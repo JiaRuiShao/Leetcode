@@ -67,7 +67,7 @@ public class _47 {
     }
 
     public static void main(String[] args) {
-        Solution1_Backtrack solution = new _47().new Solution1_Backtrack();
+        Solution2 solution = new _47().new Solution2();
         int[] nums = {1,1,2};
         System.out.println(solution.permuteUnique(nums));
     }
