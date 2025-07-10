@@ -1,7 +1,5 @@
 import helper.TreeNode;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -105,7 +103,7 @@ public class _111 {
         }
     }
 
-    class Solution3_DFS_Without_Global_Variables { // count from top to bottom
+    class Solution3_DFS_Without_Global_Variables { // count from top down
         public int minDepth(TreeNode root) {
             if (root == null) {
                 return 0;
@@ -130,7 +128,7 @@ public class _111 {
         }
     }
 
-    class Solution4_DFS_Without_Global_Variables { // count from bottom to top
+    class Solution4_DFS_Without_Global_Variables { // count from bottom up
         /**
          * Convert the problem into: find min depth from leaf node to root node 
          * Time: O(n)
