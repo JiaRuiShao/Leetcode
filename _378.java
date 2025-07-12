@@ -9,19 +9,18 @@ import java.util.PriorityQueue;
 public class _378 {
     class Solution1_Binary_Search {
         /**
-         * Left boundary binary search + matrix traversal technique.
+         * Left boundary binary search on  + matrix traversal technique.
          * We convert this problem to a binary search problem:
          * Variable target num with search range as [matrix[0][0], matrix[m-1][n-1]]
          * Function is num of elems in the matrix that <= target: f(x) = # of elem <= x in given matrix, monotonic increase
          * Goal is to find the lower bound of variable num under the given function value k
          *
-         * Time: O((m+n)log(2e9)) = O(nlog(2e9)) < O(30n) = O(n)
+         * Time: O(nlog(2e9)) = O(nlog(2e9)) < O(30n) = O(n)
          * Space: O(1)
          */
         public int kthSmallest(int[][] matrix, int k) {
             int n = matrix.length; // in this question m == n
             int left = matrix[0][0], right = matrix[n - 1][n - 1], mid = 0;
-            // 
             // f(x) = # of elem <= x in given matrix, monotonic increase
             while (left <= right) {
                 mid = left + (right - left) / 2;
@@ -37,7 +36,7 @@ public class _378 {
 
         /**
          * Find number of elements that are LTE to the given number x.
-         * We go diagonal from top-right to bottom-left or vice versa.
+         * We go diagonal from bottom-left to top-right.
          *
          * Time: O(m + n) = O(2n) = O(n)
          * Space: O(1)
@@ -52,11 +51,18 @@ public class _378 {
             return count;
         }
 
+        /**
+         * Find number of elements that are LTE to the given number x.
+         * We go diagonal from top-right to bottom-left.
+         *
+         * Time: O(m + n) = O(2n) = O(n)
+         * Space: O(1)
+         */
         private int getLTECount(int[][] matrix, int target) {
             int m = matrix.length, n = matrix[0].length;
             int count = 0, r = 0, c = n - 1;
             while (r < m && c >= 0) {
-                while (target < matrix[r][c]) c--;
+                while (c >= 0 && target < matrix[r][c]) c--;
                 count += c + 1;
                 r++;
             }
@@ -66,8 +72,9 @@ public class _378 {
 
     class Solution2_MinHeap {
         /**
-         * - Time: O(nlogn + klogn)
-         * - Space: O(n)
+         * This question can be seen as the mergeKList question, very similar to LC 23
+         * Time: O((n+k)logn) in the worst case where k ≈ n^2, time complexity is O(n^2logn)
+         * Space: O(n)
          */
         public int kthSmallest(int[][] matrix, int k) {
             int m = matrix.length, n = matrix[0].length;
@@ -90,7 +97,39 @@ public class _378 {
         }
     }
 
-    class Solution3_BruteForce_TLE_MLE {
+    static class Node {
+        int val;
+        int row;
+        int col;
+        
+        public Node (int val, int row, int col) {
+            this.val = val;
+            this.row = row;
+            this.col = col;
+        }
+    }
+
+    class Solution3_MinHeap {
+        public int kthSmallest(int[][] matrix, int k) {
+            int n = matrix.length;
+            PriorityQueue<Node> minHeap = new PriorityQueue<>((n1, n2) -> Integer.compare(n1.val, n2.val));
+            for (int r = 0; r < n; r++) {
+                minHeap.offer(new Node(matrix[r][0], r, 0));
+            }
+            while (!minHeap.isEmpty()) {
+                Node node = minHeap.poll();
+                if (--k == 0) {
+                    return node.val;
+                }
+                if (node.col + 1 < n) {
+                    minHeap.offer(new Node(matrix[node.row][node.col + 1], node.row, node.col + 1));
+                }
+            }
+            return -1; // never reach here
+        }
+    }
+
+    class Solution0_BruteForce_TLE_MLE {
         public int kthSmallest(int[][] matrix, int k) {
             List<Integer> list = new ArrayList<>();
             int m = matrix.length, n = matrix[0].length;
