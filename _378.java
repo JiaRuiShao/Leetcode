@@ -9,7 +9,7 @@ import java.util.PriorityQueue;
 public class _378 {
     class Solution1_Binary_Search {
         /**
-         * Left boundary binary search on  + matrix traversal technique. (Note: for this question, we can use either binary search variants to solve)
+         * Left boundary binary search on  + matrix traversal technique.
          * We convert this problem to a binary search problem:
          * Variable target num with search range as [matrix[0][0], matrix[m-1][n-1]]
          * Function is num of elems in the matrix that <= target: f(x) = # of elem <= x in given matrix, monotonic increase
