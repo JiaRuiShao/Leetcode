@@ -164,7 +164,7 @@ public class _460 {
             private void increaseUsage(int key) {
                 int freq = keyFreq.getOrDefault(key, 0);
                 keyFreq.put(key, freq + 1);
-                freqKeys.computeIfAbsent(freq, k -> new LinkedHashSet<>()).remove(key);
+                freqKeys.get(freq).remove(key);
                 freqKeys.computeIfAbsent(freq + 1, k -> new LinkedHashSet<>()).add(key);
                 if (freqKeys.get(freq).isEmpty() && freq == minFreq) {
                     minFreq++;
