@@ -1,17 +1,32 @@
 /**
  * 28. Find the Index of the First Occurrence in a String
+ * This question is asking for a substring match so that character order matters.
  */
 public class _28 {
     class Solution1_Sliding_Window {
-        // Time: O(nk) where n is length of haystack and k is length of needle 
+        // Time: worst O(nk) where n is length of haystack and k is length of needle
         public int strStr(String haystack, String needle) {
-            if (needle.length() > haystack.length()) return -1;
-            int windowLen = needle.length(), left = 0, right = 0;
+            int[] needleCharFreq = new int[26];
+            for (int i = 0; i < needle.length(); i++) {
+                needleCharFreq[needle.charAt(i) - 'a']++;
+            }
+            int winLen = needle.length(), charNeeded = winLen;
+            int left = 0, right = 0;
             while (right < haystack.length()) {
+                int toAdd = haystack.charAt(right) - 'a';
                 right++;
-                if (right - left == windowLen) {
-                    if (haystack.substring(left, right).equals(needle)) return left;
+                if (needleCharFreq[toAdd]-- > 0) {
+                    charNeeded--;
+                }
+                if (right - left == winLen) {
+                    if (charNeeded == 0 && haystack.substring(left, right).equals(needle)) {
+                        return left;
+                    }
+                    int toRem = haystack.charAt(left) - 'a';
                     left++;
+                    if (++needleCharFreq[toRem] > 0) {
+                        charNeeded++;
+                    }
                 }
             }
             return -1;
