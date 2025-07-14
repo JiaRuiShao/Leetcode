@@ -89,6 +89,8 @@ public class _204 {
         }
     }
 
+    // Time: O(n log log n)
+    // Space: O(n)
     class Solution5_Sieve_of_Eratosthenes_Improved {
         public int countPrimes(int n) {
             int primeCount = 0;
