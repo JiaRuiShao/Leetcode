@@ -89,4 +89,21 @@ public class _204 {
         }
     }
 
+    class Solution5_Sieve_of_Eratosthenes_Improved {
+        public int countPrimes(int n) {
+            int primeCount = 0;
+            boolean[] visited = new boolean[n];
+            for (int i = 2; i < n; i++) {
+                if (!visited[i]) {
+                    primeCount++;
+                    // visited[i] = true, not necessary here since we're not coming back to visit this num
+                    for (long j = (long)i * i; j < n; j += i) { /*IMPORTANT: cast j to long type to avoid integer overflow */
+                        visited[(int)j] = true;
+                    }
+                }
+            }
+            return primeCount;
+        }
+    }
+
 }
