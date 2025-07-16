@@ -2,7 +2,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 219. Contains Duplicate II.
+ * 219. Contains Duplicate II
  */
 public class _219 {
 	/**
@@ -29,5 +29,25 @@ public class _219 {
 			right++;
 		}
 		return false;
+	}
+
+	class Solution1_Sliding_Window {
+		// j - i <= k ==> winLen - 1 <= k
+		public boolean containsNearbyDuplicate(int[] nums, int k) {
+			if (k == 0) return false;
+			Set<Integer> set = new HashSet<>();
+			int left = 0, right = 0;
+			while (right < nums.length) {
+				int toAdd = nums[right++];
+				if (set.contains(toAdd)) return true;
+				set.add(toAdd);
+				if (right - left - 1 >= k) { // remove the leftmost num in the window when winLen == k + 1 or j - i == k
+					int toRem = nums[left++];
+					set.remove(toRem);
+				}
+				
+			}
+			return false;
+		}
 	}
 }
