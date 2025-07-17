@@ -41,7 +41,7 @@ public class _219 {
 				int toAdd = nums[right++];
 				if (set.contains(toAdd)) return true;
 				set.add(toAdd);
-				if (right - left - 1 >= k) { // remove the leftmost num in the window when winLen == k + 1 or j - i == k
+				if (right - left - 1 >= k) { // remove the leftmost num in the window when j - i == k for next iteration
 					int toRem = nums[left++];
 					set.remove(toRem);
 				}
