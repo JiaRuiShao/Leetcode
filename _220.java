@@ -1,7 +1,7 @@
 import java.util.TreeSet;
 
 /**
- * 220. Contains Duplicate III.
+ * 220. Contains Duplicate III
  */
 public class _220 {
 	/**
