@@ -12,6 +12,9 @@ import java.util.Map;
  */
 public class _137 {
     public static class Solution1_HashMap {
+        // Hash Table
+        // Time: O(2n)
+        // Space: O(n)
         public int singleNumber(int[] nums) {
             Map<Integer, Integer> map = new HashMap<>();
             for (int i : nums) {
@@ -27,12 +30,14 @@ public class _137 {
     }
 
     // Sorting + Linear Traversal
+    // Time: O(nlogn) < O(18n)
+    // Space: O(logn)
     class Solution2_Sorting {
         public int singleNumber(int[] nums) {
             int n = nums.length;
             if (n == 1) return nums[0];
             Arrays.sort(nums);
-            if (nums[n - 1] != nums[n - 2]) return nums[n - 1];
+            if (nums[n - 1] != nums[n - 2]) return nums[n - 1]; // corner case where last elem is the single num
             for (int i = 1; i < n; i += 3) {
                 if (nums[i] != nums[i - 1]) return nums[i - 1];
             }
@@ -40,6 +45,9 @@ public class _137 {
         }
     }
 
+    // Count set bits and take the bit that cannot be divisible by 3
+    // Time: O(32n)
+    // Space: O(1)
     class Solution3_Set_Bits_Counting {
         public int singleNumber(int[] nums) {
             int mask = 1, single = 0;
