@@ -60,7 +60,7 @@ public class _967 {
             int lastDigit = num % 10;
             for (int digit = 0; digit <= 9; digit++) {
                 if (num == 0 && digit == 0) continue;
-                if (num > 0 && Math.abs(lastDigit - digit) != digitDiff) continue;
+                if (num > 0 && Math.abs(lastDigit - digit) != digitDiff) continue; // remember to check if num > 0 before check if digit is valid
                 // num = 10 * num + digit;
                 // digits++;
                 backtrack(len, digitDiff, 10 * num + digit, digits + 1, res);
