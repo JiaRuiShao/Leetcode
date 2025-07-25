@@ -57,51 +57,81 @@ public class _209 {
 
     // Time: O(nlogn)
     class Solution3_FollowUp_Input_Negative_TreeMap_PreSum {
+        // find min(j - i) that preSum[j] - preSum[i] >= target
+        // ==> preSum[i] <= preSum[j] - target
         public int minSubArrayLen(int target, int[] nums) {
-            TreeMap<Integer, Integer> prefixMap = new TreeMap<>();
-            prefixMap.put(0, -1); // sum 0 at index -1
-            int n = nums.length, sum = 0, minLen = n + 1;
-
+            int n = nums.length, preSum = 0, minLen = n + 1;
+            TreeMap<Integer, Integer> preSumToIdx = new TreeMap<>();
+            preSumToIdx.put(preSum, -1);
             for (int i = 0; i < n; i++) {
-                sum += nums[i];
-                Integer bound = prefixMap.floorKey(sum - target);
-                if (bound != null) {
-                    minLen = Math.min(minLen, i - prefixMap.get(bound));
+                preSum += nums[i];
+                int preSumJMinusTarget = preSum - target;
+                Integer preSumI = preSumToIdx.floorKey(preSumJMinusTarget);
+                if (preSumI != null) {
+                    minLen = Math.min(minLen, i - preSumToIdx.get(preSumI));
                 }
-                prefixMap.putIfAbsent(sum, i);
+                // here we're updating for larger index since this question is about minimum and not maximum subarray
+                preSumToIdx.put(preSum, i);
             }
-
             return minLen == n + 1 ? 0 : minLen;
         }
     }
 
     // Time: O(n)
     class Solution4_FollowUp_Input_Negative_Mono_Queue_PreSum {
+        // find min(j - i) that preSum[j] - preSum[i] >= target
+        // ==> preSum[i] <= preSum[j] - target
+        public int minSubArrayLen(int target, int[] nums) {
+            int n = nums.length, minLen = n + 1;
+            int[] preSum = new int[n + 1];
+            for (int i = 0; i < n; i++) {
+                preSum[i + 1] = preSum[i] + nums[i];
+            }
+            Deque<Integer> monoDeque = new ArrayDeque<>();
+            // minValIdx <------> maxValIdx
+            for (int i = 0; i <= n; i++) {
+                // attempt to shrink from front as long as we meet the target
+                while (!monoDeque.isEmpty() && preSum[i] - preSum[monoDeque.peek()] >= target) {
+                    minLen = Math.min(minLen, i - monoDeque.poll());
+                }
+                // maintain increasing prefix sums in the deque
+                while (!monoDeque.isEmpty() && preSum[i] <= preSum[monoDeque.peekLast()]) {
+                    monoDeque.pollLast();
+                }
+                monoDeque.offer(i);
+            }
+            return minLen == n + 1 ? 0 : minLen;
+        }
+    }
+
+    class Solution5_FollowUp_Input_Negative_Mono_Queue_PreSum {
         public int minSubArrayLen(int target, int[] nums) {
             int n = nums.length;
-            long[] prefix = new long[n + 1];
-            for (int i = 0; i < n; i++) {
-                prefix[i + 1] = prefix[i] + nums[i];
-            }
-
-            Deque<Integer> deque = new ArrayDeque<>();
             int minLen = n + 1;
+            
+            // Each entry: { prefixSumAtIndex, index }
+            Deque<int[]> deque = new ArrayDeque<>();
+            deque.offerLast(new int[]{0, -1});  // prefixSum=0 at index=-1
 
-            for (int i = 0; i <= n; i++) {
-                // Shrink from front while condition is met
-                while (!deque.isEmpty() && prefix[i] - prefix[deque.peekFirst()] >= target) {
-                    minLen = Math.min(minLen, i - deque.pollFirst());
+            int prefixSum = 0;
+            for (int i = 0; i < n; i++) {
+                prefixSum += nums[i];
+                
+                // Shrink from front while valid
+                while (!deque.isEmpty() && prefixSum - deque.peekFirst()[0] >= target) {
+                    minLen = Math.min(minLen, i - deque.pollFirst()[1]);
                 }
-
-                // Maintain increasing order of prefix sums
-                while (!deque.isEmpty() && prefix[i] <= prefix[deque.peekLast()]) {
+                
+                // Maintain increasing prefix sums
+                while (!deque.isEmpty() && prefixSum <= deque.peekLast()[0]) {
                     deque.pollLast();
                 }
-
-                deque.offerLast(i);
+                
+                // Add current prefix sum and index
+                deque.offerLast(new int[]{prefixSum, i});
             }
-
-            return minLen == n + 1 ? 0 : minLen;
+            
+            return (minLen <= n) ? minLen : 0;
         }
     }
 }
