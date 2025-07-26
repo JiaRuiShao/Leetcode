@@ -4,6 +4,7 @@ import java.util.Arrays;
  * 259. 3Sum Smaller
  */
 public class _259 {
+    // Fix the first elem, then use two pointers to greedily count satisfying triplets pairs
     // Time: O(nlogn + n^2)
     // Space: O(1)
     class Solution1_Sorting_Greedy_Two_Pointers {
