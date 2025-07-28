@@ -58,52 +58,6 @@ class _17 {
     }
 
     /**
-     * Find letter combinations using BFS.
-     * Time: O(2*4^n)
-     * Space: O(3*4^n)
-     * 
-     * @param digits the input digits
-     * @return a list of letter combination Strings
-     */
-    static List<String> findCombinationsBFS(String digits) {
-        // a list of String to save the final results of letter combinations
-        List<String> combinations = new LinkedList<>();
-        // a list of previous formed letters char arr
-        Queue<String> prevCombinations = new LinkedList<String>();
-        Queue<String> currCombinations = new LinkedList<String>();
-        // letters matched for the digits(0 - 9)
-        String[] allLetters = new String[]{" ", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
-        
-        // corner case
-        if (digits == null || digits.length() == 0) return combinations;
-
-        // BFS
-        prevCombinations.offer(""); // [""] - ["" + "a"]
-        for (char c : digits.toCharArray()) { // O(n)
-            String letters = allLetters[c - '0'];
-            // append each letter to the previous formed combinations
-            while (!prevCombinations.isEmpty()) { // O(4^(n-1))
-                String prev = prevCombinations.poll();
-                for (int i = 0; i < letters.length(); i++) { // O(4)
-                    currCombinations.offer(prev + letters.substring(i, i + 1)); // [)
-                }
-                // currCombination : ["a", "b", "c"]
-            }
-            // the current combinations is now previous combinations for the letters that match the next digit 
-            while (!currCombinations.isEmpty()) {// O(4^n))
-                String temp = currCombinations.poll();
-                if (temp.length() == digits.length()) {
-                    combinations.add(temp);
-                } else {
-                    prevCombinations.offer(temp);
-                }
-            }
-        }
-
-        return combinations;
-    } 
-
-    /**
      * Find letter combinations using BFS (concise version).
      * Time: O(4^n)
      * Space: O(2*4^n)
@@ -138,7 +92,7 @@ class _17 {
         return combinations;
     }
 
-    // Time: O(3^n) to O(4^n)
+    // Time: O(n*3^n) to O(n*4^n)
     // Space: O(n)
     class Solution1_Backtrack_Combination_ElemUsedOnce_NoDedup {
         // combination -- elem used once -- no dedup needed
@@ -203,6 +157,27 @@ class _17 {
         }
     }
 
+    class Solution2_Iterative_Nested_For_Loop {
+        public List<String> letterCombinations(String digits) {
+            List<String> letters = new ArrayList<>();
+            String[] digitToLetter = {" ", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+            letters.add("");
+            for (int i = 0; i < digits.length(); i++) {
+                List<String> next = new ArrayList<>();
+                int sz = letters.size();
+                for (int j = 0; j < sz; j++) {
+                    String prev = letters.get(j);
+                    String lettersForCurrDigit = digitToLetter[digits.charAt(i) - '0'];
+                    for (int k = 0; k < lettersForCurrDigit.length(); k++) {
+                        next.add(prev + lettersForCurrDigit.charAt(k));
+                    }
+                }
+                letters = next;
+                next = null;
+            }
+            return letters;
+        }
+    }
 
     public static void main(String[] args) {
         // tests
