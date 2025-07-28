@@ -7,16 +7,6 @@ import java.util.Queue;
  * 17. Letter Combinations of a Phone Number
  */
 class _17 {
-
-    /**
-     * A private recursive DFS helper class.
-     * 
-     * @param allLetters
-     * @param digits
-     * @param currIdx
-     * @param currCombination
-     * @param combinations
-     */
     private static void dfs(String[] allLetters, String digits, int currIdx, char[] currCombination, List<String> combinations) {
         // base case
         if (currIdx == digits.length()) {
@@ -31,7 +21,7 @@ class _17 {
         }
 
         // recursive rule
-        String letters = allLetters[digits.charAt(currIdx) - '0']; // **Here we must minus the '0' to cast the result into int from String type
+        String letters = allLetters[digits.charAt(currIdx) - '0']; // **Here we must minus the '0' to cast the result into int from String type**
         for (int i = 0; i < letters.length(); i++) {
             char c = letters.charAt(i);
             currCombination[currIdx] = c;
