@@ -1,18 +1,11 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-/* Problem:
-Given a digit string, return all possible letter combinations that the number could represent.
-A mapping of digit to letters (just like on the telephone buttons) is given below. 
-
-Input:Digit string "23"
-Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
-
-Combination/DFS/BFS
-Sum of Geometric Series
-*/
-
+/**
+ * 17. Letter Combinations of a Phone Number
+ */
 class _17 {
 
     /**
@@ -153,8 +146,72 @@ class _17 {
         }
 
         return combinations;
-    } 
+    }
 
+    // Time: O(3^n) to O(4^n)
+    // Space: O(n)
+    class Solution1_Backtrack_Combination_ElemUsedOnce_NoDedup {
+        // combination -- elem used once -- no dedup needed
+        public List<String> letterCombinations(String digits) {
+            List<String> letters = new ArrayList<>();
+            backtrack(digits, letters, new StringBuilder(), 0);
+            return letters;
+        }
+
+        private void backtrack(String s, List<String> res, StringBuilder selected, int idx) {
+            int n = s.length();
+            if (idx == n) {
+                if (selected.length() == n && n > 0) res.add(selected.toString());
+                return;
+            }
+            for (char letter : getMappedLetters(s.charAt(idx))) {
+                selected.append(letter);
+                backtrack(s, res, selected, idx + 1);
+                selected.deleteCharAt(selected.length() - 1);
+            }
+        }
+
+        private List<Character> getMappedLetters(char num) {
+            List<Character> letters = new ArrayList<>();
+            switch (num) {
+                case '2': {
+                    letters = List.of('a', 'b', 'c');
+                    break;
+                }
+                case '3': {
+                    letters = List.of('d', 'e', 'f');
+                    break;
+                }
+                case '4': {
+                    letters = List.of('g', 'h', 'i');
+                    break;
+                }
+                case '5': {
+                    letters = List.of('j', 'k', 'l');
+                    break;
+                }
+                case '6': {
+                    letters = List.of('m', 'n', 'o');
+                    break;
+                }
+                case '7': {
+                    letters = List.of('p', 'q', 'r', 's');
+                    break;
+                }
+                case '8': {
+                    letters = List.of('t', 'u', 'v');
+                    break;
+                }
+                case '9': {
+                    letters = List.of('w', 'x', 'y', 'z');
+                    break;
+                }
+                default: {
+                }
+            }
+            return letters;
+        }
+    }
 
 
     public static void main(String[] args) {
@@ -169,7 +226,7 @@ class _17 {
                 counter++;
             } */
 
-            for (String s : findCombinationsBFS(input)) {
+            for (String s : new _17().new Solution1_Backtrack_Combination_ElemUsedOnce_NoDedup().letterCombinations(input)) {
                 System.out.println(s);
                 counter++;
             }
