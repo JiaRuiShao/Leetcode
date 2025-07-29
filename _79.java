@@ -3,8 +3,10 @@ import java.util.List;
 
 public class _79 {
 
-	public static class Solution1 {
-        boolean[][] visited;
+	// Time: O(m × n × 3^L) where L is word length
+	// Space: O(m x n + 3^L)
+	public static class Solution1_DFS {
+        private boolean[][] visited;
 
         public boolean exist(char[][] board, String word) {
             int m = board.length;
@@ -23,7 +25,7 @@ public class _79 {
         }
 
         boolean backtrack(char[][] board, String word, int i, int j, int index) {
-            // base cases
+            // base cases -- need to check if all chars traversed before check index validation
 			if (index == word.length()) {
                 return true;
             }
@@ -49,7 +51,9 @@ public class _79 {
         }
     }
 
-	public static class Solution2 {
+	// Time: O(m × n × 3^L) where L is word length
+	// Space: O(3^L)
+	public static class Solution2_DFS_Improved {
         public boolean exist(char[][] board, String word) {
             int row = board.length;
             int col = board[0].length;
@@ -96,90 +100,6 @@ public class _79 {
 
             return false;
         }
-    }
-
-	int m, n;
-
-	/**
-	 * Get the next available neighbor indices.
-	 * Demo: 3(m) x 4(n)
-	 * 0	1	2	3
-	 * 4	5	6	7
-	 * 8	9	10	11
-	 * 
-	 * @param idx curr idx
-	 * @return a list of available neighbor indices
-	 */
-	private List<Integer> getNext(int idx) {
-		List<Integer> next = new LinkedList<>();
-		// add upper idx if not first row
-		if (idx / n != 0) next.add(idx - n);
-		// add left idx if not first col
-		if (idx % n != 0) next.add(idx - 1);
-		// add right idx if not first col
-		if ((idx + 1) % n != 0) next.add(idx + 1);
-		// add lower idx if not first row
-		if (idx / n + 1 != m) next.add(idx + n);
-
-		return next;
-	}
-
-	private boolean backtrack(char[] b, char[] target, int len, boolean[] used, List<Integer> curr) {
-		// base cases
-		if (len == target.length) return true;
-
-		// recursive rules
-		for (int idx : curr) {
-			// check if it's valid
-			if (b[idx] != target[len] || used[idx]) continue;
-			// select
-			len++;
-			used[idx] = true;
-			List<Integer> next = getNext(idx);
-			// dfs
-			if (backtrack(b, target, len, used, next)) {
-				return true;
-			}
-			// undo the select
-			len--;
-			used[idx] = false;
-		}
-
-		return false;
-	}
-
-	public boolean exist(char[][] board, String word) {
-		m = board.length;
-		n = board[0].length;
-
-        // corner cases
-		if (m * n < word.length()) return false;
-
-        // flatten the board
-        char[] b = new char[m * n];
-
-        // initial next available indices
-    	List<Integer> next = new LinkedList<>();
-
-        int idx = 0;
-        for (int r  = 0; r < m; r++) {
-        	for (int c = 0; c < n; c++) {
-        		b[idx] = board[r][c];
-        		next.add(idx);
-        		idx++;
-        	}
-        }
-
-        // A B C E S F C S A D E E
-        // 0 1 2 3 4 5 6 7 8 9 10 11
-        // System.out.println(Arrays.toString(b));
-        /*char[] b = Arrays.stream(board).flatMapToChar(o -> Arrays.stream(o)).toArray();*/
-
-    	// used index
-    	boolean[] used = new boolean[m * n];
-
-    	return backtrack(b, word.toCharArray(), 0, used, next);
-        // System.out.println(Arrays.toString(next));
     }
 
 	public static void main(String[] args) {
