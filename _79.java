@@ -101,24 +101,4 @@ public class _79 {
             return false;
         }
     }
-
-	public static void main(String[] args) {
-		char[][] board = 
-		{{'A','B','C','E'},
-		 {'S','F','C','S'},
-		 {'A','D','E','E'}};
-
-		String word = "ABCCED";
-		System.out.println(new _79().exist(board, word));
-
-		word = "SEE";
-		System.out.println(new _79().exist(board, word));
-
-		word = "ABCB";
-		System.out.println(new _79().exist(board, word));
-
-		board = new char[][] {{'a', 'b'}, {'c', 'd'}};
-		word = "acdb";
-		System.out.println(new _79().exist(board, word));
-	}
 }
