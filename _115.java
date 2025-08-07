@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
  * 115. Distinct Subsequences
  */
 public class _115 {
+    // Time: O(m^n) where m is sp len and n is tp len
+    // Space: O(n)
     class Solution0_Backtrack_By_T_TLE {
         private int distinct;
         public int numDistinct(String s, String t) {
