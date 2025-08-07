@@ -1,6 +1,9 @@
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 79. Word Search
+ */
 public class _79 {
 
 	// Time: O(m × n × 3^L) where L is word length
