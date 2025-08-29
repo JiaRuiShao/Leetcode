@@ -1,6 +1,8 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -234,6 +236,57 @@ public class _301 {
             }
 
             sb.deleteCharAt(sb.length() - 1);
+        }
+    }
+
+    // BFS guaranteed minimal removals
+    public class Solution3_BFS {
+        public List<String> removeInvalidParentheses(String s) {
+            List<String> res = new ArrayList<>();
+            if (s == null) return res;
+
+            Queue<String> q = new ArrayDeque<>();
+            Set<String> seen = new HashSet<>();
+            q.offer(s);
+            seen.add(s);
+
+            boolean found = false;
+
+            while (!q.isEmpty()) {
+                int sz = q.size();
+                for (int t = 0; t < sz; t++) {
+                    String cur = q.poll();
+                    if (isValid(cur)) {
+                        res.add(cur);
+                        found = true;
+                    }
+                    if (found) continue; // don't generate next level once we found valid on this level
+
+                    for (int i = 0; i < cur.length(); i++) {
+                        char c = cur.charAt(i);
+                        if (c != '(' && c != ')') continue;
+                        // avoid duplicates: skip removing the same char in a run
+                        if (i > 0 && cur.charAt(i) == cur.charAt(i - 1)) continue;
+                        String next = cur.substring(0, i) + cur.substring(i + 1);
+                        if (seen.add(next)) q.offer(next);
+                    }
+                }
+                if (found) break;
+            }
+            return res;
+        }
+
+        private boolean isValid(String str) {
+            int bal = 0;
+            for (int i = 0; i < str.length(); i++) {
+                char c = str.charAt(i);
+                if (c == '(') bal++;
+                else if (c == ')') {
+                    if (bal == 0) return false;
+                    bal--;
+                }
+            }
+            return bal == 0;
         }
     }
 }
