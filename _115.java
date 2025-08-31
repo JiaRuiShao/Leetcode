@@ -1,6 +1,8 @@
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,7 +35,7 @@ public class _115 {
 
     // Time: O(mn*m) = O(m^2n)
     // still got TLE
-    class Solution0_Backtrack_By_T_Improved_Memo_TLE {
+    class Solution0_Backtrack_By_T_Improved_Memo_TLE { // By Box
         private int[][] memo;
         public int numDistinct(String s, String t) {
             memo = new int[s.length()][t.length()];
@@ -61,9 +63,31 @@ public class _115 {
         }
     }
 
+    class Solution0_Backtrack_By_T_Improved_Memo_TLE {
+        public int numDistinct(String s, String t) {
+            Map<String, Integer> memo = new HashMap<>();
+            return backtrack(s, 0, t, 0, memo);
+        }
+
+        // backtrack by t
+        private int backtrack(String s, int sp, String t, int st, Map<String, Integer> memo) {
+            if (st == t.length()) return 1;
+            if (sp == s.length()) return 0;
+            String state = sp + "#" + st;
+            if (memo.containsKey(state)) return memo.get(state);
+            int subseq = 0;
+            for (int i = sp; i < s.length(); i++) {
+                if (t.charAt(st) != s.charAt(i)) continue;
+                subseq += backtrack(s, i + 1, t, st + 1, memo);
+            }
+            memo.put(state, subseq);
+            return subseq;
+        }
+    }
+
     // Iterative DP from bottom up
     // dp(s, i, t, j) = SUM{dp(s, k + 1, t, j + 1)} where k >= i and s[k] == t[j]
-    class Solution0_By_T_Bottom_Up_DP_TLE {
+    class Solution0_By_T_Bottom_Up_DP_TLE { // By Box
         // s: babgbag
         // t: bag
         public int numDistinct(String s, String t) {
@@ -86,7 +110,7 @@ public class _115 {
         }
     }
 
-    class Solution0_Backtrack_By_S {
+    class Solution0_Backtrack_By_S { // By Ball
         private int distinct;
         public int numDistinct(String s, String t) {
             distinct = 0;
@@ -111,7 +135,7 @@ public class _115 {
     }
     
     // Time: O(mn)
-    class Solution1_Backtrack_By_S_Improved_Memo {
+    class Solution1_Backtrack_By_S_Improved_Memo { // By Ball
         public int numDistinct(String s, String t) {
             int[][] memo = new int[s.length()][t.length()];
             for (int i = 0; i < s.length(); i++) {
@@ -134,6 +158,29 @@ public class _115 {
             }
             memo[sp][tp] += backtrack(s, sp + 1, t, tp, memo);
             return memo[sp][tp];
+        }
+    }
+
+    class Solution1_Backtrack_By_S_With_Memo { // By Ball {
+        public int numDistinct(String s, String t) {
+            Map<String, Integer> memo = new HashMap<>();
+            return backtrack(s, 0, t, 0, memo);
+        }
+
+        private int backtrack(String s, int sp, String t, int tp, Map<String, Integer> memo) {
+            if (tp == t.length()) return 1;
+            if (sp == s.length()) return 0;
+            String state = sp + "#" + tp;
+            if (memo.containsKey(state)) return memo.get(state);
+            int subseq = 0;
+            // ignore curr char in s
+            subseq += backtrack(s, sp + 1, t, tp, memo);
+            // select curr char in s
+            if (s.charAt(sp) == t.charAt(tp)) {
+                subseq += backtrack(s, sp + 1, t, tp + 1, memo);
+            }
+            memo.put(state, subseq);
+            return subseq;
         }
     }
     
