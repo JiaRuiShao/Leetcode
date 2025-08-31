@@ -5,7 +5,7 @@ import java.util.List;
  * 784. Letter Case Permutation
  */
 public class _784 {
-    class Solution1_Backtrack_By_Char_Combination_ElemUsedOnce_NoDedup {
+    class Solution1_Backtrack_ByBall_Combination_ElemUsedOnce_NoDedup {
         // Time: O(n*2^L) where n is s len and L is letter num
         // Space: auxiliary O(n) total O(n*2^L)
         public List<String> letterCasePermutation(String s) {
