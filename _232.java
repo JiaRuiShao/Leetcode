@@ -1,5 +1,4 @@
-import java.util.Deque;
-import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * 232. Implement Queue using Stacks
@@ -7,40 +6,33 @@ import java.util.LinkedList;
 public class _232 {
     class MyQueue {
 
-        Deque<Integer> stk;
-        Deque<Integer> temp;
+        Stack<Integer> stk;
+        Stack<Integer> tmp;
 
         public MyQueue() {
-            stk = new LinkedList<>();
-            temp = new LinkedList<>();
+            stk = new Stack<>();
+            tmp = new Stack<>();
         }
-
+        
         public void push(int x) {
+            // reverse order of stk
+            while (!stk.isEmpty()) {
+                tmp.push(stk.pop());
+            }
             stk.push(x);
+            while (!tmp.isEmpty()) {
+                stk.push(tmp.pop());
+            }
         }
-
+        
         public int pop() {
-            while (!stk.isEmpty()) {
-                temp.push(stk.pop());
-            }
-            int popNum = temp.pop();
-            while (!temp.isEmpty()) {
-                stk.push(temp.pop());
-            }
-            return popNum;
+            return stk.pop();
         }
-
+        
         public int peek() {
-            while (!stk.isEmpty()) {
-                temp.push(stk.pop());
-            }
-            int peekNum = temp.peek();
-            while (!temp.isEmpty()) {
-                stk.push(temp.pop());
-            }
-            return peekNum;
+            return stk.peek();
         }
-
+        
         public boolean empty() {
             return stk.isEmpty();
         }
