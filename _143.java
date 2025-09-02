@@ -23,7 +23,7 @@ public class _143 {
                 curr = next;
             }
             ListNode n1 = head, n2 = prev;
-            while (n2 != null && n2.next != null) {
+            while (n2 != null && n2.next != null) {  /*IMPORTANT*/
                 ListNode tmp = n1.next;
                 n1.next = n2;
                 n1 = tmp;
