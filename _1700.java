@@ -1,5 +1,7 @@
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
+
 /**
  * 1700. Number of Students Unable to Eat Lunch
  */
@@ -55,21 +57,18 @@ public class _1700 {
 
     class Solution3_My_Solution {
         public int countStudents(int[] students, int[] sandwiches) {
-            int circular = 0, square = 0;
-            for (int student : students) {
-                if (student == 0) circular++;
-                else square++;
-            }
-            for (int i = 0; i < sandwiches.length; i++) {
-                if (sandwiches[i] == 0 && circular > 0) {
-                    circular--;
-                } else if (sandwiches[i] == 1 && square > 0) {
-                    square--;
+            int circularNeeds = (int) Arrays.stream(students).filter(s -> s == 0).count();
+            int squareNeeds = students.length - circularNeeds;
+            for (int sandwich : sandwiches) {
+                if (sandwich == 0) {
+                    if (circularNeeds == 0) break;
+                    circularNeeds--;
                 } else {
-                    break;
+                    if (squareNeeds == 0) break;
+                    squareNeeds--;
                 }
             }
-            return circular + square;
+            return circularNeeds + squareNeeds;
         }
     }
 }
