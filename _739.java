@@ -1,36 +1,23 @@
+import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.LinkedList;
 
 /**
- * 739. Daily Temperatures.
+ * 739. Daily Temperatures
  */
 public class _739 {
-    static class Solution {
-        /**
-         * Monotonic Increasing Stack.
-         * Time: O(n)
-         * Space: O(n)
-         * 
-         * @param temperatures the temperatures array
-         * @return next greater temperature indexes
-         */
+    static class Solution1_Mono_Stack {
         public int[] dailyTemperatures(int[] temperatures) {
-            // used to store the next greater temperature index
-            Deque<Integer> stack = new LinkedList<>();
-            int[] res = new int[temperatures.length];
-            for (int i = temperatures.length - 1; i >= 0; i--) {
-                while (!stack.isEmpty() && temperatures[stack.peekLast()] <= temperatures[i]) {
-                    stack.pollLast();
+            int n = temperatures.length;
+            Deque<Integer> stk = new ArrayDeque<>(); // mono increasing stack for the indices
+            int[] daysNeedToWait = new int[n];
+            for (int i = n - 1; i >= 0; i--) {
+                while (!stk.isEmpty() && temperatures[stk.peek()] <= temperatures[i]) {
+                    stk.pop();
                 }
-                res[i] = stack.isEmpty() ? 0 : stack.peekLast() - i;
-                stack.addLast(i); // add the current temperature index into the stack
+                daysNeedToWait[i] = stk.isEmpty() ? 0 : stk.peek() - i;
+                stk.push(i);
             }
-            return res;
+            return daysNeedToWait;
         }
-    }
-
-    public static void main(String[] args) {
-        int[] temperatures = new int[]{73,74,75,71,69,72,76,73};
-        new Solution().dailyTemperatures(temperatures);
     }
 }
