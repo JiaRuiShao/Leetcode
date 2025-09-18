@@ -63,7 +63,7 @@ public class _115 {
         }
     }
 
-    class Solution0_Backtrack_By_T_Improved_Memo_TLE {
+    class Solution0_Backtrack_By_T_Memo_TLE {
         public int numDistinct(String s, String t) {
             Map<String, Integer> memo = new HashMap<>();
             return backtrack(s, 0, t, 0, memo);
