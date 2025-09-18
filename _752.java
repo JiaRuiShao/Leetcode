@@ -1,36 +1,89 @@
-/* 
+import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.Queue;
+import java.util.Set;
 
-Problem: Open the Lock
-
-You have a lock in front of you with 4 circular wheels. Each wheel has 10 slots: '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'. The wheels can rotate freely and wrap around: for example we can turn '9' to be '0', or '0' to be '9'. Each move consists of turning one wheel one slot.
-
-The lock initially starts at '0000', a string representing the state of the 4 wheels.
-
-You are given a list of deadends dead ends, meaning if the lock displays any of these codes, the wheels of the lock will stop turning and you will be unable to open it.
-
-Given a target representing the value of the wheels that will unlock the lock, return the minimum total number of turns required to open the lock, or -1 if it is impossible.
-
-Example 1:
-Input: deadends = ["0201","0101","0102","1212","2002"], target = "0202"
-Output: 6
-Explanation: 
-A sequence of valid moves would be "0000" -> "1000" -> "1100" -> "1200" -> "1201" -> "1202" -> "0202".
-Note that a sequence like "0000" -> "0001" -> "0002" -> "0102" -> "0202" would be invalid,
-because the wheels of the lock become stuck after the display becomes the dead end "0102".
-
-Example 2:
-Input: deadends = ["8888"], target = "0009"
-Output: 1
-Explanation: We can turn the last wheel in reverse to move from "0000" -> "0009".
-
-Example 3:
-Input: deadends = ["8887","8889","8878","8898","8788","8988","7888","9888"], target = "8888"
-Output: -1
-Explanation: We cannot reach the target without getting stuck.
-
-BFS
+/**
+ * 752. Open the Lock
  */
-
 public class _752 {
-    
+    // Time: O(10^n*8n) where n is target length, here is 4; we have 10^4 states here
+    class Solution1_BFS {
+        public int openLock(String[] deadends, String target) {
+            Set<String> visited = new HashSet<>();
+            for (String dead : deadends) {
+                visited.add(dead);
+            }
+            String start = "0000";
+            if (visited.contains(start)) {
+                return -1;
+            }
+            Queue<String> q = new ArrayDeque<>();
+            q.offer(start);
+            visited.add(start);
+
+            int turns = 0;
+            while (!q.isEmpty()) {
+                int size = q.size();
+                for (int i = 0; i < size; i++) {
+                    String curr = q.poll();
+                    if (curr.equals(target)) {
+                        return turns;
+                    }
+                    char[] arr = curr.toCharArray();
+                    for (int digit = 0; digit < 4; digit++) {
+                        String turnUp = turnUp(arr, digit);
+                        String turnDown = turnDown(arr, digit);
+                        if (!visited.contains(turnUp)) {
+                            q.offer(turnUp);
+                            visited.add(turnUp);
+                        }
+                        if (!visited.contains(turnDown)) {
+                            q.offer(turnDown);
+                            visited.add(turnDown);
+                        }
+                    }
+                }
+                turns++;
+            }
+            return -1;
+        }
+
+        private String turnUp(char[] arr, int idx) {
+            char num = arr[idx];
+            char next = num == '9' ? '0' : (char) (num + 1);
+            arr[idx] = next;
+            String res = new String(arr);
+            arr[idx] = num;
+            return res;
+        }
+
+        private String turnDown(char[] arr, int idx) {
+            char num = arr[idx];
+            char next = num == '0' ? '9' : (char) (num - 1);
+            arr[idx] = next;
+            String res = new String(arr);
+            arr[idx] = num;
+            return res;
+        }
+
+        // another way to write
+        // private String turnUp(char[] arr, int idx) {
+        //     int num = arr[idx] - '0';
+        //     int next = num == 9 ? 0 : num + 1;
+        //     arr[idx] = (char)('0' + next);
+        //     String res = new String(arr);
+        //     arr[idx] =  (char)('0' + num);
+        //     return res;
+        // }
+
+        // private String turnDown(char[] arr, int idx) {
+        //     int num = arr[idx] - '0';
+        //     int next = num == 0 ? 9 : num - 1;
+        //     arr[idx] = (char)('0' + next);
+        //     String res = new String(arr);
+        //     arr[idx] = (char)('0' + num);
+        //     return res;
+        // }
+    }
 }
