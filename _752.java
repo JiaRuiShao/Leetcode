@@ -1,5 +1,7 @@
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
@@ -85,5 +87,64 @@ public class _752 {
         //     arr[idx] = (char)('0' + num);
         //     return res;
         // }
+    }
+
+    class Solution2_BidirectionalBFS {
+        public int openLock(String[] deadends, String target) {
+            Set<String> deads = new HashSet<>();
+            for (String deadend : deadends) {
+                deads.add(deadend);
+            }
+
+            String start = "0000";
+            if (deads.contains(start)) return -1;
+            Queue<String> q1 = new ArrayDeque<>();
+            Queue<String> q2 = new ArrayDeque<>();
+            Set<String> set1 = new HashSet<>();
+            Set<String> set2 = new HashSet<>();
+            q1.offer(start);
+            set1.add(start);
+            q2.offer(target);
+            set2.add(target);
+
+            int turn = 0;
+            while (!q1.isEmpty() && !q2.isEmpty()) {
+                int size = q1.size();
+                for (int i = 0; i < size; i++) {
+                    String curr = q1.poll();
+                    if (set2.contains(curr)) return turn;
+                    for (String next : getNeighbors(curr)) {
+                        if (!deads.contains(next) && !set1.contains(next)) {
+                            q1.offer(next);
+                            set1.add(next);
+                        }
+                    }
+                }
+                if (q2.size() < q1.size()) {
+                    Queue<String> temp = q1;
+                    q1 = q2;
+                    q2 = temp;
+                    Set<String> tmp = set1;
+                    set1 = set2;
+                    set2 = tmp;
+                }
+                turn++;
+            }
+            return -1;
+        }
+
+        private List<String> getNeighbors(String s) {
+            List<String> res = new ArrayList<>();
+            char[] arr = s.toCharArray();
+            for (int i = 0; i < arr.length; i++) {
+                char old = arr[i];
+                arr[i] = (old == '9') ? '0' : (char)(old + 1);
+                res.add(new String(arr));
+                arr[i] = (old == '0') ? '9' : (char)(old - 1);
+                res.add(new String(arr));
+                arr[i] = old;
+            }
+            return res;
+        }
     }
 }
