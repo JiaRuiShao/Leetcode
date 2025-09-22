@@ -53,11 +53,11 @@ public class _20 {
             return c == '(' || c == '{' || c == '[';
         }
     }
+
     class Solution1_Stack {
         public boolean isValid(String s) {
             Deque<Character> stk = new LinkedList<>();
-            for (int i = 0; i < s.length(); i++) {
-                char c = s.charAt(i);
+            for (char c : s.toCharArray()) {
                 if (isOpenParenthesis(c)) {
                     stk.push(c);
                 } else if (stk.isEmpty() || !isMatchingParentheses(c, stk.peek())) {
@@ -75,6 +75,31 @@ public class _20 {
 
         private boolean isMatchingParentheses(char close, char open) {
             return open == '(' && close == ')' || open == '{' && close == '}' || open == '[' && close == ']';
+        }
+    }
+
+    class Solution1_Stack_InPlace {
+        public boolean isValid(String s) {
+            char[] arr = s.toCharArray();
+            int idx = 0;
+            for (char c : arr) {
+                if (isOpenParenthesis(c)) {
+                    arr[idx++] = c;
+                } else if (idx == 0 || !isMatchParenthesis(arr[idx - 1], c)) {
+                    return false;
+                } else {
+                    idx--;
+                }
+            }
+            return idx == 0;
+        }
+
+        private boolean isOpenParenthesis(char c) {
+            return c == '(' || c == '[' || c == '{';
+        }
+
+        private boolean isMatchParenthesis(char open, char closed) {
+            return open == '(' && closed == ')' || open == '[' && closed == ']' || open == '{' && closed == '}';
         }
     }
 }
