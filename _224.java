@@ -72,14 +72,13 @@ public class _224 {
                     total = 0;
                 } else if (c == ')'){
                     total += sign * curNum;
-                    curNum = 0;
+                    curNum = 0; /**IMPORTANT**/
                     total *= stack.pop();
                     total += stack.pop();
 
                 }
             }
-            if (curNum != 0) total += sign * curNum;
-            return total;
+            return total + sign * curNum;
         }
     }
 
@@ -125,5 +124,10 @@ public class _224 {
             }
             return total + sign * num;
         }
+    }
+
+    public static void main(String[] args) {
+        String s  = "(1+(4+5+2)-3)+(6+8)";
+        System.out.println(Solution.calculate(s));
     }
 }
