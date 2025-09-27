@@ -1,40 +1,52 @@
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 224. Basic Calculator
- * Problems to be solved:
- * 1. how to read the chars as int number
- * 2. how to deal with the brackets `()`
- * 3. handle corner cases
  */
 public class _224 {
-    public static class Solution1_Recursion {
-        int i = 0;
+    // Clarifications:
+    // operators supported? only + - ( )
+    // input is valid expression
+    // constraint on numbers value? If not <= 18, use BigInteger
+
+    // Solutions:
+    // 1 - Recursion
+    // 2 - Stack
+    class Solution1_Recursion {
+        private int i = 0;
+
         public int calculate(String s) {
-            if (s == null || s.length() == 0) return 0;
-            int total = 0, num = 0, sign = 1;
-            while (i < s.length()) {
-                char c = s.charAt(i++);
-                if (Character.isDigit(c)) {
-                    num = 10 * num + (c - '0');
+            char[] arr = s.toCharArray();
+            i = 0;
+            return calcExpr(arr);
+        }
+
+        private int calcExpr(char[] arr) {
+            int res = 0, curr = 0, opr = 1;
+            while (i < arr.length) {
+                char c = arr[i++];
+                if (c >= '0' && c <= '9') {
+                    curr = curr * 10 + (c - '0');
                 } else if (c == '(') {
-                    num = calculate(s);
+                    curr = calcExpr(arr);
                 } else if (c == ')') {
                     break;
-                } else if (c != ' ') {
-                    total += sign * num;
-                    num = 0;
-                    sign = c == '-' ? -1 : 1;
+                } else if (c == '+' || c == '-') {
+                    res += opr * curr;
+                    curr = 0;
+                    opr = (c == '+') ? 1 : -1;
                 }
             }
-            return total + sign * num;
+            return res + opr * curr;
         }
     }
 
-    public static class Solution2_Iterative_Stack {
-
+    class Solution2_Iterative_Stack {
         public int calculate(String s) {
-            Deque<Integer> stack = new LinkedList<>();
+            Deque<Integer> stack = new ArrayDeque<>();
             int total = 0;
             int curNum = 0;
             int sign = 1;
@@ -69,13 +81,12 @@ public class _224 {
             if (curNum != 0) total += sign * curNum;
             return total;
         }
-
     }
 
     class Solution3_My_Solution {
         public int calculate(String s) {
             // we either need this parenthesis index map or we need to use global variable to track the current index
-            Deque<Integer> stk = new LinkedList<>();
+            Deque<Integer> stk = new ArrayDeque<>();
             Map<Integer, Integer> parenthesisMap = new HashMap<>();
             for (int i = 0; i < s.length(); i++) {
                 char c = s.charAt(i);
