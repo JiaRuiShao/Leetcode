@@ -2,11 +2,54 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 567. Permutation in String.
+ * 567. Permutation in String
  * Count each needed character not just the distinct character -- this will effect how we update the needed chars
  */
 public class _567 {
-    class Solution1 {
+    class Solution1_Sliding_Window_Array { // use char freq counter
+        public boolean checkInclusion(String s1, String s2) {
+            if (s1.length() > s2.length()) return false;
+            int[] charFreq = new int[26];
+            for (int i = 0; i < s1.length(); i++) {
+                charFreq[s1.charAt(i) - 'a']++;
+            }
+            int left = 0, right = 0, charNeeded = s1.length(), winLen = charNeeded; // [left, right)
+            while (right < s2.length()) {
+                int toAdd = s2.charAt(right++) - 'a';
+                if (charFreq[toAdd]-- > 0) charNeeded--;
+                if (right - left == winLen) {
+                    if (charNeeded == 0) return true;
+                    int toRem = s2.charAt(left++) - 'a';
+                    if (++charFreq[toRem] > 0) charNeeded++;
+                }
+            }
+            return false;
+        }
+    }
+    
+    class Solution2_Sliding_Window_Array { // use distinct char counter
+        public boolean checkInclusion(String s1, String s2) {
+            if (s1.length() > s2.length()) return false;
+            int[] charFreq = new int[26];
+            int distinct = 0;
+            for (int i = 0; i < s1.length(); i++) {
+                if (charFreq[s1.charAt(i) - 'a']++ == 0) distinct++;
+            }
+            int left = 0, right = 0, winLen = s1.length(); // [left, right)
+            while (right < s2.length()) {
+                int toAdd = s2.charAt(right++) - 'a';
+                if (--charFreq[toAdd] == 0) distinct--;
+                if (right - left == winLen) {
+                    if (distinct == 0) return true;
+                    int toRem = s2.charAt(left++) - 'a';
+                    if (charFreq[toRem]++ == 0) distinct++;
+                }
+            }
+            return false;
+        }
+    }
+    
+    class Solution3_Sliding_Window_HashMap {
         public boolean checkInclusion(String s1, String s2) {
             // build a freq map for target s1
             int size = s1.length();
@@ -55,124 +98,12 @@ public class _567 {
             return false;
         }
     }
-    
-    class Solution2 {
-        static final int MAX_CHAR = 256;
-        public boolean checkInclusion(String s1, String s2) {
-            int[] count = new int[MAX_CHAR]; // ASCII size counter array
-            for (char c : s1.toCharArray()) count[c]++;
-            int counter = s1.length(); // num of chars needed
-            int left = 0, right = 0;
-            while (right < s2.length()) {
-                // move right pointer
-                char newChar = s2.charAt(right++);
-                if (count[newChar] > 0) counter--; // decrease counter if char at right is one of the char in s1
-                count[newChar]--; // decrease the freq of this char in the counter array
-
-                // keep shrinking the left window [left, right) if the window size >= s1 size
-                while (right - left >= s1.length()) {
-                    if (counter == 0) return true;
-                    // move left pointer
-                    if (++count[s2.charAt(left++)] > 0) counter++;
-                }
-            }
-            return false;
-        }
-    }
-
-    class Solution3 {
-
-        private int MAX_CHAR = 256;
-    
-        /**
-         * We can use char array here because the constraint mentioned 1 <= s1.length, s2.length <= 10^4, and each char has 2 bytes, which is 16 bits to store the data. 2^16 - 1 - 10^4 > 0, it means we can store the data as char without overflow problem.
-         * Notice that char is stored as ASCII code in java, which is unsigned, so it can store up to 16 bits numbers
-         * Improvements: we can store the lowercase english letters in a 26-size int arr
-         * @param s1 s1
-         * @param s2 s2
-         * @return true if s1's permutation found in s2; else false
-         */
-        public boolean checkInclusion(String s1, String s2) {
-            char[] freq = new char[MAX_CHAR];
-            for (int i = 0; i < s1.length(); i++) {
-                freq[s1.charAt(i)]++;
-            }
-    
-            int l = 0, r = 0, maxWinLen = s1.length(), need = s1.length();
-            while(r < s2.length()) {
-                char cAdd = s2.charAt(r++);
-                if (freq[cAdd] > 0) {
-                    need--;
-                }
-                freq[cAdd]--;
-    
-                if (r - l == maxWinLen) {
-                    if (need == 0) {
-                        return true;
-                    }
-                    char cRem = s2.charAt(l++);
-                    freq[cRem]++;
-                    if (freq[cRem] > 0) {
-                        need++;
-                    }
-                }
-            }
-    
-            return false;
-        }
-    }
-
-    class Solution4 {
-
-        private char a = 'a';
-    
-        private short convertCharToShort(char c) {
-            return (short) (c - a);
-        }
-    
-        /**
-         * Uses short array to store the char freq. Compared to char array and int array, it saves some more memory space. But is it really worth it?
-         * @param s1 s1
-         * @param s2 s2
-         * @return true if s1's permutation found in s2; else false
-         */
-        public boolean checkInclusion(String s1, String s2) {
-            short[] freq = new short[26];
-            int maxWinLen = s1.length();
-            for (int i = 0; i < maxWinLen; i++) {
-                freq[convertCharToShort(s1.charAt(i))]++;
-            }
-    
-            int l = 0, r = 0, need = maxWinLen;
-            short cAdd = 0, cRem = 0;
-            while(r < s2.length()) {
-                cAdd = convertCharToShort(s2.charAt(r++));
-                if (freq[cAdd] > 0) {
-                    need--;
-                }
-                freq[cAdd]--;
-    
-                if (r - l == maxWinLen) {
-                    if (need == 0) {
-                        return true;
-                    }
-                    cRem = convertCharToShort(s2.charAt(l++));
-                    freq[cRem]++;
-                    if (freq[cRem] > 0) {
-                        need++;
-                    }
-                }
-            }
-    
-            return false;
-        }
-    }
 
     /**
      * NO-BRAINER SOLUTION! Uses two freq map for both strings.
      * Ref: https://labuladong.online/algo/ds-class/shu-zu-lia-39fd9/hua-dong-c-c0f54/#%E4%BA%8C%E3%80%81%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8E%92%E5%88%97
      */
-    class Solution5 {
+    class Solution4 {
         public boolean checkInclusion(String t, String s) {
             HashMap<Character, Integer> need = new HashMap<>();
             HashMap<Character, Integer> window = new HashMap<>();
@@ -181,36 +112,24 @@ public class _567 {
                 need.put(c, need.getOrDefault(c, 0) + 1);
             }
     
-            int left = 0, right = 0;
-            int valid = 0;
+            int left = 0, right = 0, valid = 0;
             while (right < s.length()) {
-                char c = s.charAt(right);
-                right++;
+                char c = s.charAt(right++);
                 if (need.containsKey(c)) {
                     window.put(c, window.getOrDefault(c, 0) + 1);
-                    if (window.get(c).equals(need.get(c)))
-                        valid++;
+                    if (window.get(c).equals(need.get(c))) valid++;
                 }
     
                 while (right - left >= t.length()) {
-                    if (valid == need.size())
-                        return true;
-                    char d = s.charAt(left);
-                    left++;
+                    if (valid == need.size()) return true;
+                    char d = s.charAt(left++);
                     if (need.containsKey(d)) {
-                        if (window.get(d).equals(need.get(d)))
-                            valid--;
+                        if (window.get(d).equals(need.get(d))) valid--;
                         window.put(d, window.getOrDefault(d, 0) - 1);
                     }
                 }
             }
             return false;
         }
-    }
-
-    public static void main(String[] args) {
-        String t = "abcdxabcde", s = "abcdeabcdx";
-
-        new _567().new Solution4().checkInclusion(t, s);
     }
 }
