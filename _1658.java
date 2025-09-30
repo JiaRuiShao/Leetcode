@@ -1,7 +1,13 @@
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * 1658. Minimum Operations to Reduce X to Zero.
+ * 1658. Minimum Operations to Reduce X to Zero
  * Convert the original question to a maxLen sliding window question
  */
 public class _1658 {
@@ -23,7 +29,7 @@ public class _1658 {
 				windowSum += nums[right];
 				right++;
 				
-				while (windowSum > target && left < right) {
+				while (windowSum > target && left < right) { // prevent k > sum(nums)
 					// shrink the window when windowSum > target
 					windowSum -= nums[left];
 					left++;
@@ -62,6 +68,74 @@ public class _1658 {
 	
 			return maxLen == -1 ? maxLen : nums.length - maxLen;
 		}
+	}
+	
+	class FollowUp_Negative_Input {
+		// [0, -2, 3, -2, 1], x = 1
+		// find the longest subarray with sum as
+		// sum(nums) = 0, target = 0 - 1 = -1
+		// prefixSum = [0, 0, -2, 1, -1, 0]
+		public int minOperations(int[] nums, int x) {
+			int subarraySum = Arrays.stream(nums).sum() - x;
+			int n = nums.length, maxLen = -1;
+			Map<Integer, Integer> preSumToIdx = new HashMap<>();
+			preSumToIdx.put(0, 0);
+			int[] preSum = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				preSum[i + 1] = preSum[i] + nums[i];
+			}
+			for (int i = 0; i <= n; i++) {
+				// pre[j] - pre[i] = subarraySum
+				int target = preSum[i] - subarraySum;
+				if (preSumToIdx.containsKey(target)) {
+					maxLen = Math.max(maxLen, i - preSumToIdx.get(target));
+				}
+				preSumToIdx.putIfAbsent(preSum[i], i);
+			}
+			return maxLen == -1 ? -1 : n - maxLen;
+		}
+		
+		public int minOperationsImproved(int[] nums, int x) {
+			int total = Arrays.stream(nums).sum();
+			int target = total - x;             // we want the longest subarray summing to (total – x)
+			int n = nums.length, maxLen = -1;
+			
+			// map: prefixSum → earliest index where this prefixSum appeared,
+			// using 1-based indices in the loop. We seed (0 → 0) for the “empty” prefix.
+			Map<Integer, Integer> preSumToIdx = new HashMap<>();
+			preSumToIdx.put(0, 0);
+			
+			int prefixSum = 0;
+			// Loop i from 0 to n (inclusive). Interpret “i” as “length of prefix”:
+			//   - at i=0: prefixSum = 0 (empty prefix)
+			//   - at i>0: prefixSum += nums[i-1].
+			for (int j = 0; j <= n; j++) { // need to start from index 0 because of corner case where x == sum(nums)
+				if (j > 0) {
+					prefixSum += nums[j - 1];
+				}
+				
+				// Check if there was some earlier prefix whose sum = (prefixSum – target).
+				// If so, [thatIndex … i-1] sums to 'target'.
+				int k = prefixSum - target;
+				if (preSumToIdx.containsKey(k)) {
+					int i = preSumToIdx.get(k);
+					maxLen = Math.max(maxLen, j - i);
+				}
+				
+				// Record the first time we see this prefixSum at “index = i”
+				preSumToIdx.putIfAbsent(prefixSum, j);
+			}
+			
+			return maxLen == -1 ? -1 : n - maxLen;
+		}
+	}
+	
+	@Test
+	public void testNegativeValuesAllowableRemoval() {
+		int[] nums = {8828,9581,49,9818,9974,9869,9991,10000,10000,10000,9999,9993,9904,8819,1231,6309};
+		int x = 134365;
+		assertEquals(16, new FollowUp_Negative_Input().minOperations(nums, x));
+		assertEquals(16, new FollowUp_Negative_Input().minOperationsImproved(nums, x));
 	}
 
 	public static void main(String[] args) {
