@@ -1,10 +1,12 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
- * 187. Repeated DNA Sequences.
+ * 187. Repeated DNA Sequences
  * Sliding Window + Rabin-Karp Algorithm
  */
 public class _187 {
@@ -42,34 +44,25 @@ public class _187 {
      */
     class Solution2_Sliding_Window {
         public List<String> findRepeatedDnaSequences(String s) {
-            int windowLen = 10;
-            Set<String> seen = new HashSet<>();
-            Set<String> seqDna = new HashSet<>(); // why we need a Set? to de-duplicate
-            // if we don't want to use a Set, we can use a Map for seen and count the freq
-            // to only add to res list when freq == 2
-            List<String> repeatDnaSeq = new ArrayList<>();
-
-            int l = 0, r = 0;
-            while (r < s.length()) {
-                r++;
-                if (r - l == windowLen) {
-                    String winStr = s.substring(l, r);
-                    if (seen.contains(winStr)) {
-                        seqDna.add(winStr);
-                    } else {
-                        seen.add(winStr);
-                    }
-                    l++;
+            Map<String, Integer> dnaSeqToFreq = new HashMap<>();
+            List<String> repeatedDnaSeq = new ArrayList<>();
+            int left = 0, right = 0, winLen = 10;
+            while (right < s.length()) {
+                right++;
+                if (right - left == winLen) {
+                    String winStr = s.substring(left, right);
+                    dnaSeqToFreq.put(winStr, dnaSeqToFreq.getOrDefault(winStr, 0) + 1);
+                    if (dnaSeqToFreq.get(winStr) == 2) repeatedDnaSeq.add(winStr);
+                    left++;
                 }
             }
-            repeatDnaSeq.addAll(seqDna);
-            return repeatDnaSeq;
+            return repeatedDnaSeq;
         }
     }
 
     /**
      * Sliding Window with the window substring converted to base-10 number.
-     * Time: average O(N) worst O(NL) when there're too many results
+     * Time: average O(N) worst O(NL) when there are too many results
      * Space: O(N + NL)
      */
     class Solution3_Sliding_Hash_Technique_Base10 {
@@ -135,61 +128,35 @@ public class _187 {
      * Space: O(N + NL)
      */
     class Solution4_Sliding_Hash_Technique_Base4 {
-        private static final int BASE = 4;
-        private static final int DNA_LENGTH = 10;
-
         public List<String> findRepeatedDnaSequences(String s) {
-            int[] hash = new int[s.length()];
-
-            for (int i = 0; i < s.length(); i++) {
-                hash[i] = getHashNum(s.charAt(i));
-            }
-
-            Set<Integer> uniqueDNAs = new HashSet<>();
-            Set<String> repeatedDNAs = new HashSet<>();
-            int left = 0, right = 0, hashing = 0; // hash val for the sliding window
-            // window: [left, right)
-            while (right < hash.length) {
-                hashing = addToRight(hashing, hash[right++]); // hashing val update -- add num from the right
-                if (right - left == DNA_LENGTH) {
-                    if (uniqueDNAs.contains(hashing)) {
-                        repeatedDNAs.add(s.substring(left, right));
-                    } else {
-                        uniqueDNAs.add(hashing);
-                    }
-                    hashing = subtractFromLeft(hashing, hash[left++]); // hashing val update -- remove num from the left
+            Map<Integer, Integer> dnaToFreq = new HashMap<>();
+            List<String> repeated = new ArrayList<>();
+            int base = 4, winLen = 10, basePowLenMinusOne = (int) Math.pow(base, winLen - 1);
+            int left = 0, right = 0, windowHash = 0;
+            while (right < s.length()) {
+                int addToRight = decode(s.charAt(right++));
+                windowHash = base * windowHash + addToRight;
+                if (right - left == winLen) {
+                    dnaToFreq.put(windowHash, dnaToFreq.getOrDefault(windowHash, 0) + 1);
+                    if (dnaToFreq.get(windowHash) == 2) repeated.add(s.substring(left, right));
+                    int remFromLeft = decode(s.charAt(left++));
+                    windowHash -= remFromLeft * basePowLenMinusOne;
                 }
             }
-
-            return new ArrayList<>(repeatedDNAs);
+            return repeated;
         }
-
-        private int subtractFromLeft(int base, int rem) {
-            return base - rem * (int) Math.pow(BASE, DNA_LENGTH - 1);
-        }
-
-        private int addToRight(int base, int add) {
-            return base * BASE + add;
-        }
-
-        private int getHashNum(char c) {
-            int hashedNum = -1;
+    
+        private int decode(char c) {
             switch (c) {
                 case 'A':
-                    hashedNum = 0;
-                    break;
+                    return 0;
                 case 'C':
-                    hashedNum = 1;
-                    break;
+                    return 1;
                 case 'G':
-                    hashedNum = 2;
-                    break;
-                case 'T':
-                    hashedNum = 3;
-                    break;
+                    return 2;
                 default:
+                    return 3;
             }
-            return hashedNum;
         }
     }
 }
