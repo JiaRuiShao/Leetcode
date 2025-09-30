@@ -192,6 +192,6 @@ public class _792 {
                 this.word = word;
                 this.index = index;
             }
-        }        
+        }
     }
 }
