@@ -1,10 +1,10 @@
 /**
- * 5. Longest Palindromic Substring.
+ * 5. Longest Palindromic Substring
  * Given a string s, return the longest palindromic substring in s.
  * A string is called a palindrome string if the reverse of that string is the same as the original string.
  */
 public class _5 {
-	class Solution1 { // Time Limit Exceed, O(n^3) time complexity
+	class Solution1_Two_Pointers_TLE { // Time Limit Exceed, O(n^3) time complexity
 		public String longestPalindrome(String s) {
 			int maxLen = 0, maxL = 0, maxR = 0;
 			for (int left = 0; left < s.length(); left++) {
@@ -29,7 +29,9 @@ public class _5 {
 		}
 	}
 	
-	class Solution2 { // find palindrome centered at s[i] or s[i+1]
+	// Time: O(n^2)
+	// Space: O(n)
+	class Solution2_Center_Expansion { // find palindrome centered at s[i] or s[i+1]
 		public String longestPalindrome(String s) {
 			String longestP = "";
 			for (int i = 0; i < s.length(); i++) {
@@ -49,56 +51,30 @@ public class _5 {
 			return s.substring(l + 1, r);
 		}
 	}
-
-	class Solution3_Two_Pointers {
+	
+	/**
+	 * Expand around center for every possible center.
+	 * Time: O(n^2)
+	 * Space: O(n) -> O(1) if don't convert to char arr
+	 */
+	class Solution3_Two_Pointers_Improved {
 		public String longestPalindrome(String s) {
-			int[] longestPal = new int[2]; // Stores [length, startIndex]
+			int start = 0, maxLen = 1;
 			for (int i = 0; i < s.length(); i++) {
-				int[] oddPal = findPalindrome(s, i, i);
-				int[] evenPal = findPalindrome(s, i, i + 1);
-				if (oddPal[0] >= evenPal[0] && oddPal[0] > longestPal[0]) {
-					longestPal = oddPal;
-				} else if (evenPal[0] > longestPal[0]) {
-					longestPal = evenPal;
-				}
-			}
-			return s.substring(longestPal[1], longestPal[1] + longestPal[0]);
-		}
-		
-		private int[] findPalindrome(String s, int left, int right) {
-			int[] pal = new int[2];
-			while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
-				int palLen = right - left + 1;
-				if (palLen > pal[0]) {
-					pal[0] = palLen;
-					pal[1] = left;
-				}
-				left--;
-				right++;
-			}
-			return pal;
-		}
-	}
-
-	class Solution4_Two_Pointers_Improved {
-		public String longestPalindrome(String s) {
-			int start = 0, maxLen = 1, length;
-			char[] str = s.toCharArray();
-			for (int i = 0; i < s.length(); i++) {
-				int oddLength = findLongestPalindrome(str, i, i);
-				int evenLength = findLongestPalindrome(str, i, i + 1);
-				length = Math.max(oddLength, evenLength);
-				if (length > maxLen) {
-					maxLen = length;
-					start = i - (length - 1) / 2;
+				int oddLength = findLongestPalindromeLength(s, i, i);
+				int evenLength = findLongestPalindromeLength(s, i, i + 1);
+				int len = Math.max(oddLength, evenLength);
+				if (len > maxLen) {
+					maxLen = len;
+					start = i - (len - 1) / 2;
 				}
 			}
 			return s.substring(start, start + maxLen);
 		}
 	
-		private int findLongestPalindrome(char[] arr, int i, int j) {
-			int maxLen = 1;
-			while (i >= 0 && j < arr.length && arr[i] == arr[j]) {
+		private int findLongestPalindromeLength(String s, int i, int j) { // [i, j]
+			int maxLen = 1, n = s.length();
+			while (i >= 0 && j < n && s.charAt(i) == s.charAt(j)) {
 				maxLen = Math.max(maxLen, j - i + 1);
 				i--;
 				j++;
