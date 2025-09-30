@@ -291,90 +291,93 @@ public class _126 {
         }
     }
 
-    class Solution2_BFS_DFS_LevelMap {
-        List<List<String>> ans;
-        HashMap<String, Integer> map;
-        String beginW;
-
+    // easiest solution to implement -- BFS to track the valid words and their levels
+    // backtrack from end word and check from built map for valid path
+    // no dedup needed like in parents map
+    // say N is word len, L is num of word in wordList, K is num of valid path
+    // Time: O(L*26N+K*L*26N) = O(KLN)
+    // Space: O(NL)
+    class Solution2_BFS_LevelMap_Backtrack {
+        // aa -> ab -> bb
+        // aa -> ba -> bb
         public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
-            ans = new ArrayList<>();
-            HashSet<String> set = new HashSet<>(wordList);
-            if (!set.contains(endWord)) return ans;
-
-            beginW = beginWord;
-            map = new HashMap<>();
-            map.put(beginWord, 0);
-
-            Queue<String> q = new LinkedList<>();
-            q.offer(beginWord);
-            HashSet<String> vis = new HashSet<>();
-            vis.add(beginWord);
-
-            int level = 0;
-            boolean found = false;
-
-            // BFS to build shortest distance map
-            while (!q.isEmpty()) {
-                int n = q.size();
-                level++;
-                for (int i = 0; i < n; i++) {
-                    String word = q.poll();
-                    if (word.equals(endWord)) found = true;
-                    if (found) continue;
-
-                    char[] arr = word.toCharArray();
-                    for (int j = 0; j < word.length(); j++) {
-                        char ch = arr[j];
-                        for (int k = 'a'; k <= 'z'; k++) {
-                            arr[j] = (char) k;
-                            String newWord = new String(arr);
-                            if (set.contains(newWord) && !vis.contains(newWord)) {
-                                q.offer(newWord);
-                                vis.add(newWord);
-                                map.put(newWord, level);
-                            }
-                        }
-                        arr[j] = ch;
-                    }
-                }
-                if (found) break;
+            Set<String> whitelist = new HashSet<>(wordList);
+            if (!whitelist.contains(endWord)) {
+                return new ArrayList<>();
             }
 
-            // DFS to reconstruct all shortest paths
-            List<String> path = new ArrayList<>();
-            path.add(endWord);
-            dfs(path, endWord);
-
-            return ans;
+            Map<String, Integer> wordToLevel = new HashMap<>();
+            bfs(beginWord, endWord, whitelist, wordToLevel);
+            
+            List<List<String>> transformSeq = new ArrayList<>();
+            List<String> path = new LinkedList<>();
+            path.add(0, endWord);
+            backtrack(endWord, beginWord, wordToLevel, path, transformSeq);
+            return transformSeq;
         }
 
-        private void dfs(List<String> path, String word) {
-            if (word.equals(beginW)) {
-                List<String> copy = new ArrayList<>(path);
-                Collections.reverse(copy);
-                ans.add(copy);
+        private void backtrack(String start, String end, Map<String, Integer> map, List<String> path, List<List<String>> res) {
+            if (start.equals(end)) {
+                res.add(new ArrayList<>(path));
                 return;
             }
+            int currLevel = map.getOrDefault(start, -1);
+            for (String nextWord : findNextWords(start)) {
+                int nextWordLevel = map.getOrDefault(nextWord, -1);
+                if (nextWordLevel == currLevel - 1) {
+                    path.add(0, nextWord);
+                    backtrack(nextWord, end, map, path, res);
+                    path.remove(0);
+                }
+            }
+        }
 
-            char[] arr = word.toCharArray();
-            for (int j = 0; j < word.length(); j++) {
-                char ch = arr[j];
-                for (int k = 'a'; k <= 'z'; k++) {
-                    arr[j] = (char) k;
-                    String newWord = new String(arr);
-                    if (map.containsKey(newWord) && map.get(newWord) == map.get(word) - 1) {
-                        path.add(newWord);
-                        dfs(path, newWord);
-                        path.remove(path.size() - 1); // backtrack
+        private void bfs(String begin, String end, Set<String> whitelist, Map<String, Integer> wordToLevel) {
+            Queue<String> q = new ArrayDeque<>();
+            int level = 0;
+            q.offer(begin);
+            whitelist.remove(begin);
+            wordToLevel.put(begin, level);
+
+            while (!q.isEmpty()) {
+                int size = q.size();
+                level++;
+                for (int i = 0; i < size; i++) {
+                    String word = q.poll();
+                    if (word.equals(end)) {
+                        return;
+                    }
+                    for (String nextWord : findNextWords(word)) {
+                        if (whitelist.contains(nextWord)) {
+                            q.offer(nextWord);
+                            whitelist.remove(nextWord);
+                            wordToLevel.putIfAbsent(nextWord, level);
+                        }
                     }
                 }
-                arr[j] = ch;
             }
+        }
+
+        private List<String> findNextWords(String word) {
+            List<String> words = new ArrayList<>();
+            char[] arr = word.toCharArray();
+            for (int i = 0; i < arr.length; i++) {
+                char old = arr[i];
+                for (char newC = 'a'; newC <= 'z'; newC++) {
+                    if (newC == old) {
+                        continue;
+                    }
+                    arr[i] = newC;
+                    words.add(new String(arr));
+                }
+                arr[i] = old;
+            }
+            return words;
         }
     }
 
     public static void main(String[] args) {
-        _126.Solution solution = new _126.Solution();
-        solution.findLadders("red", "tax", List.of("ted","tex","red","tax","tad","den","rex","pee"));
+        // _126.Solution solution = new _126.Solution();
+        // solution.findLadders("red", "tax", List.of("ted","tex","red","tax","tad","den","rex","pee"));
     }
 }
