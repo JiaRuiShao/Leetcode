@@ -1,9 +1,7 @@
 import java.util.ArrayDeque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 
 /**
  * 1926. Nearest Exit from Entrance in Maze
@@ -148,7 +146,7 @@ public class _1926 {
     }
 
     public static void main(String[] args) {
-        Solution0_DFS_Memo_TLE solution = new _1926().new Solution0_DFS_Memo_TLE();
+        WrongSolution_DFS_Memo solution = new _1926().new WrongSolution_DFS_Memo();
         char[][] maze = {{'+','+','.','+'},{'.','.','.','+'},{'+','+','+','.'}};
         int[] entrance = {1,2};
         System.out.println(solution.nearestExit(maze, entrance)); // 1
