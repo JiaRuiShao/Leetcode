@@ -2,6 +2,22 @@
  * 921. Minimum Add to Make Parentheses Valid
  */
 public class _921 {
+    class Solution1 {
+        // s = ")(((", "))()("
+        public int minAddToMakeValid(String s) {
+            int open = 0, close = 0;
+            for (char c : s.toCharArray()) {
+                if (c == '(') { // need a close parenthesis
+                    close++;
+                } else if (close-- == 0) { // need an open parenthesis
+                    open++;
+                    close = 0;
+                }
+            }
+            return open + close;
+        }
+    }
+
     class Solution1_Stack {
         // s = ")((("
         public int minAddToMakeValid(String s) {
@@ -36,13 +52,8 @@ public class _921 {
             return c == '(' || c == '{' || c == '[';
         }
 
-        private boolean isMatchParen(char close, char open) {
+        private boolean isMatchParen(char open, char close) {
             return open == '(' && close == ')' || open == '{' && close == '}' || open == '[' && close == ']';
         }
-    }
-
-    public static void main(String[] args) {
-        String s = "())";
-        new _921().new Solution_FollowUp_GeneralizedParentheses().minAddToMakeValid(s);
     }
 }
