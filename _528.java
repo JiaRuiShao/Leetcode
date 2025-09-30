@@ -1,16 +1,17 @@
 import java.util.Random;
+import java.util.TreeMap;
 
 /**
- * 528. Random Pick with Weight.
+ * 528. Random Pick with Weight
  */
 public class _528 {
-    class Solution {
+    class Solution1_PrefixSum_BinarySearch {
 
         private int n;
         private int[] pre;
         private Random random;
 
-        public Solution(int[] w) {
+        public Solution1_PrefixSum_BinarySearch(int[] w) {
             n = w.length;
             pre = new int[n];
             pre[0] = w[0];
@@ -42,5 +43,31 @@ public class _528 {
             return lo;
         }
     }
-
+    
+    // Time: O(nlogn + logn)
+    class Solution2_PrefixSum_TreeMap {
+        private final Random random;
+        private final TreeMap<Integer, Integer> preSumToIdx; // [start, start + weight)
+        private int weightSum;
+        // w:      [1, 2, 1]
+        // pre: [0, 1, 3, 4]
+        // 0 -> (0, 1]
+        // 1 -> (1, 3]
+        // 2 -> (3, 4]
+        // pick randomInt in [1, 4]
+        public Solution2_PrefixSum_TreeMap(int[] w) {
+            random = new Random();
+            preSumToIdx = new TreeMap<>();
+            weightSum = 0;
+            for (int i = 0; i < w.length; i++) {
+                weightSum += w[i];
+                preSumToIdx.put(weightSum, i);
+            }
+        }
+        
+        public int pickIndex() {
+            int pick = random.nextInt(weightSum) + 1; // [1, weightSum]
+            return preSumToIdx.get(preSumToIdx.ceilingKey(pick));
+        }
+    }
 }
