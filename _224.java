@@ -125,9 +125,4 @@ public class _224 {
             return total + sign * num;
         }
     }
-
-    public static void main(String[] args) {
-        String s  = "(1+(4+5+2)-3)+(6+8)";
-        System.out.println(Solution.calculate(s));
-    }
 }
