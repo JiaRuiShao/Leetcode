@@ -60,7 +60,7 @@ public class _20 {
             for (char c : s.toCharArray()) {
                 if (isOpenParenthesis(c)) {
                     stk.push(c);
-                } else if (stk.isEmpty() || !isMatchingParentheses(c, stk.peek())) {
+                } else if (stk.isEmpty() || !isMatchingParentheses(stk.peek(), c)) {
                     return false;
                 } else {
                     stk.pop();
@@ -73,7 +73,7 @@ public class _20 {
             return c == '(' || c == '{' || c == '[';
         }
 
-        private boolean isMatchingParentheses(char close, char open) {
+        private boolean isMatchingParentheses(char open, char close) {
             return open == '(' && close == ')' || open == '{' && close == '}' || open == '[' && close == ']';
         }
     }
