@@ -1,48 +1,48 @@
 import java.util.*;
 
 /**
- * 519. Random Flip Matrix.
+ * 519. Random Flip Matrix
  */
 public class _519 {
     /**
-     * This key of this solution is to have a map to store {key: flipped index, value: last available unflipped index for given size}.
-     * It guarantees evenly probability to be flipped for unflipped indices and O(1) time complexity for each flip().
+     * This key of this solution is to have a map to store {key: flipped index, value: last available flippable index for given size}.
+     * It guarantees evenly probability to be flipped for flippable indices and O(1) time complexity for each flip().
      */
     class Solution1 {
         private int row;
         private int col;
-        private int unflippedCell;
+        private int flippable;
         private Map<Integer, Integer> flipped; // flipped indices map
         private Random random;
 
         public Solution1(int m, int n) {
             row = m;
             col = n;
-            unflippedCell = m * n;
+            flippable = m * n;
             flipped = new HashMap<>();
             random = new Random();
         }
 
         /**
          * Randomly select an index, swap this index with the last available index that hasn't been flipped if this index has been flipped.
-         * Save the last available unflipped index as an extra life for this index, for next round of selection, the search range would be: [0, size - 1].
+         * Save the last available flippable index as an extra life for this index, for next round of selection, the search range would be: [0, size - 1].
          * Notice that the size index is saved as an "extra life" for the picked up index;
-         * If this selected index is the last unflipped index, then there's no extra life.
+         * If this selected index is the last flippable index, then there's no extra life.
          *
          * @return mapping to a 2D matrix
          */
         public int[] flip() {
-            int idx = random.nextInt(unflippedCell--);
-            // if this index hasn't been flipped, flipped it and set the last unflipped index as its backup index
+            int idx = random.nextInt(flippable--);
+            // if this index hasn't been flipped, flipped it and set the last flippable index as its backup index
             // if this index has been flipped, the prev backup index will be returned and flipped, new backup index(current size - 1) will be set for this index
             int flipIdx = flipped.getOrDefault(idx, idx);
             // update the backup index
-            flipped.put(idx, flipped.getOrDefault(unflippedCell, unflippedCell));
+            flipped.put(idx, flipped.getOrDefault(flippable, flippable));
             return new int[]{flipIdx / col, flipIdx % col};
         }
 
         public void reset() {
-            unflippedCell = row * col;
+            flippable = row * col;
             flipped.clear();
         }
     }
@@ -88,8 +88,8 @@ public class _519 {
     }
 
     /**
-     * This solution also guarantee universe random access for all unflipped indices; however, flip() time complexity is not O(1);
-     * in worst case, the unflipped indices will never be picked up, and the while loop will never be terminated unless the unflipped indices are luckily selected.
+     * This solution also guarantee universe random access for all flippable indices; however, flip() time complexity is not O(1);
+     * in worst case, the flippable indices will never be picked up, and the while loop will never be terminated unless the flippable indices are luckily selected.
      */
     class Solution3 {
 
