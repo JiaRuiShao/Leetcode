@@ -1,10 +1,10 @@
 /**
- * 1201. Ugly Number III.
- * An ugly number is a positive integer that is divisible by a, b, or c.
- * Given an integer n, return the nth ugly number.
+ * 1201. Ugly Number III
  */
 public class _1201 {
-	class Solution1_Time_Limit_Exceeded {
+	// brute force solution
+	// Time: O(n*min(a, b, c)) time solution is not efficient if a, b, c are large
+	class Solution0_BruteForce_TLE {
 		public int nthUglyNumber(int n, int a, int b, int c) {
 			int num = 0;
 			while (n > 0) {
@@ -21,7 +21,7 @@ public class _1201 {
 		}
 	}
 	
-	class Solution2_Memory_Limit_Exceeded {
+	class Solution0_MergeKList_Memory_Limit_Exceeded {
 		public int nthUglyNumber(int n, int a, int b, int c) {
 			int pa = a, pb = b, pc = c; // product head for list a, b and c
 			int p = 0; // pointer for merged ugly number list
@@ -37,15 +37,9 @@ public class _1201 {
 		}
 	}
 
-	class Solution3_Time_Limit_Exceeded {
-		/**
-		 * We have to use long type here or there's integer overflow problem when updating the multiples & comparing three numbers.
-		 * @param n n
-		 * @param a a
-		 * @param b b
-		 * @param c c
-		 * @return nth ugly num
-		 */
+	// Time: O(n)
+	// Space: O(1)
+	class Solution0_MergeKList_TLE {
 		public int nthUglyNumber(int n, int a, int b, int c) {
 			long m1 = a, m2 = b, m3 = c;
 			long ugly = 0;
@@ -65,7 +59,8 @@ public class _1201 {
 		}
 	}
 	
-	class Solution4_Binary_Search {
+	// Time: O(log(2·10⁹) · log(max(a,b,c))) = O(log(max(a,b,c)))
+	class Solution1_Binary_Search {
 		/**
 		 * Use lower bound binary search to narrow down the target number (nth ugly num)
 		 * Time: O(log_2(2e9) * log(m)) where m is the max(a, b, c) = log_2(5^9) * 10 * log(m) < log_2((2^3)^9) * 10 * log(m) = 270*logm
@@ -127,6 +122,16 @@ public class _1201 {
 		private long gcd(long a, long b) {
 			return (b == 0 || a == b) ? a : gcd(b, a % b);
 		}
+
+		// iterative version of gcd
+		// private long gcd(long a, long b) {
+		// 	while (b != 0) {
+		// 		long tmp = b;
+		// 		b = a % b;
+		// 		a = tmp;
+		// 	}
+		// 	return a;
+		// }
 		
 		/**
 		 * LCM stands for least common multiple. The least common multiple of two numbers is the smallest number that is a multiple of both of them.
