@@ -1,3 +1,7 @@
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * 1201. Ugly Number III
  */
@@ -60,7 +64,7 @@ public class _1201 {
 	}
 	
 	// Time: O(log(2·10⁹) · log(max(a,b,c))) = O(log(max(a,b,c)))
-	class Solution1_Binary_Search {
+	class Solution1_BinarySearch_InclusionExclusion_EuclideanAlgo {
 		/**
 		 * Use lower bound binary search to narrow down the target number (nth ugly num)
 		 * Time: O(log_2(2e9) * log(m)) where m is the max(a, b, c) = log_2(5^9) * 10 * log(m) < log_2((2^3)^9) * 10 * log(m) = 270*logm
@@ -110,28 +114,20 @@ public class _1201 {
 			return countA + countB + countC - countAB - countAC - countBC + countABC;
 		}
 		
-		/**
-		 * Greatest Common Divisor (GCD) of two integers A and B is the largest integer that divides both A and B.
-		 * Use Euclidean algorithm to find the gcd of two integers a, b.
-		 *      Time: O(log_b(a))
-		 *      Space: O(log_b(a))
-		 * @param a num1
-		 * @param b num2
-		 * @return gcd of a and b
-		 */
-		private long gcd(long a, long b) {
-			return (b == 0 || a == b) ? a : gcd(b, a % b);
-		}
+		// recursive version of gcd
+		// private long gcd(long a, long b) {
+		// 	return (b == 0 || a == b) ? a : gcd(b, a % b);
+		// }
 
 		// iterative version of gcd
-		// private long gcd(long a, long b) {
-		// 	while (b != 0) {
-		// 		long tmp = b;
-		// 		b = a % b;
-		// 		a = tmp;
-		// 	}
-		// 	return a;
-		// }
+		private long gcd(long a, long b) {
+			while (b != 0) {
+				long tmp = b;
+				b = a % b;
+				a = tmp;
+			}
+			return a;
+		}
 		
 		/**
 		 * LCM stands for least common multiple. The least common multiple of two numbers is the smallest number that is a multiple of both of them.
@@ -145,12 +141,18 @@ public class _1201 {
 		}
 	}
 
-	public static void main(String[] args) {
-		_1201 myClass = new _1201();
-		int n = 1000000000;
+	_1201.Solution1_BinarySearch_InclusionExclusion_EuclideanAlgo s = new _1201.Solution1_BinarySearch_InclusionExclusion_EuclideanAlgo();
+
+	@Test
+	void test() {
+		int n = 2;
 		// int a = 2, b = 217983653, c = 336916467;
-		int a = 217983653, b = 336916467, c = 2;
-		System.out.println(myClass.new Solution3_Time_Limit_Exceeded().nthUglyNumber(n, a, b, c)); // 1999999946
-		System.out.println(myClass.new Solution4_Binary_Search().nthUglyNumber(n, a, b, c)); // 1999999984
+		int a = 1, b = 1, c = 1;
+		System.out.println("Testing for a = b = c");
+		assertEquals(2, s.countUgly(n, a, b, c));
+	}
+
+	public static void main(String[] args) {
+		new _1201().test();
 	}
 }
