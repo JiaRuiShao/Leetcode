@@ -1,45 +1,27 @@
 /**
- * 264. Ugly Number II.
- * An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
- * Given an integer n, return the nth ugly number.
+ * 264. Ugly Number II
  */
 public class _264 {
+	// Time: O(n)
 	static class Solution_MergeLinkedList {
-		
-		/**
-		 * Think this question of merging three linked list, compare the product for each list and update the ugly array with the smallest one.
-		 * Time: O(n)
-		 * Space: O(n)
-		 *
-		 * @param n nth ugly number
-		 * @return the nth ugly number whose prime factor are: 2, 3, and 5
-		 */
 		public int nthUglyNumber(int n) {
-			// p is the pointer of the merged ugly num list, and p2, p3, p5 represents the pointer for list of multiples of 2, 3, and 5
-			int p = 0, p2 = 0, p3 = 0, p5 = 0;
-			// represent the pointed val on list of multiples of 2, 3, and 5
-			// int prod1 = 2, prod2 = 3, prod3 = 5;
-			int product2 = 1, product3 = 1, product5 = 1;
-			// merged list
 			int[] ugly = new int[n];
-			
-			// merge three list until nth elem
-			while (p < n) {
-				// update the merged list with the smallest val of three list
-				int min = Math.min(Math.min(p2, p3), p5);
-				ugly[p++] = min;
-				// update the pointers and pointed val of three lists
-				if (product2 == min) {
-					product2 = 2 * ugly[p2++];
+			ugly[0] = 1;
+			int p1 = 0, p2 = 0, p3 = 0;
+			long m1 = 1, m2 = 1, m3 = 1;
+			for (int pos = 0; pos < n; ) {
+				long next = Math.min(Math.min(m1, m2), m3);
+				ugly[pos++] = (int) next;
+				if (next == m1) {
+					m1 = (long) ugly[p1++] * 2;
 				}
-				if (product3 == min) {
-					product3 = 3 * ugly[p3++];
+				if (next == m2) {
+					m2 = (long) ugly[p2++] * 3;
 				}
-				if (product5 == min) {
-					product5 = 5 * ugly[p5++];
+				if (next == m3) {
+					m3 = (long) ugly[p3++] * 5;
 				}
 			}
-			// return the nth ugly num
 			return ugly[n - 1];
 		}
 
