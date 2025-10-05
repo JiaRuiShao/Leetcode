@@ -6,6 +6,7 @@ import java.util.PriorityQueue;
  * 313. Super Ugly Number
  */
 public class _313 {
+	// Time: O(nklogk)
 	class Solution1_mergeKList_minHeap {
 		class UglyPair {
 			int prime, pos;
