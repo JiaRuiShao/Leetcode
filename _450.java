@@ -1,7 +1,125 @@
 import helper.TreeNode;
 
+/**
+ * 450. Delete Node in a BST
+ */
 public class _450 {
-    static class Solution {
+    // My original recursive solution, more complicated than the value replacement recursive solution; not recommended
+    static class Solution1_Recursion_NodeRelocation {
+        // 1 - find node to delete
+        // 2.1 node is a leaf node - direct delete
+        // 2.2 node has only one child - delete and attach its only child to parent
+        // 2.3 node has two childs - find rightmost node in left subtree OR leftmost node in right subtree as the replacement node; attach left child of predecessor OR right child of successor to their parent node
+        public TreeNode deleteNode(TreeNode root, int key) {
+
+            if (root == null) return null;
+            if (root.val == key) { // found the node to delete
+                if (root.left == null) {
+                    return root.right;
+                } else if (root.right == null) {
+                    return root.left;
+                } else {
+                    // node to delete has two childs, find rightmost node in left subtree
+                    TreeNode predecessor = findPredecessor(root.left);
+                    if (predecessor != root.left) predecessor.left = root.left;
+                    predecessor.right = root.right;
+                    root.left = null;
+                    root.right = null;
+                    return predecessor;
+                }
+            } else if (root.val < key) {
+                root.right = deleteNode(root.right, key);
+            } else {
+                root.left = deleteNode(root.left, key);
+            }
+            return root;
+        }
+
+        private TreeNode findPredecessor(TreeNode curr) {
+            TreeNode prev = null;
+            while (curr.right != null) {
+                prev = curr;
+                curr = curr.right;
+            }
+            if (prev != null) { // attach replacement left subtree as prev right child
+                prev.right = curr.left;
+                // curr.left = null; // this logic is implemented in main method
+            }
+            
+            return curr;
+        }
+    }
+
+    static class Solution1_Recursion_ValueReplacement_FindPredecessor {
+        /**
+         * 1. Recursively find the node that has the same value as the key, while setting the left/right nodes equal to the returned subtree
+         * 2. Once the node is found, have to handle the below 4 cases
+         * a. node doesn't have left or right - return null
+         * b. node only has left subtree- return the left subtree
+         * c. node only has right subtree- return the right subtree
+         * d. node has both left and right - find the minimum value in the right subtree, set that value to the currently found node, then recursively delete the minimum value in the right subtree
+         */
+        public TreeNode deleteNode(TreeNode root, int key) {
+            if (root == null) return null;
+            if (root.val == key) { // found the node to delete
+                if (root.left == null) {
+                    return root.right;
+                } else if (root.right == null) {
+                    return root.left;
+                } else {
+                    // node to delete has two childs, find rightmost node in left subtree
+                    TreeNode predecessor = findPredecessor(root.left);
+                    root.val = predecessor.val;
+                    // delete the replacement node
+                    root.left = deleteNode(root.left, predecessor.val);
+                }
+            } else if (root.val < key) {
+                root.right = deleteNode(root.right, key);
+            } else {
+                root.left = deleteNode(root.left, key);
+            }
+            return root;
+        }
+
+        private TreeNode findPredecessor(TreeNode curr) {
+            while (curr.right != null) {
+                curr = curr.right;
+            }
+            return curr;
+        }
+    }
+
+    static class Solution1_Recursion_ValueReplacement_FindSuccessor {
+        public TreeNode deleteNode(TreeNode root, int key) {
+            if (root == null) return null;
+            if (root.val == key) { // found the node to delete
+                if (root.left == null) {
+                    return root.right;
+                } else if (root.right == null) {
+                    return root.left;
+                } else {
+                    // node to delete has two childs, find leftmost node in right subtree
+                    TreeNode successor = findSuccessor(root.right);
+                    root.val = successor.val;
+                    root.right = deleteNode(root.right, successor.val);
+                }
+            } else if (root.val < key) {
+                root.right = deleteNode(root.right, key);
+            } else {
+                root.left = deleteNode(root.left, key);
+            }
+            return root;
+        }
+
+        private TreeNode findSuccessor(TreeNode curr) {
+            while (curr.left != null) {
+                curr = curr.left;
+            }
+            return curr;
+        }
+    }
+
+    static class Solution2_Iterative {
 
         TreeNode parent = null;
         TreeNode newRoot;
@@ -93,47 +211,6 @@ public class _450 {
         }
     }
 
-    static class Solution2 {
-        /**
-         * credit: https://discuss.leetcode.com/topic/65792/recursive-easy-to-understand-java-solution
-         * Steps:
-         * 1. Recursively find the node that has the same value as the key, while setting the left/right nodes equal to the returned subtree
-         * 2. Once the node is found, have to handle the below 4 cases
-         * a. node doesn't have left or right - return null
-         * b. node only has left subtree- return the left subtree
-         * c. node only has right subtree- return the right subtree
-         * d. node has both left and right - find the minimum value in the right subtree, set that value to the currently found node, then recursively delete the minimum value in the right subtree
-         */
-        public TreeNode deleteNode(TreeNode root, int key) {
-            if (root == null) {
-                return null;
-            }
-            if (root.val > key) {
-                root.left = deleteNode(root.left, key);
-            } else if (root.val < key) {
-                root.right = deleteNode(root.right, key);
-            } else { // root.val == key
-                if (root.left == null) {
-                    return root.right;
-                } else if (root.right == null) {
-                    return root.left;
-                }
-
-                TreeNode minNode = getMin(root.right); // get the smallest/leftest node in the right subtree
-                root.val = minNode.val;
-                root.right = deleteNode(root.right, root.val); /**Notice here the key becomes the minNode val**/
-            }
-            return root;
-        }
-
-        private TreeNode getMin(TreeNode node) {
-            while (node.left != null) {
-                node = node.left;
-            }
-            return node;
-        }
-    }
-
     public static void main(String[] args) {
         TreeNode root = new TreeNode(5);
         root.left = new TreeNode(3);
@@ -141,6 +218,6 @@ public class _450 {
         root.left.left = new TreeNode(2);
         root.left.right = new TreeNode(4);
         root.right.right = new TreeNode(7);
-        new Solution().deleteNode(root, 3);
+        new Solution1_Recursion_NodeRelocation().deleteNode(root, 3);
     }
 }
