@@ -33,6 +33,7 @@ public class _96 {
         }
     }
 
+    // Time: exponential
     class Solution0_BruteForce_TLE {
         // given root node i, leftNodeCount = i - 1, rightNodeCount = n - i
         // number of structured BST formed with node i as root is leftNodeCount * rightNodeCount
