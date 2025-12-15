@@ -53,6 +53,7 @@ public class _731 {
                 return true;
             }
 
+            // range l & r can be passed as parameters here or could be define as fields in Node
             private void update(Node node, int l, int r, int ql, int qr, int val) {
                 if (qr < l || r < ql) return;
                 if (ql <= l && r <= qr) {
