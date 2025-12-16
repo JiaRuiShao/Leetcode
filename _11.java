@@ -1,8 +1,13 @@
 /**
  * 11. Container With Most Water
+ * 
+ * Clarification:
+ * - Are lines in height[] >=2
+ * - Assume max area size is within integer range
  */
 public class _11 {
-    class Solution_Two_Pointers {
+    // area = (y - x) * min(yh, xh)
+    class Solution_Two_Pointers_Greedy {
         public int maxArea(int[] height) {
             int maxArea = 0, left  = 0, right = height.length - 1;
             while (left < right) {
