@@ -4,6 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * 1201. Ugly Number III
+ * 
+ * Red Flags
+ * - Using Heap/DDP (Treating like LC 264)
+ * - Don't know Inclusion-Exclusion
+ * - Wrong LCM calculation
+ * - Use int everywhere
  */
 public class _1201 {
 	// brute force solution
@@ -137,6 +143,7 @@ public class _1201 {
 		 * @return
 		 */
 		private long lcm(long a, long b) {
+			// return a * b / gcd(a, b); // have risk of overflow
 			return a / gcd(a, b) * b;
 		}
 	}
