@@ -1,44 +1,39 @@
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 /**
  * 313. Super Ugly Number
+ * 
+ * Clarification:
+ * - Constraints on n and primes.length? n <= 10^5, primes.length <= 100
+ * - There's no duplicate number in primes[]?
+ * 
+ * Followup:
+ * - Can you use minHeap? Yes we can use minHeap + set to get next smallest ugly number when k is large
  */
 public class _313 {
-	// Time: O(nklogk)
-	class Solution1_mergeKList_minHeap {
-		class UglyPair {
-			int prime, pos;
-			long multiple;
-			public UglyPair(int prime, int pos, long multiple) {
-				this.prime = prime;
-				this.pos = pos;
-				this.multiple = multiple;
-			}
-		}
-
+	// Time: O(nklognk) where k is primes.length; each number generates k candidates before being polled
+	// Space: O(nk)
+	class Solution1_minHeap {
 		public int nthSuperUglyNumber(int n, int[] primes) {
-			if (n <= 0) return -1;
-			int[] ugly = new int[n];
-			ugly[0] = 1;
-			PriorityQueue<UglyPair> minHeap = new PriorityQueue<>(Comparator.comparingLong(a -> a.multiple));
-			for (int prime : primes) {
-				minHeap.offer(new UglyPair(prime, 0, ugly[0])); // int[] stores {prime, multiple, pos}
-			}
-
-			for (int count = 1; count < n; ) {
-				UglyPair candidate = minHeap.poll();
-				int prime = candidate.prime, pos = candidate.pos;
-				long nextUgly = candidate.multiple;
-				if (ugly[count - 1] < nextUgly) {
-					ugly[count++] = (int) nextUgly;
+			PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+			Set<Integer> set = new HashSet<>();
+			int ugly = 1;
+			minHeap.offer(ugly);
+			set.add(ugly);
+			for (int i = 1; i <= n; i++) {
+				ugly = minHeap.poll();
+				for (int prime : primes) {
+					long next = (long) prime * ugly;
+					if (next > Integer.MAX_VALUE || set.contains((int) next)) continue;
+					minHeap.offer((int) next);
+					set.add((int) next);
 				}
-				candidate.multiple = (long) ugly[pos] * prime;
-				candidate.pos++;
-				minHeap.offer(candidate);
 			}
-			return ugly[n - 1];
+			return ugly;
 		}
 	}
 
@@ -50,29 +45,31 @@ public class _313 {
 	class Solution2_mergeSortedList {
 		public int nthSuperUglyNumber(int n, int[] primes) {
 			int[] ugly = new int[n];
-			int m = primes.length;
-			int[] pos = new int[m];
-			long[] multiple = new long[m];
-			Arrays.fill(multiple, 1);
-			for (int i = 0; i < n; i++) {
-				long nextUgly = getMin(multiple);
-				ugly[i] = (int) nextUgly;
-				for (int j = 0; j < m; j++) {
-					if (multiple[j] == nextUgly) {
-						multiple[j] = (long) ugly[pos[j]] * (long) primes[j];
-						pos[j]++;
+			int[] indices = new int[primes.length];
+			long[] next = new long[primes.length];
+
+			ugly[0] = 1;
+			for (int i = 0; i < primes.length; i++) {
+				next[i] = primes[i];
+			}
+
+			for (int i = 1; i < n; i++) {
+				long min = Long.MAX_VALUE;
+				for (long v : next) {
+					min = Math.min(min, v);
+				}
+
+				ugly[i] = (int) min;
+
+				for (int j = 0; j < primes.length; j++) {
+					if (next[j] == min) {
+						indices[j]++;
+						next[j] = (long) primes[j] * ugly[indices[j]];
 					}
 				}
 			}
-			return ugly[n - 1];
-		}
 
-		private long getMin(long[] arr) {
-			long min = arr[0];
-			for (int i = 1; i < arr.length; i++) {
-				min = Math.min(min, arr[i]);
-			}
-			return min;
+			return ugly[n - 1];
 		}
 	}
 }
