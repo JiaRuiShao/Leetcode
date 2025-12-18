@@ -1,5 +1,13 @@
 /**
  * 264. Ugly Number II
+ * 
+ * Clarification:
+ * - Does 1 count as an ugly number?
+ * - Range of n?
+ * 
+ * Followup:
+ * - How would you generalize this? LC313
+ * - Can you optimize the space? Space cannot be optimized below O(n) for a O(n) time solution
  */
 public class _264 {
 	// Time: O(n)
@@ -65,7 +73,7 @@ public class _264 {
 
 	static class Wrong_Solution2_TLE {
 		/**
-		 * Time: O(nlogn)
+		 * Time: O(ulogu) where u is nth ugly number, which is much larger than n
 		 * Space: O(1)
 		 *
 		 * @param n nth ugly number
