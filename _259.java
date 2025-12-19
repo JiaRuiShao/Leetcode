@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class _259 {
     // Fix the first elem, then use two pointers to greedily count satisfying triplets pairs
     // Time: O(nlogn + n^2)
-    // Space: O(1)
+    // Space: O(logn)
     class Solution1_Sorting_Greedy_Two_Pointers {
         // [3,1,0,-2], 4
         // 3
@@ -31,7 +31,7 @@ public class _259 {
     }
 
     // Time: O(nlogn + n^2*logn)
-    // Space: O(1)
+    // Space: O(1ogn)
     class Solution2_Binary_Search {
         // n1 + n2 + n3 < k ==> n2 + n3 < k - n1 ==>  n3 < k - n1 - n2
         public int threeSumSmaller(int[] nums, int target) {
