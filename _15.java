@@ -1,14 +1,22 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * 15. 3Sum
+ * 
+ * 1 - BF O(n^3), O(1)
+ * 2 - Fixed First Elem, Find Supplements using Set O(n^2), O(n)
+ * 3 - Sorting + TP O(nlogn + n^2), O(logn) dual-pivot quicksort
+ * 
+ * Clarification:
+ * - Does order matters in duplicate triplets? [-1,0,1] and [0,-1,1] are considered the same triplet
+ * - Does order matter for duplicate triplets? 
+ * - Assume input array min length is 3?
+ * - What to return if input array has less than 3 elem or there's no valid triplets? Return an empty list
  */
 public class _15 {
 
@@ -17,6 +25,34 @@ public class _15 {
 	 * Space: O()
 	 */
 	class Solution_Two_Pointers {
+		// Time: O(nlogn + n^2) = O(n^2)
+		// Space: O(logn) quicksort stack height
+		public List<List<Integer>> threeSum1(int[] nums) {
+			Arrays.sort(nums);
+			List<List<Integer>> triplets = new ArrayList<>();
+			int n = nums.length;
+			for (int i = 0; i < n - 2; i++) {
+				if (i > 0 && nums[i] == nums[i - 1]) continue;
+				int target = -nums[i];
+				int left = i + 1, right = n - 1;
+				while (left < right) {
+					int sum = nums[left] + nums[right];
+					if (sum == target) {
+						triplets.add(Arrays.asList(nums[i], nums[left], nums[right]));
+						while (left + 1 < n && nums[left + 1] == nums[left]) left++;
+						left++;
+						while (right - 1 > i && nums[right - 1] == nums[right]) right--;
+						right--;
+					} else if (sum < target) {
+						left++;
+					} else {
+						right--;
+					}
+				}
+			}
+			return triplets;
+		}
+
 		/**
 		 * Sorting + Two Pointers + Dedup.
 		 * Notice we can have the same 1st, 2nd or 3rd num val but never allow the same val to be used twice or more for the same num in the triplet, e.g. [-1, -1, -1, -1, -1, -1], -1 can be used as the 1st, 2nd and 3rd num val, but we should not allow any num to use the same val again.
@@ -27,7 +63,7 @@ public class _15 {
 		 * @param nums nums
 		 * @return triplets
 		 */
-		public List<List<Integer>> threeSum1(int[] nums) {
+		public List<List<Integer>> threeSum2(int[] nums) {
 			Arrays.sort(nums);
 			int n = nums.length;
 			List<List<Integer>> triplets = new ArrayList<>();
@@ -57,63 +93,59 @@ public class _15 {
 			}
 			return triplets;
 		}
+	}
 
-		public List<List<Integer>> threeSum2(int[] nums) {
-			Arrays.sort(nums);
-			List<List<Integer>> triplets = new ArrayList<>();
-			for (int i = 0; i < nums.length - 2; i++) {
-				if (i >= 1 && nums[i] == nums[i - 1]) {
-					continue;
-				}
-				int left = i + 1;
-				int right = nums.length - 1;
-				while (left < right) {
-					int sum = nums[i] + nums[left] + nums[right];
-					if (sum == 0) {
-						triplets.add(Arrays.asList(nums[i], nums[left], nums[right]));
-						// ignore the duplicate numbers
-						while (left < right && nums[left + 1] == nums[left]) {
-							left++;
-						}
-						while (left < right && nums[right - 1] == nums[right]) {
-							right--;
-						}
-						// these two lines are critical and easy to forget, if so, it'll TLE
-						left++;
-						right--;
-					} else if (sum > 0) {
-						right--;
-					} else {
-						left++;
+	// Time: O(n^2)
+	// Space: O(n)
+	class Solution2_Set {
+		public List<List<Integer>> threeSum(int[] nums) {
+			int n = nums.length;
+			Set<List<Integer>> triplets = new HashSet<>();
+			Set<Integer> first = new HashSet<>();
+			for (int i = 0; i < n - 2; i++) {
+				int a = nums[i];
+				if (first.contains(a)) continue;
+				Set<Integer> seen = new HashSet<>();
+				for (int j = i + 1; j < n; j++) {
+					int c = nums[j], b = -a - c;
+					if (seen.contains(b)) {
+						List<Integer> triplet = Arrays.asList(a, b, c);
+						Collections.sort(triplet);
+						triplets.add(triplet);
 					}
+					seen.add(c);
 				}
+				first.add(a);
 			}
-			return triplets;
+			return new ArrayList(triplets);
 		}
 	}
 
-	class Solution2_Sorting_Not_Allowed {
+	// Below solution using set to deduplicate doesn't work
+	// For nums [-1,0,1,2,-1,-4], we get [[-1,0,1],[-1,2,-1],[0,1,-1]] as output, where we have duplicate combination triplet
+	// It doesn't handle cross-first-element duplicates
+	// This is why we have to use a Set to deduplicate the result set
+	class WrongSolution_Set {
 		public List<List<Integer>> threeSum(int[] nums) {
-			Set<List<Integer>> res = new HashSet<>();
-			Set<Integer> dups = new HashSet<>();
-			Map<Integer, Integer> seen = new HashMap<>();
-			for (int i = 0; i < nums.length; ++i) {
-				if (!dups.add(nums[i])) continue;
-				for (int j = i + 1; j < nums.length; ++j) {
-					int complement = -nums[i] - nums[j];
-					if (seen.containsKey(complement) && seen.get(complement) == i) {
-						List<Integer> triplet = Arrays.asList(
-							nums[i],
-							nums[j],
-							complement
-						);
-						Collections.sort(triplet);
-						res.add(triplet);
+			int n = nums.length;
+			List<List<Integer>> triplets = new ArrayList<>();
+			Set<Integer> first = new HashSet<>();
+			for (int i = 0; i < n - 2; i++) {
+				int a = nums[i];
+				if (first.contains(a)) continue;
+				Set<Integer> seen = new HashSet<>();
+				Set<Integer> second = new HashSet<>();
+				for (int j = i + 1; j < n; j++) {
+					int c = nums[j], b = -a - c;
+					if (seen.contains(b) && !second.contains(b)) {
+						triplets.add(List.of(a, b, c));
+						second.add(b);
 					}
-					seen.put(nums[j], i);
+					seen.add(c);
 				}
+				first.add(a);
 			}
-			return new ArrayList(res);
+			return triplets;
 		}
 	}
 }
