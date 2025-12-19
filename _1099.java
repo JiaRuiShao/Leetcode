@@ -2,10 +2,13 @@ import java.util.Arrays;
 
 /**
  * 1099. Two Sum Less Than K
+ * 
+ * 1 - BF: O(n^2), O(1)
  */
 public class _1099 {
-    // Time: O(nlogn + n^2)
-    class Solution1_Two_Pointers {
+    // Time: O(nlogn)
+    // Space: O(logn)
+    class Solution1_Sort_TwoPointers {
         public int twoSumLessThanK(int[] nums, int k) {
             Arrays.sort(nums);
             int left = 0, right = nums.length - 1, sum = 0, maxSum = -1;
@@ -22,7 +25,9 @@ public class _1099 {
     }
 
     // Time: O(nlogn)
-    class Solution2_Binary_Search {
+    // Space: O(logn)
+    // Same complexity as two pointers solution, but code logic is more complicated
+    class Solution2_Sort_BinarySearch {
         // n1 + n2 < k ==> n2 < k - n1
         public int twoSumLessThanK(int[] nums, int k) {
             int n = nums.length, maxSum = -1;
@@ -37,6 +42,7 @@ public class _1099 {
             return maxSum;
         }
     
+        // lower bound binary search, return hi as it points to the largest elem < k
         private int binarySearch(int[] nums, int lo, int hi, int k) {
             while (lo <= hi) {
                 int mid = lo + (hi - lo) / 2;
