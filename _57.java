@@ -42,7 +42,7 @@ public class _57 {
                 }
             }
             inserted.add(newInterval); // add the last interval (either merged or original)
-            return inserted.toArray(new int[inserted.size()][2]);
+            return inserted.toArray(new int[inserted.size()][]);
         }
     }
 
