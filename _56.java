@@ -76,7 +76,7 @@ public class _56 {
                     curr[1] = Math.max(curr[1], intervals[i][1]);
                 }
             }
-            return stk.toArray(new int[stk.size()][2]);
+            return stk.toArray(new int[stk.size()][]);
         }
     }
 
