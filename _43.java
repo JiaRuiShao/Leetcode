@@ -7,6 +7,9 @@
  * - Max len of input String?
  * - Non-empty String?
  * 
+ * Edge Cases:
+ * - num1 = "0", num2 = "0", output should be "0" and not ""
+ * 
  * Followup:
  * - Why the result size m + n? Maximum product of m-digit and n-digit numbers: (10^m - 1) × (10^n - 1) < 10^m × 10^n = 10^(m+n); since 10^(m+n) is the smallest num with m+n+1 digits, we can conclude that our project max digit is m+n
  * - Why the pos1 and pos2 calculated as i + j and i + j + 1? 
@@ -34,14 +37,8 @@ public class _43 {
     // Time: O(mn)
     // Space: O(m+n)
     class Solution1 {
-        public String multiply(String num1, String num2) {
-            // Edge case: multiplication by zero
-            if (num1.equals("0") || num2.equals("0")) {
-                return "0";
-            }
-            
-            int m = num1.length();
-            int n = num2.length();
+        public String multiply(String num1, String num2) {            
+            int m = num1.length(), n = num2.length();
             int[] result = new int[m + n];
             
             // Multiply each digit from right to left
@@ -70,5 +67,46 @@ public class _43 {
             
             return sb.length() == 0 ? "0" : sb.toString();
         }
+    }
+
+    class Followup_StringBuilder {
+        public String multiply(String num1, String num2) {
+            int m = num1.length(), n = num2.length();
+            StringBuilder sb = new StringBuilder();
+            
+            // Initialize with zeros
+            for (int i = 0; i < m + n; i++) {
+                sb.append('0');
+            }
+            
+            for (int i = m - 1; i >= 0; i--) {
+                for (int j = n - 1; j >= 0; j--) {
+                    int product = (num1.charAt(i) - '0') * (num2.charAt(j) - '0');
+                    int pos1 = i + j;
+                    int pos2 = i + j + 1;
+                    
+                    // Awkward: convert char to int, add, convert back
+                    int sum = product + (sb.charAt(pos2) - '0');
+                    sb.setCharAt(pos2, (char)('0' + sum % 10));
+                    
+                    int carry = sum / 10;
+                    int currentCarry = sb.charAt(pos1) - '0';
+                    sb.setCharAt(pos1, (char)('0' + currentCarry + carry));
+                }
+            }
+            
+            // Remove leading zeros
+            int start = 0;
+            while (start < sb.length() - 1 && sb.charAt(start) == '0') {
+                start++;
+            }
+            
+            return sb.substring(start);
+        }
+
+        // This works but:
+        // - Lots of char ↔ int conversions
+        // - Less readable
+        // - No performance benefit over int[]
     }
 }
