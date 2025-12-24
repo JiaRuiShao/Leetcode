@@ -17,9 +17,9 @@ public class SegmentTree {
         }
     }
 
-    //  * When update a range [l, r]:
-    //  *      if current node is fully covered in range [l, r], update max and lazy and directly return
-    //  *      if partial overlap, push lazy down to childs and recompute max from children recursively
+    // When update a range [l, r]:
+    //      if current node is fully covered in range [l, r], update max and lazy and directly return
+    //      if partial overlap, push lazy down to childs and recompute max from children recursively
     private void update(SegmentNode node, int l, int r, int val) {
         if (node == null || r < node.start || node.end < l) return; // no overlap
         if (l <= node.start && node.end <= r) {                     // total overlap
