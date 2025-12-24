@@ -32,6 +32,7 @@ public class _415 {
     }
 
     class Solution2_Array {
+        // Use char[]
         public String addStrings(String num1, String num2) {
             int m = num1.length(), n = num2.length(), maxLen = Math.max(m, n) + 1;
             char[] res = new char[maxLen];
@@ -47,6 +48,33 @@ public class _415 {
             int start = pos + 1;
             while (start < maxLen && res[start] == '0') start++; 
             return new String(res, start, maxLen - start);
+        }
+
+        // use int[]
+        public String addStrings2(String num1, String num2) {
+            int m = num1.length(), n = num2.length(), maxLen = Math.max(m, n) + 1;
+            int[] result = new int[maxLen];
+            int i = m - 1, j = n - 1, pos = maxLen - 1, carry = 0;
+            
+            while (i >= 0 || j >= 0 || carry > 0) {
+                int digit1 = i >= 0 ? num1.charAt(i--) - '0' : 0;
+                int digit2 = j >= 0 ? num2.charAt(j--) - '0' : 0;
+                
+                int sum = digit1 + digit2 + carry;
+                result[pos--] = sum % 10;
+                carry = sum / 10;
+            }
+            
+            // Convert to string, skip leading zero
+            StringBuilder sb = new StringBuilder();
+            int start = pos + 1;
+            if (result[start] == 0 && start < maxLen - 1) start++;
+            
+            for (int k = start; k < maxLen; k++) {
+                sb.append(result[k]);
+            }
+            
+            return sb.toString();
         }
     }
 
@@ -114,6 +142,38 @@ public class _415 {
 
         // Time: O(n) without reverse
         // Space: O(n)
+    }
+
+    class Followup_WithoutCarry {
+        public String addStrings(String num1, String num2) {
+            int m = num1.length(), n = num2.length(), maxLen = Math.max(m, n) + 1;
+            int[] result = new int[maxLen];
+            int i = m - 1, j = n - 1, pos = maxLen - 1;
+            
+            while (i >= 0 || j >= 0) {
+                int digit1 = i >= 0 ? num1.charAt(i--) - '0' : 0;
+                int digit2 = j >= 0 ? num2.charAt(j--) - '0' : 0;
+                
+                result[pos] += digit1 + digit2;  // Add to existing value (might be carry)
+                
+                if (result[pos] >= 10) {
+                    result[pos - 1] += result[pos] / 10;  // Propagate carry to next position
+                    result[pos] %= 10;                     // Keep only ones digit
+                }
+                
+                pos--;
+            }
+            
+            StringBuilder sb = new StringBuilder();
+            int start = pos;
+            while (start < maxLen && result[start] == 0) start++;
+            
+            for (int k = start; k < maxLen; k++) {
+                sb.append(result[k]);
+            }
+            
+            return sb.length() == 0 ? "0" : sb.toString();
+        }
     }
 
     class Followup_Subtract {
