@@ -32,6 +32,7 @@ public class _1305 {
         }
 
         class BSTIterator {
+            
             Deque<TreeNode> stk;
             public BSTIterator(TreeNode root) {
                 stk = new ArrayDeque<>();
