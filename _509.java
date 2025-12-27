@@ -2,9 +2,9 @@
  * 509. Fibonacci Number
  * 
  * - S1: BF recursively O(2^n), O(n)
- * - S2: BF recursively with memo O(n), O(n)
- * - S3: Iterative Bottom-Up with memo O(n), O(n)
- * - S4: Iterative Bottom-Up without memo O(n), O(1)
+ * - S2: DP recursive top-down with memo O(n), O(n)
+ * - S3: DP iterative bottom-up with memo O(n), O(n)
+ * - S4: DP iterative bottom-up without memo O(n), O(1)
  * 
  * Followup:
  * - What if n is extremely large (n = 10^9, 10^18)? Use Matrix Exponentiation
