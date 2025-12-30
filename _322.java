@@ -5,6 +5,11 @@ import java.util.List;
 /**
  * 322. Coin Change
  * 
+ * This is an unbounded knapsack DP problem.
+ * - S1: top down backtrack O(exponential - n^m), O(m)
+ * - S2: bottom up iterative 2D DP O(mn), O(mn)
+ * - S3: bottom up iterative 1D DP O(mn), O(m)
+ * 
  * Clarification:
  * - Amount range?
  * - Can amount be 0? Yes
@@ -82,7 +87,7 @@ public class _322 {
     }
 
     /**
-     * Bottom-Up Recursion Approach with DP memo.
+     * Bottom-Up Recursion Approach with DP dp.
      * Time: O(mn)
      * Space: O(m) 
      */
@@ -90,29 +95,29 @@ public class _322 {
         static final int INF = Integer.MAX_VALUE;
         
         public int coinChange(int[] coins, int amount) {
-            int[] memo = new int[amount + 1]; // size  = amount + 1
-            int minCoins = getCoins(coins, memo, amount);
+            int[] dp = new int[amount + 1]; // size  = amount + 1
+            int minCoins = getCoins(coins, dp, amount);
             return minCoins == INF ? -1 : minCoins;
         }
     
-        private int getCoins(int[] coins, int[] memo, int n) {
+        private int getCoins(int[] coins, int[] dp, int n) {
             if (n < 0) return INF;
             if (n == 0) return 0; // return 0 or 1 for base case
-            if (memo[n] > 0) return memo[n];
+            if (dp[n] > 0) return dp[n];
     
             int minCoins = INF;
             for (int coin : coins) {
-                minCoins = Math.min(minCoins, getCoins(coins, memo, n - coin));
+                minCoins = Math.min(minCoins, getCoins(coins, dp, n - coin));
             }
             minCoins = minCoins == INF ? INF : minCoins + 1;
-            memo[n] = minCoins;
+            dp[n] = minCoins;
     
             return minCoins;
         }
     }
 
     /**
-     * Bottom-Up Iterative Approach with DP memo.
+     * Bottom-Up Iterative Approach with DP dp.
      * Time: O(mn)
      * Space: O(m) 
      */
@@ -120,43 +125,63 @@ public class _322 {
         static final int INF = Integer.MAX_VALUE;
         
         public int coinChange(int[] coins, int amount) {    
-            int[] memo = new int[amount + 1]; // size  = amount + 1
-            Arrays.fill(memo, INF);
-            memo[0] = 0; // base case
+            int[] dp = new int[amount + 1]; // size  = amount + 1
+            Arrays.fill(dp, INF);
+            dp[0] = 0; // base case
             int currAmount = 0, leftAmount = 0;
     
             while (++currAmount <= amount) {
                 for (int coin : coins) {
                     leftAmount = currAmount - coin;
-                    if (leftAmount >= 0 && memo[leftAmount] != INF) {
-                        memo[currAmount] = Math.min(memo[currAmount], memo[leftAmount] + 1);
+                    if (leftAmount >= 0 && dp[leftAmount] != INF) {
+                        dp[currAmount] = Math.min(dp[currAmount], dp[leftAmount] + 1);
                     }
                 }
             }
     
-            return memo[amount] == INF ? -1 : memo[amount];
+            return dp[amount] == INF ? -1 : dp[amount];
+        }
+
+        public int coinChange2D(int[] coins, int amount) {
+            int n = coins.length;
+            int[][] dp = new int[n + 1][amount + 1]; // min coin # to make amount j using first i coins
+            // dp[...][0] = 0
+            // others default value as max_val
+            for (int i = 0; i <= n; i++) {
+                Arrays.fill(dp[i], amount + 1);
+                dp[i][0] = 0;
+            }
+
+            for (int i = 1; i <= n; i++) {
+                int coin = coins[i - 1];
+                for (int j = 1; j <= amount; j++) {
+                    dp[i][j] = dp[i - 1][j];
+                    if (j >= coin) dp[i][j] = Math.min(dp[i][j], dp[i][j - coin] + 1);
+                }
+            }
+            return dp[n][amount] == amount + 1 ? -1 : dp[n][amount];
         }
     }
 
     /**
-     * Bottom-Up Iterative Approach with DP memo.
+     * Bottom-Up Iterative Approach with DP dp.
      * Time: O(mn)
      * Space: O(m) 
      */
     class Solution5_DP_Iterative_Improved {
         // f(n) = Math.min(1 + f(n-coin_i)) for coins[i]
         public int coinChange(int[] coins, int amount) {
-            int[] memo = new int[amount + 1]; // coins used to make up to amount i from 0 to amount
-            Arrays.fill(memo, amount + 1);
-            memo[0] = 0;
+            int[] dp = new int[amount + 1]; // coins used to make up to amount i from 0 to amount
+            Arrays.fill(dp, amount + 1);
+            dp[0] = 0;
             for (int n = 1; n <= amount; n++) {
                 for (int coin : coins) {
                     int remaining = n - coin;
                     if (remaining < 0) continue;
-                    memo[n] = Math.min(memo[n], 1 + memo[remaining]);
+                    dp[n] = Math.min(dp[n], 1 + dp[remaining]);
                 }
             }
-            return memo[amount] == amount + 1 ? -1 : memo[amount];
+            return dp[amount] == amount + 1 ? -1 : dp[amount];
         }
     }
 
@@ -253,6 +278,33 @@ public class _322 {
             }
             
             return dp[amount] > amount ? -1 : dp[amount];
+        }
+
+        // solve using 2D dp array
+        public int coinChange2D(int[] coins, int amount) {
+            int n = coins.length;
+            int[][] dp = new int[n + 1][amount + 1]; // min coin # to make amount j using first i coins
+            // dp[...][0] = 0
+            // dp[...][1...amount] = +inf
+            for (int i = 0; i <= n; i++) {
+                Arrays.fill(dp[i], amount + 1);
+                dp[i][0] = 0;
+            }
+
+            for (int i = 1; i <= n; i++) {
+                int coin = coins[i -1];
+                for (int j = 1; j <= amount; j++) {
+                    if (j >= coin) {
+                        dp[i][j] = Math.min(
+                            dp[i-1][j], // not select ith coin
+                            dp[i-1][j-coin] + 1 // select ith coin
+                        );
+                    } else {
+                        dp[i][j] = dp[i-1][j];
+                    }
+                }
+            }
+            return dp[n][amount] == amount + 1 ? -1 : dp[n][amount];
         }
     }
 }
