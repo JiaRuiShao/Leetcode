@@ -21,6 +21,7 @@ import java.util.Map;
  * - Prove subseqs array is sorted? Contradiction theory: subseqs[i] > subseqs[j] for i < j if it's not sorted; based on array definition, we know subseqs[i] is smallest tail for subsequences of length i + 1; if i < j & subseqs[i] is the largest, then by definition, subseqs[j] = subseqs[i]
  * - Find longest decreasing subsequence instead? 
  * - Find longest bitonic subsequence (Bitonic = increasing then decreasing)? 
+ * - Why we can't use mono stack here? Because mono stack is a greedy approach and it assumes current elem is part of the LIS; this problem needs global optimization however stack can only keep one selection
  */
 public class _300 {
     // Time: O(2^n)
