@@ -141,4 +141,30 @@ public class _931 {
             return min;
         }
     }
+
+    class Solution3_DP_1D_SpaceOptimized {
+        public int minFallingPathSum(int[][] matrix) {
+            int n = matrix.length, minSum = Integer.MAX_VALUE;
+            int[] dp = new int[n];
+            for (int c = 0; c < n; c++) {
+                dp[c] = matrix[n - 1][c];
+            }
+
+            for (int r = n - 2; r >= 0; r--) {
+                int prev = Integer.MAX_VALUE;
+                for (int c = 0; c < n; c++) {
+                    int tmp = dp[c]; // save dp[i+1][j-1] to calculate dp[i][j]
+                    int downRight = c + 1 < n ? dp[c + 1] : Integer.MAX_VALUE;
+                    // downLeft = prev = dp[c-1] from prev row, down = dp[c]; downRight = dp[c+1]
+                    dp[c] = matrix[r][c] + Math.min(prev, Math.min(dp[c], downRight));
+                    prev = tmp;
+                }
+            }
+
+            for (int c = 0; c < n; c++) {
+                minSum = Math.min(minSum, dp[c]);
+            }
+            return minSum;
+        }
+    }
 }
