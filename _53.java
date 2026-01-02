@@ -1,8 +1,33 @@
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
+
+import helper.IdxSum;
 
 /**
  * 53. Maximum Subarray
+ * 
+ * - S1: BF nested loop O(n^2), O(1)
+ * - S2: prefixSum O(n), O(n)/O(1) [PREFERRED]
+ * - S3: mono queue + prefixSum O(n), O(n)
+ * - S4: DP Kadane's Algo O(n), O(n)/O(1) [PREFERRED]
+ * 
+ * Clarification:
+ * - Can there be overflow issue?
+ * - Can numbers be negative?
+ * - Does subarray mean contiguous? Yes
+ * - Min subarray length? >= 1
+ * 
+ * Followup:
+ * - Return actual array, not just the sum? Have extra start, end & maxStart pointers
+ * - Find min subarray sum instead? Flip the logic
+ * - Solve the circular array version? LC 918 find maxSum (max subarray in middle) & totalSum - minSum (max subarray at ends); if all numbers are negative, return maxSum, else return max(maxSum, totalSum - minSum)
+ * - Empty sum is allowed? Then default maxSum should be initialized as 0
+ * - Find k non-overlapping maximum subarrays? 2D DP
+ * - Maximum subarray sum with at least k elements? MonoQueue
+ * - Maximum subarray sum with at most k elements? MonoQueue -- variant of 918 where k = n
+ * - What if we want maximum product subarray instead of sum? LC 152
+ * - What if we want maximum subarray sum with at most k deletions? DP
  */
 public class _53 {
     class Solution0_BruteForce {
@@ -19,25 +44,24 @@ public class _53 {
         }
     }
 
+    // Recurrence: dp[i] = max(nums[i], dp[i-1] + nums[i])
     class Solution1_DP_KadaneAlgo {
         public int maxSubArray(int[] nums) {
             int n = nums.length;
-            if (n == 0) return 0;
-            // dp table, dp[i] saves the max sum of subarray that ends at index i
+            
+            // dp[i] = max subarray sum ending at index i
             int[] dp = new int[n];
-            // base case
             dp[0] = nums[0];
-            // state equation: dp[i] = Math.max(nums[i], nums[i] + dp[i - 1])
-            // for each elem, we can choose to use prev sum or start a new subarray
+            
+            int maxSum = dp[0];
+            
             for (int i = 1; i < n; i++) {
-                dp[i] = Math.max(nums[i], nums[i] + dp[i - 1]);
+                // Either extend previous subarray or start new
+                dp[i] = Math.max(nums[i], dp[i - 1] + nums[i]);
+                maxSum = Math.max(maxSum, dp[i]);
             }
-            // find max subarray sum ends at index i
-            int res = Integer.MIN_VALUE;
-            for (int i = 0; i < n; i++) {
-                res = Math.max(res, dp[i]);
-            }
-            return res;
+            
+            return maxSum;
         }
     }
 
@@ -66,9 +90,9 @@ public class _53 {
             for (int i = 1; i < n; i++) {
                 // dp[i] = max(nums[i], nums[i] + dp[i-1])
                 dp_1 = Math.max(nums[i], nums[i] + dp_0);
-                dp_0 = dp_1;
                 // check if curr subarray sum is the max
                 maxSum = Math.max(maxSum, dp_1);
+                dp_0 = dp_1;
             }
             
             return maxSum;
@@ -84,7 +108,7 @@ public class _53 {
             for (int i = 0; i < n; i++) {
                 sum += nums[i];
                 if (!minQ.isEmpty()) {
-                    maxSum = Math.max(maxSum, sum - minQ.peekFirst());
+                    maxSum = Math.max(maxSum, sum - minQ.peekFirst()); // minQ.peekFirst() = min prefix sum so far
                 }
                 while (!minQ.isEmpty() && minQ.peekLast() >= sum) {
                     minQ.pollLast();
@@ -165,4 +189,156 @@ public class _53 {
         }
     }
 
+    // after check, we can see we don't actually need the entire prefix sum array
+    class Solution4_PrefixSum {
+        // find max(preSum[j] - preSum[i]) is to find min(preSum[i]) for each j where j > i
+        public int maxSubArray(int[] nums) {
+            int n = nums.length;
+            int[] preSum = new int[n + 1];
+            preSum[0] = 0;
+            for (int i = 1; i <= n; i++) {
+                preSum[i] = preSum[i - 1] + nums[i - 1];
+            }
+            
+            int maxSum_j = Integer.MIN_VALUE;
+            int minSum_i = Integer.MAX_VALUE;
+            for (int i = 0; i < n; i++) {
+                minSum_i = Math.min(minSum_i, preSum[i]);
+                maxSum_j = Math.max(maxSum_j, preSum[i + 1] - minSum_i);
+            }
+            return maxSum_j;
+        }
+
+        public int maxSubArrayImproved(int[] nums) {
+            int currSum = 0, maxSum = Integer.MIN_VALUE, minSum = Integer.MAX_VALUE;
+            for (int i = 0; i < nums.length; i++) {
+                minSum = Math.min(minSum, currSum);
+                currSum += nums[i];
+                maxSum = Math.max(maxSum, currSum - minSum);
+            }
+            return maxSum;
+        }
+    }
+
+    class Followup_ReturnSubarray {
+        public int[] maxSubArray(int[] nums) {
+            int currSum = 0, maxSum = Integer.MIN_VALUE, start = 0, maxEnd = 0, maxStart = 0;
+            for (int i = 0; i < nums.length; i++) {
+                int num = nums[i];
+                if (currSum < 0) {
+                    currSum = num;
+                    start = i;
+                } else {
+                    currSum += num;
+                }
+                
+                if (currSum > maxSum) {
+                    maxSum = currSum;
+                    maxStart = start; // start is inclusive
+                    maxEnd = i + 1; // end is exclusive
+                }
+            }
+            return Arrays.copyOfRange(nums, maxStart, maxEnd);
+        }
+    }
+
+    class Followup_MinSubArray {
+        public int minSubArray(int[] nums) {
+            int n = nums.length, sum = nums[0], minSum = nums[0];
+            for (int i = 1; i < n; i++) {
+                sum = Math.min(sum + nums[i], nums[i]);
+                minSum = Math.min(minSum, sum);
+            }
+            return minSum;
+        }
+    }
+
+    class Followup_MaxSumKSubarray {
+        // dp[i][j] = max sum subarrays using first i elements with j subarrays
+        // dp[i][j] = max(dp[i-1][j], dp[j...i-1][j-1] + nums[j...i-1])
+        public int maxSumKSubarrays(int[] nums, int k) {
+            int n = nums.length;
+            
+            // dp[i][j] = max sum using first i elements with j subarrays
+            int[][] dp = new int[n + 1][k + 1];
+            
+            for (int i = 0; i <= n; i++) {
+                Arrays.fill(dp[i], Integer.MIN_VALUE);
+            }
+            dp[0][0] = 0;
+            
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= Math.min(i, k); j++) {
+                    // Option 1: Don't include nums[i-1]
+                    dp[i][j] = dp[i - 1][j];
+                    
+                    // Option 2: Include nums[i-1] in jth subarray
+                    int sum = 0;
+                    for (int p = i; p >= j; p--) {
+                        sum += nums[p - 1];
+                        if (dp[p - 1][j - 1] != Integer.MIN_VALUE) {
+                            dp[i][j] = Math.max(dp[i][j], dp[p - 1][j - 1] + sum);
+                        }
+                    }
+                }
+            }
+            
+            return dp[n][k];
+        }
+    }
+
+    class Followup_MaxSumWithAtLeastKElem {
+        public int maxSubArrayAtLeastK(int[] nums, int k) {
+            int n = nums.length;
+            int maxSum = Integer.MIN_VALUE, sum = 0;
+            Deque<IdxSum> minQ = new ArrayDeque<>();
+            minQ.offer(new IdxSum(-1, 0));
+            for (int i = 0; i < n; i++) {
+                sum += nums[i];
+                // update maxSum if we have at least k elements
+                if (!minQ.isEmpty() && i - minQ.peekFirst().idx >= k) {
+                    maxSum = Math.max(maxSum, sum - minQ.peekFirst().sum);
+                }
+                // maintain monotonic increasing queue
+                while (!minQ.isEmpty() && minQ.peekLast().sum > sum) {
+                    minQ.pollLast();
+                }
+                minQ.offerLast(new IdxSum(i, sum));
+            }
+            return maxSum;
+        }
+    }
+
+    class Followup_MaxSumWithAtLeastKDeletions {
+        public int maxSubArrayWithKDeletions(int[] nums, int k) {
+            int n = nums.length;
+            
+            // dp[i][j] = max sum ending at i with j deletions used
+            int[][] dp = new int[n][k + 1];
+            
+            dp[0][0] = nums[0];
+            dp[0][1] = 0;  // Delete first element
+            
+            int maxSum = Math.max(dp[0][0], dp[0][1]);
+            
+            for (int i = 1; i < n; i++) {
+                for (int j = 0; j <= k; j++) {
+                    // Include nums[i]
+                    dp[i][j] = nums[i];
+                    if (i > 0) {
+                        dp[i][j] = Math.max(dp[i][j], dp[i-1][j] + nums[i]);
+                    }
+                    
+                    // Delete nums[i]
+                    if (j > 0 && i > 0) {
+                        dp[i][j] = Math.max(dp[i][j], dp[i-1][j-1]);
+                    }
+                    
+                    maxSum = Math.max(maxSum, dp[i][j]);
+                }
+            }
+            
+            return maxSum;
+        }
+    }
 }
