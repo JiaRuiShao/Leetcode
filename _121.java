@@ -1,5 +1,9 @@
 /**
  * 121. Best Time to Buy and Sell Stock
+ * 
+ * - S1: BF nested loop O(n^2), O(1)
+ * - S2: Recursion With Memo O(n), O(n)
+ * - S3: Bottom-Up DP O(n), O(n)/O(1)
  */
 public class _121 {
     class Solution0_BruteForce_TLE {
@@ -57,54 +61,35 @@ public class _121 {
         }
     }
 
-    /**
-     * dp[i][0]: Max profit on day i when not holding a stock at end of day (test or sell)
-     * dp[i][1]: Max profit on day i when holding a stock at end of day (rest or buy)
-     */
     class Solution2_DP {
-        int maxProfit(int[] prices) {
-            int n = prices.length;        
-            int[][] dp = new int[n][2];
-            for (int i = 0; i < n; i++) {
-                if (i == 0) {
-                    dp[i][0] = 0;
-                    dp[i][1] = -prices[i];
-                } else {
-                    dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
-                    dp[i][1] = Math.max(dp[i - 1][1], -prices[i]);
-                }
-            }
-            return dp[n - 1][0];
-        }
-    }
-
-    class Solution3_DP {
-        int maxProfit(int[] prices) {
-            int n = prices.length;        
+        public int maxProfit(int[] prices) {
+            int n = prices.length;
+            // dp[i][0/1]: max profit of not holding/holding a stock on day i - 1
             int[][] dp = new int[n + 1][2];
-            dp[0][0] = 0; // base cases
-            dp[0][1] = Integer.MIN_VALUE;
-    
-            for (int i = 0; i < n; i++) {
-                int day = i + 1;
-                dp[day][0] = Math.max(dp[day - 1][0], dp[day - 1][1] + prices[i]); // rest or sell
-                dp[day][1] = Math.max(dp[day - 1][1], 0 - prices[i]); // rest or buy
+            dp[0][0] = 0;
+            dp[0][1] = -10001;
+            for (int i = 1; i <= n; i++) {
+                dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i - 1]);
+                // dp[i - 1][0]: didn't have stock yesterday and still don't
+                // dp[i - 1][1] + prices[i - 1]: had stock yesterday and sell today
+                dp[i][1] = Math.max(dp[i - 1][1], -prices[i - 1]);
+                // dp[i - 1][1]: had stock yesterday and keep holding
+                // -prices[i - 1]: buy stock today (first time buying, so profit = -price)
             }
             return dp[n][0];
         }
     }
 
-    class Solution3_DP_Without_Memo {
-        int maxProfit(int[] prices) {
-            int n = prices.length;        
-            int yesterdayNotHold = 0, yesterdayHolding = Integer.MIN_VALUE;
-            for (int i = 0; i < n; i++) {
-                int todayNotHold = Math.max(yesterdayNotHold, yesterdayHolding + prices[i]);
-                int todayHolding = Math.max(yesterdayHolding, - prices[i]);
-                yesterdayNotHold = todayNotHold;
-                yesterdayHolding = todayHolding;
+    class Solution3_DP_SpaceOptimized {
+        public int maxProfit(int[] prices) {
+            int n = prices.length;
+            int notHold = 0;
+            int hold = -10001;
+            for (int i = 1; i <= n; i++) {
+                notHold = Math.max(notHold, hold + prices[i - 1]);
+                hold = Math.max(hold, 0 - prices[i - 1]);
             }
-            return yesterdayNotHold;
+            return notHold;
         }
     }
 }
