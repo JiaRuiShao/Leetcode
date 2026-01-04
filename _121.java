@@ -3,15 +3,22 @@
  * 
  * - S1: BF nested loop O(n^2), O(1)
  * - S2: Recursion With Memo O(n), O(n)
- * - S3: Bottom-Up DP O(n), O(n)/O(1)
+ * - S3: Bottom-Up DP O(n), O(n)/O(1) [PREFERRED]
+ * - S4: Greedy Sliding Window O(n), O(1) [PREFERRED]
+ * 
+ * Clarification:
+ * - One transaction only? Yes
+ * - Buy before sell only? Yes
+ * - Range of prices[i]? 0 ≤ prices[i] ≤ 10^4
  */
 public class _121 {
     class Solution0_BruteForce_TLE {
         public int maxProfit(int[] prices) {
             int n = prices.length, maxProfit = 0;
-            for (int i = n - 1; i >= 0; i--) {
+            for (int i = 0; i < n; i++) {
                 for (int j = i + 1; j < n; j++) {
-                    if (prices[j] > prices[i]) maxProfit = Math.max(maxProfit, prices[j] - prices[i]);
+                    int profit = prices[j] - prices[i];
+                    maxProfit = Math.max(maxProfit, profit);
                 }
             }
             return maxProfit;
@@ -48,14 +55,13 @@ public class _121 {
         }
     }
 
-    class Solution1_Two_Pointers {
+    // max(profit) = max(prices[j] - prices[i]) where j > i ==> for each j, find min(prices[i])
+    class Solution1_Greedy {
         public int maxProfit(int[] prices) {
-            int n = prices.length, profit = 0, maxProfit = 0;
-            int left = 0, right = 0;
-            while (++right < n) {
-                profit = prices[right] - prices[left];
-                if (profit > 0) maxProfit = Math.max(maxProfit, profit);
-                else left = right;
+            int minPrice = 10001, maxProfit = 0;
+            for (int price : prices) {
+                maxProfit = Math.max(maxProfit, price - minPrice);
+                minPrice = Math.min(minPrice, price);
             }
             return maxProfit;
         }
