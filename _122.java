@@ -12,10 +12,8 @@ public class _122 {
             for (int price : prices) {
                 if (price >= minPrice) {
                     profit += price - minPrice;
-                    minPrice = price;
-                } else {
-                    minPrice = price;
                 }
+                minPrice = price;
             }
             return profit;
         }
