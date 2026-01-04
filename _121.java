@@ -80,17 +80,17 @@ public class _121 {
     class Solution2_DP {
         public int maxProfit(int[] prices) {
             int n = prices.length;
-            // dp[i][0/1]: max profit of not holding/holding a stock on day i - 1
-            int[][] dp = new int[n + 1][2];
+            // dp[i][0/1]: max profit of not holding/holding a stock on day i-1
+            int[][] dp = new int[n+1][2];
             dp[0][0] = 0;
             dp[0][1] = -10001;
             for (int i = 1; i <= n; i++) {
-                dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i - 1]);
-                // dp[i - 1][0]: didn't have stock yesterday and still don't
-                // dp[i - 1][1] + prices[i - 1]: had stock yesterday and sell today
-                dp[i][1] = Math.max(dp[i - 1][1], -prices[i - 1]);
-                // dp[i - 1][1]: had stock yesterday and keep holding
-                // -prices[i - 1]: buy stock today (first time buying, so profit = -price)
+                dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1] + prices[i-1]);
+                // dp[i-1][0]: didn't have stock yesterday and still don't
+                // dp[i-1][1] + prices[i-1]: had stock yesterday and sell today
+                dp[i][1] = Math.max(dp[i-1][1], -prices[i-1]);
+                // dp[i-1][1]: had stock yesterday and keep holding
+                // -prices[i-1]: buy stock today (first time buying, so profit = -price)
             }
             return dp[n][0];
         }
@@ -102,8 +102,8 @@ public class _121 {
             int notHold = 0;
             int hold = -prices[0] - 1;
             for (int i = 1; i <= n; i++) {
-                notHold = Math.max(notHold, hold + prices[i - 1]);
-                hold = Math.max(hold, 0 - prices[i - 1]);
+                notHold = Math.max(notHold, hold + prices[i-1]);
+                hold = Math.max(hold, 0 - prices[i-1]);
             }
             return notHold;
         }
@@ -118,7 +118,7 @@ public class _121 {
             int maxEndingHere = 0;
             
             for (int i = 1; i < prices.length; i++) {
-                maxEndingHere = Math.max(0, maxEndingHere + prices[i] - prices[i - 1]);
+                maxEndingHere = Math.max(0, maxEndingHere + prices[i] - prices[i-1]);
                 maxProfit = Math.max(maxProfit, maxEndingHere);
             }
             
