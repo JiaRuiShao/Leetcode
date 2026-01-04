@@ -5,23 +5,21 @@ public class _188 {
     class Solution1_DP {
         public int maxProfit(int k, int[] prices) {
             int n = prices.length;
-            int[][][] profits = new int[n + 1][k][2]; // maxProfits gained at end of day i [0...n-1] when having transCount [0...k-1] transactions ; holding a stock at end of the day (represents by 0) or not holding a stock at end of the day
-            for (int transCount = 0; transCount < k; transCount++) {
-                profits[0][transCount][0] = 0;
-                profits[0][transCount][1] = -prices[0] - 1;
+            // dp[i][k][0/1] = maxProfit on day i-1 with at most k transactions allowed when not holding/holding a stock
+            int[][][] dp = new int[n+1][k+1][2];
+            for (int j = 0; j <= k; j++) {
+                dp[0][j][1] = Integer.MIN_VALUE / 2;
             }
-            for (int i = 0; i < n; i++) {
-                int day = i + 1;
-                for (int transCount = 0; transCount < k; transCount++) {
-                    profits[day][transCount][0] = Math.max(profits[day - 1][transCount][0], profits[day - 1][transCount][1] + prices[i]);
-                    if (transCount > 0) {
-                        profits[day][transCount][1] = Math.max(profits[day - 1][transCount][1], profits[day - 1][transCount - 1][0] - prices[i]);
-                    } else {
-                        profits[day][transCount][1] = Math.max(profits[day - 1][transCount][1], - prices[i]); // here we CANNOT use profits[day - 1][0][0] - prices[i] because maxTransCount defined here is 0 and profits[day - 1][0][0] represents the profit of having at most k stocks but right now it's holding none
-                    }
+
+            for (int i = 1; i <= n; i++) {
+                int price = prices[i - 1];
+                for (int j = 1; j <= k; j++) {
+                    dp[i][j][0] = Math.max(dp[i-1][j][0], dp[i-1][j][1] + price);
+                    dp[i][j][1] = Math.max(dp[i-1][j][1], dp[i-1][j-1][0] - price);
                 }
             }
-            return profits[n][k - 1][0];
+
+            return dp[n][k][0];
         }
     }
 
