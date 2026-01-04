@@ -2,24 +2,23 @@
  * 122. Best Time to Buy and Sell Stock II
  */
 public class _122 {
-    class Solution1_Two_Pointers {
+    class Solution1_Greedy {
+        // max(profit) = max(prices[j] - prices[i]) where j > i ==> for each j, find min(prices[i])
         public int maxProfit(int[] prices) {
-            int left = 0, right = 0, totalProfit = 0;
-            int n = prices.length;
-            while (++right < n) {
-                int profit = prices[right] - prices[left];
-                if (profit <= 0) {
-                    left = right; // should buy today since the price is lower
+            int minPrice = 10001, profit = 0;
+            for (int price : prices) {
+                if (price >= minPrice) {
+                    profit += price - minPrice;
+                    minPrice = price;
                 } else {
-                    totalProfit += profit;
-                    left = right; // able to buy on the same day of selling
+                    minPrice = price;
                 }
             }
-            return totalProfit;
+            return profit;
         }
     }
 
-    class Solution2_DP_With_Memo {
+    class Solution2_DP {
         public int maxProfit(int[] prices) {
             int n = prices.length;
             int[][] dp = new int[n + 1][2];
@@ -34,7 +33,7 @@ public class _122 {
         }
     }
 
-    class Solution3_DP_Without_Memo {
+    class Solution3_DP_SpaceOptimized {
         public int maxProfit(int[] prices) {
             int n = prices.length, notHold = 0, hold = -prices[0] - 1;
             for (int day = 0; day < n; day++) {
