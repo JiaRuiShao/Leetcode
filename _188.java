@@ -2,10 +2,12 @@
  * 188. Best Time to Buy and Sell Stock IV
  */
 public class _188 {
+    // dp[i][k][0/1] = maxProfit on day i-1 with at most k transactions allowed when not holding/holding a stock
+    // dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1] + prices[i-1])
+    // dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0] - prices[i-1])
     class Solution1_DP {
         public int maxProfit(int k, int[] prices) {
             int n = prices.length;
-            // dp[i][k][0/1] = maxProfit on day i-1 with at most k transactions allowed when not holding/holding a stock
             int[][][] dp = new int[n+1][k+1][2];
             for (int j = 0; j <= k; j++) {
                 dp[0][j][1] = Integer.MIN_VALUE / 2;
@@ -20,6 +22,34 @@ public class _188 {
             }
 
             return dp[n][k][0];
+        }
+    }
+
+    // Time: O(nk)
+    // Space: O(k)
+    // dp[j][0] = max(dp[j][0], dp[j][1] + prices[i])
+    // not holding: either stayed not holding, or sold today
+    // dp[j][1] = max(dp[j][1], dp[j-1][0] - prices[i])
+    // holding: either kept holding, or bought today (uses j-1 transactions)
+    class Solution2_DP_SpaceOptimized {
+        public int maxProfit(int k, int[] prices) {
+            int n = prices.length;
+            int[][] dp = new int[k+1][2];
+            for (int j = 0; j <= k; j++) {
+                dp[j][1] = Integer.MIN_VALUE / 2;
+            }
+
+            for (int i = 1; i <= n; i++) {
+                int price = prices[i - 1], prev = 0;
+                for (int j = 1; j <= k; j++) {
+                    int temp = dp[j][0];
+                    dp[j][0] = Math.max(dp[j][0], dp[j][1] + price);
+                    dp[j][1] = Math.max(dp[j][1], prev - price);
+                    prev = temp;
+                }
+            }
+
+            return dp[k][0];
         }
     }
 
