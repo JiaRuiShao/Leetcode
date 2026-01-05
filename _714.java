@@ -2,6 +2,20 @@
  * 714. Best Time to Buy and Sell Stock with Transaction Fee
  */
 public class _714 {
+    
+    class Solution_Wrong_Greedy {
+        public int maxProfit(int[] prices, int fee) {
+            int minPrice = prices[0], profit = 0;
+            for (int price : prices) {
+                if (price > minPrice + fee) {
+                    profit += (price - minPrice - fee);
+                }
+                minPrice = price;
+            }
+            return profit;
+        }
+    }
+
     class Solution1_DP {
         public int maxProfit(int[] prices, int fee) {
             int n = prices.length;
