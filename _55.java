@@ -1,31 +1,26 @@
 /**
  * 55. Jump Game
+ * 
+ * Clarification:
+ * - Range of nums[i]? >=0 non-negative, no backward jump
+ * 
+ * Corner Cases:
+ * - [0] true
  */
 public class _55 {
     class Solution1_Greedy {
         public boolean canJump(int[] nums) {
-            int n = nums.length, jump = 0;
-            for (int pos = 0; pos < n - 1; pos++) {
-                jump = Math.max(jump, pos + nums[pos]);
-                if (jump <= pos) {
-                    return false;
-                }
-            }
-            return jump >= n - 1;
-        }
-
-        public boolean canJump2(int[] nums) {
-            int furthest = 0;
-            for (int i = 0; i < nums.length - 1; i++) {
-                furthest = Math.max(furthest, i + nums[i]);
-                if (furthest <= i) return false;
+            int farthest = 0;
+            for (int i = 0; i < nums.length - 1; i++) { // [0, n-2]
+                farthest = Math.max(farthest, i + nums[i]);
+                if (farthest <= i) return false;
             }
             return true;
         }
     }
 
     // TLE
-    class Solution2_DP_Top_Down {
+    class Solution0_Recursion_TLE {
         public boolean canJump(int[] nums) {
             return dfs(nums, 0, nums.length - 1);
         }
@@ -43,7 +38,7 @@ public class _55 {
         }
     }
 
-    class Solution3_DP_Top_Down_With_Memo {
+    class Solution2_Recursion_WithMemo {
         public boolean canJump(int[] nums) {
             int[] canJump = new int[nums.length]; // 0 means unknown, 1 means reachable, 2 means unreachable
             return dfs(nums, 0, nums.length - 1, canJump);
@@ -65,21 +60,19 @@ public class _55 {
         }
     }
 
-    class Solution4_Dp_Iterative_Bottom_Up {
+    // Time: O(nk)
+    // Space: O(n)
+    class Solution3_DP {
         public boolean canJump(int[] nums) {
             int n = nums.length;
-            int[] canJump = new int[n]; // 0 means unreachable, 1 means reachable
-            canJump[n - 1] = 1;
+            boolean[] dp = new boolean[n]; // can reach n-1 from i
+            dp[n-1] = true;
             for (int i = n - 2; i >= 0; i--) {
-                int reach = Math.min(i + nums[i], n - 1);
-                for (int jump = i + 1; jump <= reach; jump++) {
-                    if (canJump[jump] == 1) {
-                        canJump[i] = 1;
-                        break;
-                    }
+                for (int j = 1; j <= nums[i] && i + j < n; j++) {
+                    dp[i] = dp[i] || dp[i+j];
                 }
             }
-            return canJump[0] == 1;
+            return dp[0];
         }
     }
 }
