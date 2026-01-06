@@ -1,14 +1,48 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.PriorityQueue;
 import java.util.TreeMap;
 
 /**
  * 253. Meeting Rooms II
+ * 
+ * - S0: Brute Force O(n^2), O(1)
+ * - S1: Difference Array/List/TreeMap O(nlogn), O(n) [PREFERRED]
+ * - S2: Sorting + MinHeap O(nlogn), O(n) [PREFERRED]
+ * - S3: Sorting + Two Pointers O(nlogn), O(n)
  */
 public class _253 {
+    // for this question, we can't use sort by end and then compare with neighbor interval
+    // unlike LC 435, we need to track all active meetings
+    class Solution_Wrong {
+        // intervals = [[8,14],[12,13],[6,13],[1,9]] expected = 3, got 2
+        public int minMeetingRooms(int[][] intervals) {
+            Arrays.sort(intervals, (a, b) -> {
+                if (a[1] == b[1]) return Integer.compare(a[0], b[0]);
+                return Integer.compare(a[1], b[1]);
+            });
+            
+            int overlapped = 1, maxOverlapped = 1;
+            int prevEnd = intervals[0][0];
+            for (int[] interval : intervals) {
+                if (interval[0] < prevEnd) {
+                    overlapped++;
+                    maxOverlapped = Math.max(maxOverlapped, overlapped);
+                } else {
+                    prevEnd = interval[1];
+                    overlapped = 1;
+                }
+            }
+            return maxOverlapped;
+        }
+    }
+
     // difference array: diff[i] = nums[i] - nums[i - 1];
     // Time: O(n + 10^6)
     class Solution1_Difference_Array {
-        public int minMeetingRooms(int[][] intervals) {
+        public int minMeetingRooms_Array(int[][] intervals) {
             int[] rooms = new int[1_000_001];
             for (int[] interval : intervals) {
                 int start = interval[0], end = interval[1];
@@ -24,11 +58,8 @@ public class _253 {
             }
             return maxRooms;
         }
-    }
 
-    // Time: O(nlogn)
-    class Solution2_Difference_TreeMap {
-        public int minMeetingRooms(int[][] intervals) {
+        public int minMeetingRooms_TreeMap(int[][] intervals) {
             TreeMap<Integer, Integer> diff = new TreeMap<>();
 
             for (int[] interval : intervals) {
@@ -45,10 +76,52 @@ public class _253 {
 
             return maxRooms;
         }
+
+        public int minMeetingRooms_List(int[][] intervals) {
+            List<int[]> events = new ArrayList<>();
+            
+            for (int[] interval : intervals) {
+                events.add(new int[]{interval[0], 1});   // Start: +1
+                events.add(new int[]{interval[1], -1});  // End: -1
+            }
+            
+            // Sort by time, with ends before starts at same time
+            Collections.sort(events, (a, b) -> {
+                if (a[0] != b[0]) return a[0] - b[0];
+                return a[1] - b[1];  // End (-1) before Start (+1)
+            });
+            
+            int rooms = 0;
+            int maxRooms = 0;
+            for (int[] event : events) {
+                rooms += event[1];
+                maxRooms = Math.max(maxRooms, rooms);
+            }
+            
+            return maxRooms;
+        }
     }
 
     // Time: O(nlogn)
-    class Solution2_Sorting_Two_Pointers {
+    // Space: O(n)
+    class Solution2_PriorityQueue {
+        public int minMeetingRooms(int[][] intervals) {
+            Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+            // minHeap to store end times of ongoing meetings
+            PriorityQueue<Integer> endTimes = new PriorityQueue<>();
+            endTimes.offer(intervals[0][0]);
+            for (int[] interval : intervals) {
+                if (interval[0] >= endTimes.peek()) { // free one room
+                    endTimes.poll();
+                }
+                endTimes.offer(interval[1]);
+            }
+            return endTimes.size();
+        }
+    }
+
+    // Time: O(nlogn)
+    class Solution3_Sorting_Two_Pointers {
         public int minMeetingRooms(int[][] intervals) {
             int n = intervals.length;
             int[] start = new int[n];
@@ -75,4 +148,5 @@ public class _253 {
             return maxRooms;
         }
     }
+
 }
