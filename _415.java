@@ -82,37 +82,26 @@ public class _415 {
         // Method 1: Build from left to right (insert at beginning)
         // This is O(n²) - not recommended
 
-        // Method 2: Manual reverse
+        // Method 1: Use int array
         public String addStrings(String num1, String num2) {
-            int i = num1.length() - 1;
-            int j = num2.length() - 1;
+            int m = num1.length(), n = num2.length();
+            int[] res = new int[Math.max(m, n) + 1];
+            int i = m - 1, j = n - 1, pos = res.length - 1;
             int carry = 0;
-            
-            // First, build result in reverse
-            StringBuilder sb = new StringBuilder();
-            
             while (i >= 0 || j >= 0 || carry > 0) {
-                int digit1 = i >= 0 ? num1.charAt(i--) - '0' : 0;
-                int digit2 = j >= 0 ? num2.charAt(j--) - '0' : 0;
-                
-                int sum = digit1 + digit2 + carry;
-                sb.append(sum % 10);
+                int sum = carry + (i >= 0 ? num1.charAt(i--) - '0' : 0) + (j >= 0 ? num2.charAt(j--) - '0' : 0);
+                res[pos--] = sum % 10;
                 carry = sum / 10;
             }
             
-            // Method 1: Manual reverse
-            int left = 0, right = sb.length() - 1;
-            while (left < right) {
-                char temp = sb.charAt(left);
-                sb.setCharAt(left, sb.charAt(right));
-                sb.setCharAt(right, temp);
-                left++;
-                right--;
+            StringBuilder sb = new StringBuilder();
+            while (++pos < res.length) {
+                sb.append(res[pos]);
             }
-            return sb.toString();
+            return sb.isEmpty() ? "0" : sb.toString();
         }
 
-        // Method 3: Use char array
+        // Method 2: Use char array
         public String addStrings2(String num1, String num2) {
             int maxLen = Math.max(num1.length(), num2.length()) + 1;
             char[] result = new char[maxLen];
