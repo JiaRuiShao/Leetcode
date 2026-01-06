@@ -1,7 +1,11 @@
 import java.util.Arrays;
+import java.util.TreeMap;
 
 /**
  * 435. Non-overlapping Intervals
+ * 
+ * Followup:
+ * - Intervals are given as a stream? Use TreeMap
  */
 public class _435 {
     // pick the interval that ends earliest
@@ -61,6 +65,38 @@ public class _435 {
             int maxNonOverlap = Arrays.stream(dp).max().getAsInt();
 
             return n - maxNonOverlap;
+        }
+    }
+
+    class Followup_Stream {
+        class IntervalManager {
+            TreeMap<Integer, Integer> intervals;  // start -> end
+            
+            public IntervalManager() {
+                intervals = new TreeMap<>();
+            }
+            
+            public boolean addInterval(int start, int end) {
+                // Check for overlaps
+                Integer floorKey = intervals.floorKey(start);
+                
+                if (floorKey != null && intervals.get(floorKey) > start) {
+                    return false;  // Overlaps with previous
+                }
+                
+                Integer ceilingKey = intervals.ceilingKey(start);
+                if (ceilingKey != null && ceilingKey < end) {
+                    return false;  // Overlaps with next
+                }
+                
+                intervals.put(start, end);
+                return true;
+            }
+            
+            public int getOverlapCount() {
+                // Count would need to be tracked as intervals are rejected
+                return 0;  // Implementation specific
+            }
         }
     }
 }
