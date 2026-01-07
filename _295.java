@@ -2,9 +2,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.TreeMap;
 
 /**
  * 295. Find Median from Data Stream
+ * 
+ * Followup:
+ * - All numbers are in range [0, 100]? use int[] with size as 101 to store num freq
+ * - 99% of numbers are in range [0, 100]? 
  */
 public class _295 {
     // Space: O(n)
@@ -60,6 +65,54 @@ public class _295 {
             } else {
                 return (list.get(n / 2 - 1) + list.get(n / 2)) / 2.0;
             }
+        }
+    }
+
+    class Followup_AllWithinRange {
+        int[] freq;
+        int count;
+
+        Followup_AllWithinRange() {
+            freq = new int[101];
+            count = 0;
+        }
+
+        public double findMedian() {
+            // when total count is odd, mid1 == mi2
+            // when total count is even, mid2 = mid1 + 1
+            int mid1 = (count + 1) / 2;
+            int mid2 = (count + 2) / 2;
+
+            int c = 0;
+            int m1 = -1, m2 = -1;
+
+            for (int i = 0; i <= 100; i++) {
+                c += freq[i];
+                if (c >= mid1 && m1 == -1) m1 = i;
+                if (c >= mid2) {
+                    m2 = i;
+                    break;
+                }
+            }
+            return (m1 + m2) / 2.0;
+        }
+    }
+
+    class Followup_MostWithinRange {
+        int[] freq = new int[101];        // for [0,100]
+        TreeMap<Integer, Integer> left;   // < 0
+        TreeMap<Integer, Integer> right;  // > 100
+        int totalCount;
+
+        public void add(int num) {
+            if (num >= 0 && num <= 100) {
+                freq[num]++;
+            } else if (num < 0) {
+                left.put(num, left.getOrDefault(num, 0) + 1);
+            } else {
+                right.put(num, right.getOrDefault(num, 0) + 1);
+            }
+            totalCount++;
         }
     }
 }
