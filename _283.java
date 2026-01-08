@@ -1,21 +1,18 @@
 /**
- * 283. Move Zeroes.
- * Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the non-zero elements.
- * Note that you must do this in-place without making a copy of the array.
+ * 283. Move Zeroes
  */
 public class _283 {
-    class Solution1_Fast_Slow_Pointers {
+    class Solution1_TwoPointers {
         public void moveZeroes(int[] nums) {
-            int slow = 0, fast = 0;
-            while (fast < nums.length) {
-                if (nums[fast] != 0) {
-                    if (fast != slow) {
-                        nums[slow] = nums[fast];
-                        nums[fast] = 0;
-                    }
-                    slow++;
+            // [0, i) non-zero
+            // [i, j) zero
+            for (int i = 0, j = 0; j < nums.length; j++) {
+                if (nums[j] != 0) {
+                    int temp = nums[i];
+                    nums[i] = nums[j];
+                    nums[j] = temp;
+                    i++;
                 }
-                fast++;
             }
         }
     }
