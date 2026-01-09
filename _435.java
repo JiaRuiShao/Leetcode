@@ -26,7 +26,9 @@ public class _435 {
 
             return remove;
         }
+    }
 
+    class Solution1_Greedy {
         // this is the standard approach to sort by end
         public int eraseOverlapIntervals2(int[][] intervals) {
             Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));
@@ -46,25 +48,39 @@ public class _435 {
     }
 
     class Solution2_DP {
+        // min(removedInterval) = min(n - non-overlappedIntervals) ==> max(non-overlappedIntervals)
         public int eraseOverlapIntervals(int[][] intervals) {
+            Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));
             int n = intervals.length;
-            Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
-
-            // dp[i] = max number of non-overlapping intervals ending at i
-            int[] dp = new int[n];
-            Arrays.fill(dp, 1);  // Each interval forms a valid set of size 1
-
+            int[] dp = new int[n]; // max non-overlapped intervals we can select from 0..i
+            dp[0] = 1;
+            // dp[i] = max(dp[i-1], dp[j] + 1)
+            // dp[i-1] skip interval i
+            // dp[j] + 1 take interval i, where j is last non-overlapped interval with i
             for (int i = 1; i < n; i++) {
-                for (int j = 0; j < i; j++) {
-                    if (intervals[j][1] <= intervals[i][0]) { // doesn't overlap
-                        dp[i] = Math.max(dp[i], dp[j] + 1);
-                    }
+                dp[i] = dp[i-1];
+                int j = lastNonOverlappedInterval(intervals, i);
+                if (j >= 0) dp[i] = Math.max(dp[i], dp[j] + 1);
+                // else dp[i] = Math.max(dp[i], 1);
+            }
+            return n - dp[n-1];
+        }
+
+        /**
+         * Find largest index j < i where intervals[j] doesn't overlap with intervals[i]
+         * Binary search since array is sorted by end time
+         */
+        private int lastNonOverlappedInterval(int[][] intervals, int i) {
+            int lo = 0, hi = i - 1, k = intervals[i][0];
+            while (lo <= hi) {
+                int mid = lo + (hi - lo) / 2;
+                if (intervals[mid][1] <= k) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
                 }
             }
-
-            int maxNonOverlap = Arrays.stream(dp).max().getAsInt();
-
-            return n - maxNonOverlap;
+            return hi;
         }
     }
 
