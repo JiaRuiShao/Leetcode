@@ -48,7 +48,8 @@ public class _56 {
     }
 
     class Solution1_Sort_MergeInPlace {
-        public int[][] merge(int[][] intervals) {
+        // sort by start asc and extend end
+        public int[][] merge1(int[][] intervals) {
             Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
             int currIdx = 0; // pos to write next interval
             for (int i = 1; i < intervals.length; i++) {
@@ -58,8 +59,21 @@ public class _56 {
                     intervals[currIdx][1] = Math.max(intervals[currIdx][1], intervals[i][1]);
                 }
             }
-            currIdx++;
-            return Arrays.copyOf(intervals, currIdx);
+            return Arrays.copyOf(intervals, currIdx + 1);
+        }
+
+        // sort by end desc and extend start
+        public int[][] merge2(int[][] intervals) {
+            Arrays.sort(intervals, (a, b) -> Integer.compare(b[1], a[1]));
+            int i = 0;
+            for (int j = 0; j < intervals.length; j++) {
+                if (intervals[j][1] < intervals[i][0]) {
+                    intervals[++i] = intervals[j];
+                } else {
+                    intervals[i][0] = Math.min(intervals[i][0], intervals[j][0]);
+                }
+            }
+            return Arrays.copyOf(intervals, i + 1);
         }
     }
 
