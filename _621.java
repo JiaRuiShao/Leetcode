@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 
 /**
@@ -134,42 +132,36 @@ public class _621 {
 
     class Solution1_PriorityQueue2 {
         public int leastInterval(char[] tasks, int n) {
-            // Count frequency of each task
-            Map<Character, Integer> freq = new HashMap<>();
+            // 1 - task freq
+            int[] freq = new int[26];
             for (char task : tasks) {
-                freq.put(task, freq.getOrDefault(task, 0) + 1);
+                freq[task - 'A']++;
             }
-            
-            // Max heap based on frequency
-            PriorityQueue<Integer> availables = new PriorityQueue<>((a, b) -> b - a);
-            availables.addAll(freq.values());
-            
+
+            // 2 - build freq pq
+            PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> Integer.compare(b, a));
+            for (int f : freq) {
+                if (f > 0) {
+                    maxHeap.offer(f);
+                }
+            }
+
+            // 3 - simulate task running process
             int time = 0;
-            
-            while (!availables.isEmpty()) {
+            while (!maxHeap.isEmpty()) {
                 List<Integer> cooldown = new ArrayList<>();
-                
-                // Execute tasks for one cycle (n + 1 time)
-                for (int i = 0; i <= n; i++) {
-                    if (!availables.isEmpty()) {
-                        int count = availables.poll();
-                        if (count > 1) {
-                            cooldown.add(count - 1);
-                        }
-                    }
-                    
-                    time++;
-                    
-                    // If heap is empty and temp is empty, we're done
-                    if (availables.isEmpty() && cooldown.isEmpty()) {
+                for (int i = 0; i < n + 1; i++) {
+                    Integer f = maxHeap.poll();
+                    if (f == null && cooldown.isEmpty()) {
                         break;
                     }
+                    if (f != null && --f > 0) {
+                        cooldown.add(f);
+                    }
+                    time++;
                 }
-                
-                // Add back cooldown tasks
-                availables.addAll(cooldown);
+                maxHeap.addAll(cooldown);
             }
-            
             return time;
         }
     }
