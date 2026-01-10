@@ -4,7 +4,9 @@ import java.util.Stack;
  * 151. Reverse Words in a String
  */
 public class _151 {
-	
+	// \\s+ matches one or more whitespace
+	// split only by " " would result in multiple empty strings
+	// without trim would also have empty strings when there's leading/trailing zeros
 	class Solution1_Trim_With_Split {
 		public String reverseWords(String s) {
 			String[] words = s.trim().split("\\s+"); // had to trim empty spaces from both ends before split
@@ -19,47 +21,64 @@ public class _151 {
 
 	// If asked to not use split() or StringBuilder & do in-place modification with O(1) auxiliary space
 	class Solution2_Two_Pointers {
-		private static final char EMPTY_SPACE = ' ';
 		public String reverseWords(String s) {
 			char[] arr = s.toCharArray();
-			int end = removeDupSpaces(arr); // words are in range [0, end)
-			reverse(arr, 0, end);
-			reverseWord(arr, end);
-			return new String(arr, 0, end); // String​(char[] value, int offset, int length)
+			int len = removeSpace(arr);
+			reverse(arr, 0, len);
+			reverseWord(arr, len);
+			return new String(arr, 0, len);
 		}
-	
-		private int removeDupSpaces(char[] arr) { // [0, left) valid chars
-			int left = 0, right = 0;
-			while (right < arr.length) {
-				while (right < arr.length && arr[right] == EMPTY_SPACE) right++;
-				while (right < arr.length && arr[right] != EMPTY_SPACE) {
-					arr[left++] = arr[right++];
+
+		// reverse char in range [lo..hi)
+		private void reverse(char[] arr, int lo, int hi) {
+			hi--;
+			while (lo < hi) {
+				char temp = arr[lo];
+				arr[lo] = arr[hi];
+				arr[hi] = temp;
+				lo++;
+				hi--;
+			}
+		}
+
+		private int removeSpace(char[] arr) {
+			// [0..i): valid chars
+			// [i..j): invalid chars
+			// [j, n-1]: not traversed
+			int n = arr.length, i = 0, j = 0; 
+		
+			while (j < n) {
+				// remove leading/trailing zero
+				while (j < n && arr[j] == ' ') {
+					j++;
 				}
-				while (right < arr.length && arr[right] == EMPTY_SPACE) right++;
-				if (right < arr.length) arr[left++] = EMPTY_SPACE;
+
+				// append space between words (not before first or after last)
+				// i > 0 ensures we're not before the first word
+				// j < n ensures there's a word coming (not just trailing spaces)
+				if (i > 0 && j < n) {
+					arr[i++] = ' ';
+				}
+
+				// move valid chars front
+				while (j < n && arr[j] != ' ') {
+					arr[i++] = arr[j++];
+				}
 			}
-			return left;
+
+			return i;
 		}
-	
-		private void reverse(char[] arr, int start, int end) {
-			int l = start, r = end - 1;
-			while (l < r) {
-				char tmp = arr[l];
-				arr[l] = arr[r];
-				arr[r] = tmp;
-				l++;
-				r--;
-			}
-		}
-	
-		private void reverseWord(char[] arr, int end) {
-			int l = 0, r = 0;
-			for (; r < end; r++) {
-				if (arr[r] != EMPTY_SPACE) continue;
-				reverse(arr, l, r);
-				l = r + 1;
-			}
-			reverse(arr, l, end);
+
+		private void reverseWord(char[] arr, int n) {
+			int start = 0, end = 0;
+			while (end < n) {
+				while (end < n && arr[end] != ' ') {
+					end++;
+				}
+				reverse(arr, start, end);
+				end++;
+				start = end;
+			} 
 		}
 	}
 
