@@ -186,44 +186,52 @@ public class _115 {
     
     // s: babgbag
     // t: bag
-    // dp(s, i, t, j) = dp(s, i + 1, t, j)                          if s[i] != t[j]
-    // dp(s, i, t, j) = dp(s, i + 1, t, j) + dp(s, i + 1, t, j + 1) if s[i] == t[j]
-    class Solution2_By_S_Bottom_Up_DP {
+    class Solution2_DP {
+        // dp[i][j] = number of ways to form t[0..i-1] using s[0..j-1]
+        // dp[0][0..m] = 1
+        // dp[1..n][0] = 0
+        // dp[i][j] = dp[i][j-1] if s[j-1] != t[i-1]
+        //          = dp[i][j-1] + dp[i-1][j-1] else
         public int numDistinct(String s, String t) {
             int m = s.length(), n = t.length();
-            int[][] memo = new int[m + 1][n + 1];
-            for (int i = 0; i <= m; i++) {
-                memo[i][n] = 1;
+            int[][] dp = new int[n + 1][m + 1]; // ways to form t[0..i-1] using first j chars
+            for (int j = 0; j <= m; j++) {
+                dp[0][j] = 1;
             }
-            for (int i = m - 1; i >= 0; i--) {
-                for (int j = n - 1; j >= 0; j--) {
-                    memo[i][j] = memo[i + 1][j];
-                    if (s.charAt(i) == t.charAt(j)) {
-                        memo[i][j] += memo[i + 1][j + 1];
+            for (int i = 1; i <= n; i++) {
+                char tc = t.charAt(i - 1);
+                for (int j = 1; j <= m; j++) {
+                    char sc = s.charAt(j - 1);
+                    dp[i][j] = dp[i][j-1];
+                    if (sc == tc) {
+                        dp[i][j] += dp[i-1][j-1];
                     }
                 }
             }
-            return memo[0][0];
+            return dp[n][m];
         }
     }
 
-    // dp(s, i, t, j) = dp(s, i + 1, t, j) + (s[i] == t[j] ? dp(s, i + 1, t, j + 1) : 0)
-    // from this equation we can see we only need next row (i + 1)
-    class Solution2_By_S_Bottom_Up_DP_Improved {
+    class Solution2_DP_SpaceOptimized {
         public int numDistinct(String s, String t) {
             int m = s.length(), n = t.length();
-            int[] memo = new int[n];
-            for (int i = m - 1; i >= 0; i--) {
-                int prevJ = 1; // initialize memo[i][n] = 1
-                for (int j = n - 1; j >= 0; j--) {
-                    int currJ = memo[j]; // memo[i+1][j]
-                    if (s.charAt(i) == t.charAt(j)) {
-                        memo[j] += prevJ;
+            int[] dp = new int[m + 1];
+            for (int j = 0; j <= m; j++) {
+                dp[j] = 1;
+            }
+            for (int i = 1; i <= n; i++) {
+                int prev = dp[0];
+                dp[0] = 0;
+                for (int j = 1; j <= m; j++) {
+                    int temp = dp[j];
+                    dp[j] = dp[j-1];
+                    if (t.charAt(i - 1) == s.charAt(j - 1)) {
+                        dp[j] += prev;
                     }
-                    prevJ = currJ; // memo[i+1][j+1]
+                    prev = temp;
                 }
             }
-            return memo[0];
+            return dp[m];
         }
     }
         
