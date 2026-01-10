@@ -5,20 +5,13 @@ import java.util.Set;
 
 /**
  * 560. Subarray Sum Equals K
- * Given an array of integers nums and an integer k, return the total number of subarrays whose sum equals to k.
- * A subarray is a contiguous non-empty sequence of elements within an array.
+ * 
+ * Clarification:
+ * - Could nums[i] and k be negative? [IMPORTANT]
+ * - Empty subarray allowed? (No - problem says non-empty)
  */
 public class _560 {
-	static class Solution1_BruteForce {
-		/**
-		 * Find the number of subarrays whose sum equals to k.
-		 * Time: O(N^2)
-		 * Space: O(N)
-		 *
-		 * @param nums the int arr
-		 * @param k    target sum
-		 * @return the number of subarrays whose sum equals to k
-		 */
+	class Solution0_BruteForce {
 		public int subarraySum(int[] nums, int k) {
 			int[] preSum = new int[nums.length + 1];
 			for (int i = 0; i < nums.length; i++) {
@@ -34,85 +27,24 @@ public class _560 {
 		}
 	}
 	
-	static class Solution2_PrefixSum_HashMap {
-		/**
-		 * Find the number of subarrays whose sum equals to k.
-		 * Time: O(N)
-		 * Space: O(N)
-		 *
-		 * @param nums the int arr
-		 * @param k    target sum
-		 * @return the number of subarrays whose sum equals to k
-		 */
+	class Solution2_PrefixSum_HashMap {
+		// presum[j] - presum[i] == k ==> for presum[j], find count of presum[j] - k where j > i
 		public int subarraySum(int[] nums, int k) {
-			// pre[i] - pre[j] == k, && i > j
-			int n = nums.length;
-			int[] preSum = new int[n + 1];
-			for (int i = 0; i < n; i++) {
-				preSum[i + 1] = preSum[i] + nums[i];
-			}
-			// use a HashMap to store the preSum & their frequencies
-			Map<Integer, Integer> sumFreq = new HashMap<>();
-			int subarrayCount = 0;
-			for (int i = 0; i < preSum.length; i++) {
-				// target: pre[j] == pre[i] - k
-				if (sumFreq.containsKey(preSum[i] - k)) { // found the target
-					subarrayCount += sumFreq.get(preSum[i] - k); // update the total count by target freq
+			Map<Integer, Integer> preSumFreq = new HashMap<>();
+			preSumFreq.put(0, 1);
+			int count = 0, sum = 0;
+			for (int num : nums) {
+				sum += num;
+				if (preSumFreq.containsKey(sum - k)) {
+					count += preSumFreq.get(sum - k);
 				}
-				// update the prefix sum freq
-				sumFreq.put(preSum[i], sumFreq.getOrDefault(preSum[i], 0) + 1);
+				preSumFreq.put(sum, preSumFreq.getOrDefault(sum, 0) + 1);
 			}
-			return subarrayCount;
-		}
-
-		// input: [2], k = 2
-		public int subarraySum2(int[] nums, int k) {
-			// nums[i] + ... + nums[j] == k, j >= i
-			// sum(j) - sum(i - 1) == k
-			// sum(j) - k == sum(i), j > i
-			int[] preSum = new int[nums.length]; // preSum[i] = sum(nums[0..i])
-			preSum[0] = nums[0];
-			Map<Integer, Integer> sumToFreq = new HashMap<>();
-			sumToFreq.put(0, 1); // base case
-			int subarray = 0;
-	
-			for (int i = 0; i < nums.length; i++) {
-				if (i > 0) preSum[i] = preSum[i - 1] + nums[i];
-				int target = preSum[i] - k;
-				if (sumToFreq.containsKey(target)) {
-					subarray += sumToFreq.get(target);
-				}
-				sumToFreq.put(preSum[i], sumToFreq.getOrDefault(preSum[i], 0) + 1);
-			}
-			return subarray;
-		}
-		
-		/**
-		 * Time: O(n)
-		 * Space: O(n)
-		 * 
-		 * @param nums
-		 * @param k
-		 * @return
-		 */
-		public int subarraySum3(int[] nums, int k) {
-			int sum = 0, subarray = 0;
-			Map<Integer, Integer> sumToFreq = new HashMap<>();
-			sumToFreq.put(0, 1);
-	
-			for (int i = 0; i < nums.length; i++) {
-				sum += nums[i];
-				int target = sum - k;
-				if (sumToFreq.containsKey(target)) {
-					subarray += sumToFreq.get(target);
-				}
-				sumToFreq.put(sum, sumToFreq.getOrDefault(sum, 0) + 1);
-			}
-			return subarray;
+			return count;
 		}
 	}
 
-	static class Solution3_PrefixSum_HashMap_Wrong_Answer {
+	class WrongSolution_PrefixSum_HashMap {
 		public int subarraySum(int[] nums, int k) {
 			int len = nums.length;
 			int[] sum = new int[len + 1];
@@ -131,25 +63,27 @@ public class _560 {
 		}
 	}
 
-	class Solution4_Wrong_Answer {
+	// **Sliding window doesn't work with negative numbers**
+	class WrongSolution_SlidingWindow {
 		public int subarraySum(int[] nums, int k) {
-			// nums[i] + ... + nums[j] == k, j >= i
-			// sum(j) - sum(i - 1) == k
-			// sum(j) == k + sum(i), j > i
-			int[] preSum = new int[nums.length]; // preSum[i] = sum(nums[0..i])
-			preSum[0] = nums[0];
-			Map<Integer, Integer> sumToFreq = new HashMap<>();
-			sumToFreq.put(preSum[0] + k, 1);
-			int subarray = 0;
-	
-			for (int i = 1; i < nums.length; i++) {
-				preSum[i] = preSum[i - 1] + nums[i];
-				if (sumToFreq.containsKey(preSum[i])) {
-					subarray += sumToFreq.get(preSum[i]);
+			int count = 0;
+			int sum = 0;
+			int left = 0;
+			
+			for (int right = 0; right < nums.length; right++) {
+				sum += nums[right];
+				
+				// ❌ Wrong! Can't shrink window with negatives
+				while (sum > k && left <= right) {
+					sum -= nums[left++];
 				}
-				sumToFreq.put(preSum[i] + k, sumToFreq.getOrDefault(preSum[i] + k, 0) + 1);
+				
+				if (sum == k) {
+					count++;
+				}
 			}
-			return subarray;
+			
+			return count;
 		}
 	}
 
