@@ -137,12 +137,13 @@ public class _1143 {
             }
             
             // Backtrack to find the actual LCS
-            StringBuilder lcs = new StringBuilder();
-            int i = m, j = n;
+            int maxLen = dp[m][n];
+            char[] lcs = new char[maxLen];
+            int i = m, j = n, pos = maxLen - 1;
             
             while (i > 0 && j > 0) {
                 if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
-                    lcs.append(text1.charAt(i - 1));
+                    lcs[pos--] = text1.charAt(i - 1);
                     i--;
                     j--;
                 } else if (dp[i - 1][j] > dp[i][j - 1]) {
@@ -154,7 +155,7 @@ public class _1143 {
                 }
             }
             
-            return lcs.reverse().toString();
+            return new String(lcs);
         }
     }
 
