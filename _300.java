@@ -125,7 +125,7 @@ public class _300 {
 
     // In patience sorting (card game):
     // - Place cards in piles
-    // - Card can go on pile only if smaller than top card
+    // - Card can go on pile only if TLE top card
     // - Otherwise, start new pile
     // - Use binary search to find the leftmost pile where card fits
     // the subseqs array represents the top card of each pile
