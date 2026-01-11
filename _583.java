@@ -10,6 +10,7 @@ import java.util.Arrays;
 public class _583 {
     class Solution1_DP_2D {
         // dp[i][j] = min delete make s1[0..i-1] == s2[0...j-1]
+        // dp[i][j] = dp[i-1][j-1] when s1[i-1] == s2[j-1]
         // dp[i][j] = min(dp[i-1][j], dp[i][j-1]) + 1 when s1[i-1] ≠ s2[j-1]
         public int minDistance(String word1, String word2) {
             int m = word1.length(), n = word2.length();
