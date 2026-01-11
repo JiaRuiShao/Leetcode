@@ -9,6 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * 1124. Longest Well-Performing Interval
+ * 
+ * - S0 BF: O(n^2) O(1)
+ * - S1: Prefix + MonoQueue: O(n), O(n) [PREFERRED]
+ * - S2: Prefix + HashMap: O(n), O(n)
  */
 public class _1124 {
 	
@@ -16,14 +20,18 @@ public class _1124 {
 	
 	class Solution0_BruteForce {
 		public int longestWPI(int[] hours) {
-			int tiredDay = 0, maxLen = 0;
-			for (int start = 0; start < hours.length; start++) {
-				tiredDay = 0;
-				for (int end = start; end < hours.length; end++) {
-					if (hours[end] > 8) tiredDay++;
-					if (tiredDay > end - start + 1 - tiredDay) maxLen = Math.max(maxLen, end - start + 1);
+			int n = hours.length, maxLen = 0;
+			
+			for (int i = 0; i < n; i++) {
+				int sum = 0;
+				for (int j = i; j < n; j++) {
+					sum += (hours[j] > 8) ? 1 : -1;
+					if (sum > 0) {
+						maxLen = Math.max(maxLen, j - i + 1);
+					}
 				}
 			}
+			
 			return maxLen;
 		}
 	}
