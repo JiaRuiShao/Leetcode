@@ -5,6 +5,11 @@ import java.util.Map;
 
 /**
  * 792. Number of Matching Subsequences
+ * 
+ * - S0: BF O(mnk), O(1)
+ * - S1: Prebuilt index map for s, binary search on index O(nklogm) O(m)
+ * - S2: Bucket O(m+nk) O(nk) [PREFERRED]
+ * - S3: Trie O(m+nk) O(nk)
  */
 public class _792 {
     // Time: O(NW) where N is number of chars in s and W is number of word in words
@@ -145,6 +150,7 @@ public class _792 {
      * Space: O(W) where W is words arr length
      */
     class Solution3_Bucket_By_Next_Char {
+        @SuppressWarnings("unchecked")
         public int numMatchingSubseq(String s, String[] words) {
             final int CHAR_MAX_SIZE = 26;
             final char a = 'a';
