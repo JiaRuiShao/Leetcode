@@ -78,7 +78,7 @@ public class _209 {
     }
 
     // Time: O(n)
-    class Solution4_FollowUp_Input_Negative_Mono_Queue_PreSum {
+    class Solution4_FollowUp_Input_Negative_MonoQueue_PreSum {
         // find min(j - i) that preSum[j] - preSum[i] >= target
         // ==> preSum[i] <= preSum[j] - target
         public int minSubArrayLen(int target, int[] nums) {
