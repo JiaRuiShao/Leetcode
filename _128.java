@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class _128 {
         }
     }
 
-    class Solution2_Union_Find {
+    class Solution2_UnionFind {
         public int longestConsecutive(int[] nums) {
             UF uf = new UF(nums.length);
             // Map val to index in nums
@@ -106,7 +107,7 @@ public class _128 {
         }
     }
 
-    class Solution3_Union_Find_HashMap {
+    class Solution2_UnionFind_HashMap {
         public int longestConsecutive(int[] nums) {
             if (nums.length == 0) return 0;
             UF uf = new UF();
@@ -155,6 +156,35 @@ public class _128 {
                 }
                 maxConnectedComponents = Math.max(maxConnectedComponents, connectedComponents.get(p2));
             }
+        }
+    }
+
+    class Solution3_Sort {
+        public int longestConsecutive(int[] nums) {
+            if (nums.length == 0) return 0;
+            
+            Arrays.sort(nums);
+            
+            int maxLen = 1;
+            int currentLen = 1;
+            
+            for (int i = 1; i < nums.length; i++) {
+                // Skip duplicates
+                if (nums[i] == nums[i - 1]) {
+                    continue;
+                }
+                // Consecutive
+                else if (nums[i] == nums[i - 1] + 1) {
+                    currentLen++;
+                }
+                // Break in sequence
+                else {
+                    maxLen = Math.max(maxLen, currentLen);
+                    currentLen = 1;
+                }
+            }
+            
+            return Math.max(maxLen, currentLen);
         }
     }
 }
