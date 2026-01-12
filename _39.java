@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,21 +56,46 @@ public class _39 {
 	// Space: O(T / min(nums))
 	class Solution1_Backtrack {
 		public List<List<Integer>> combinationSum(int[] candidates, int target) {
-			List<List<Integer>> res = new ArrayList<>();
-			List<Integer> selected = new ArrayList<>();
-			backtrack(candidates, target, 0, 0, selected, res);
-			return res;
+			List<List<Integer>> combinations = new ArrayList<>();
+			List<Integer> combination = new ArrayList<>();
+			backtrack(candidates, 0, target, combination, combinations);
+			return combinations;
 		}
-	
-		private void backtrack(int[] nums, int k, int start, int selectedSum, List<Integer> selected, List<List<Integer>> res) {
-			if (selectedSum > k) return;
-			if (selectedSum == k) {
+
+		private void backtrack(int[] nums, int start, int remain, List<Integer> selected, List<List<Integer>> res) {
+			if (remain < 0) {
+				return;
+			}
+			if (remain == 0) {
 				res.add(new ArrayList<>(selected));
+				return;
 			}
 			for (int i = start; i < nums.length; i++) {
-				int num = nums[i];
-				selected.add(num);
-				backtrack(nums, k, i, selectedSum + num, selected, res);
+				selected.add(nums[i]);
+				backtrack(nums, i, remain - nums[i], selected, res);
+				selected.remove(selected.size() - 1);
+			}
+		}
+	}
+
+	class Solution1_Backtrack_Optimized {
+		public List<List<Integer>> combinationSum(int[] candidates, int target) {
+			Arrays.sort(candidates); // sort for early pruning
+			List<List<Integer>> combinations = new ArrayList<>();
+			List<Integer> combination = new ArrayList<>();
+			backtrack(candidates, 0, target, combination, combinations);
+			return combinations;
+		}
+
+		private void backtrack(int[] nums, int start, int remain, List<Integer> selected, List<List<Integer>> res) {
+			if (remain == 0) {
+				res.add(new ArrayList<>(selected));
+				return;
+			}
+			for (int i = start; i < nums.length; i++) {
+				if (remain < nums[i]) break;
+				selected.add(nums[i]);
+				backtrack(nums, i, remain - nums[i], selected, res);
 				selected.remove(selected.size() - 1);
 			}
 		}
