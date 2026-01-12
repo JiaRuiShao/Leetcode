@@ -1,6 +1,5 @@
 import helper.ListNode;
 
-import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -11,8 +10,7 @@ public class _23 {
     static class Solution1_MinHeap {
         /**
          * Merge K sorted LinkedList.
-         * Time: O(nlogk) where n is the total num of list nodes in the array of linked list,
-         * & k is the num of linked list in the array
+         * Time: O(nlogk)
          * Space: O(k)
          *
          * @param lists the given array of list heads
