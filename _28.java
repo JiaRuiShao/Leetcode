@@ -1,6 +1,9 @@
 /**
  * 28. Find the Index of the First Occurrence in a String
- * This question is asking for a substring match so that character order matters.
+ * 
+ * - S1 Sliding Window: O(mn), O(1)
+ * - S2: Rabin-Karp: O(n+m) avg / O(mn) worst, O(1)
+ * - S3: KMP: O(n+m), O(m)
  */
 public class _28 {
     class Solution1_Sliding_Window {
@@ -67,6 +70,72 @@ public class _28 {
     
         private int convertCharToInt(char c) {
             return c - 'a';
+        }
+    }
+
+    class Solution3_KMP {
+        public int strStr(String haystack, String needle) {
+            if (needle.isEmpty()) return 0;
+            
+            int n = haystack.length();
+            int m = needle.length();
+            
+            if (m > n) return -1;
+            
+            // Build LPS (Longest Proper Prefix which is also Suffix) array
+            int[] lps = buildLPS(needle);
+            
+            // KMP search
+            int i = 0; // haystack pointer
+            int j = 0; // needle pointer
+            
+            while (i < n) {
+                if (haystack.charAt(i) == needle.charAt(j)) {
+                    i++;
+                    j++;
+                    
+                    // Found match
+                    if (j == m) {
+                        return i - m;
+                    }
+                } else {
+                    if (j > 0) {
+                        // Don't match i, use LPS to skip characters in needle
+                        j = lps[j - 1];
+                    } else {
+                        // No match at all, move haystack pointer
+                        i++;
+                    }
+                }
+            }
+            
+            return -1;
+        }
+
+        // Build Longest Proper Prefix which is also Suffix array
+        private int[] buildLPS(String pattern) {
+            int m = pattern.length();
+            int[] lps = new int[m];
+            
+            int len = 0; // length of previous longest prefix suffix
+            int i = 1;
+            
+            while (i < m) {
+                if (pattern.charAt(i) == pattern.charAt(len)) {
+                    len++;
+                    lps[i] = len;
+                    i++;
+                } else {
+                    if (len > 0) {
+                        len = lps[len - 1];
+                    } else {
+                        lps[i] = 0;
+                        i++;
+                    }
+                }
+            }
+            
+            return lps;
         }
     }
 }
