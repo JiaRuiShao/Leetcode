@@ -5,6 +5,9 @@ import java.util.PriorityQueue;
 
 /**
  * 378. Kth Smallest Element in a Sorted Matrix
+ * 
+ * - S1 BS: O(n), O(1)
+ * - S2: Merge n list O(klogn), O(n)
  */
 public class _378 {
     class Solution1_Binary_Search {
