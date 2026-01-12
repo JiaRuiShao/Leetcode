@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * 1124. Longest Well-Performing Interval
  * 
  * - S0 BF: O(n^2) O(1)
- * - S1: Prefix + MonoQueue: O(n), O(n) [PREFERRED]
- * - S2: Prefix + HashMap: O(n), O(n)
+ * - S1: Prefix + MonoStack: O(n), O(n)
+ * - S2: Prefix + HashMap: O(n), O(n) [PREFERRED]
  */
 public class _1124 {
 	
@@ -43,26 +43,26 @@ public class _1124 {
 	// find max(j - i): pre[j] - pre[i] > 0 ==> find min(i) that pre[i] < pre[j]
 	// use a mono stack to keep preSum[i] in mono decreasing order
 	class Solution1_PrefixSum_MonoStack {
+		// for each i, find min(j) so that presum[i] - presum[j] > 0 where i > j
+		// ==> find min_j: presum[j] < presum[i]
 		public int longestWPI(int[] hours) {
 			int n = hours.length, maxLen = 0;
-			int[] preSum = new int[n + 1];
-			Deque<Integer> stk = new ArrayDeque<>(); // preSum indices
-			stk.push(0);
-			
-			for (int i = 0; i < n; i++) {
-				int sum = preSum[i];
-				if (hours[i] > 8) sum++; // tiring day
-				else sum--; // non-tiring day
-				preSum[i + 1] = sum;
-				if (sum < preSum[stk.peek()]) stk.push(i + 1);
-			}
-			
-			for (int i = n; i >= 0; i--) {
-				while (!stk.isEmpty() && preSum[stk.peek()] < preSum[i]) {
-					maxLen = Math.max(maxLen, i - stk.pop());
+			int[] presum = new int[n+1];
+			Deque<Integer> minStack = new ArrayDeque<>();
+			minStack.push(0);
+			for (int i = 1; i <= n; i++) {
+				presum[i] = presum[i-1] + ((hours[i-1] > 8) ? 1 : -1);
+				if (presum[i] < presum[minStack.peek()]) {
+					minStack.push(i);
 				}
 			}
-			
+
+			for (int i = n; i > 0; i--) {
+				while (!minStack.isEmpty() && presum[minStack.peek()] < presum[i]) {
+					maxLen = Math.max(maxLen, i - minStack.pop());
+				}
+			}
+
 			return maxLen;
 		}
 	}
@@ -78,47 +78,19 @@ public class _1124 {
 		 * @return longest interval
 		 */
 		public int longestWPI(int[] hours) {
-			int n = hours.length, maxLen = 0;
-			// build the prefix sum array
-			int[] preSum = new int[n + 1];
-			for (int i = 0; i < n; i++) {
-				preSum[i + 1] = preSum[i] + (hours[i] > 8 ? 1 : -1);
-			}
-			// store the prefix sum and the corresponding index
-			Map<Integer, Integer> sumIdx = new HashMap<>();
-			for (int i = 0; i < preSum.length; i++) {
-				// if preSum[i] > 0, means interval from 0 to i is a well-performing interval
-				if (preSum[i] > 0) {
-					maxLen = Math.max(maxLen, i);
-				}
-				// if preSum[i] <= 0, we need to find a j so that pre[i] - pre[j] > 0, and j is as small as possible ==> pre[i] - pre[j] == 1
-				else if (sumIdx.containsKey(preSum[i] - 1)) {
-					maxLen = Math.max(maxLen, i - sumIdx.get(preSum[i] - 1));
-				}
-				
-				// update preSum[i]
-				if (!sumIdx.containsKey(preSum[i])) {
-					sumIdx.put(preSum[i], i);
-				} // else do nothing because we want to keep the leftmost idx
-			}
-			return maxLen;
-		}
-		
-		public int longestWPIImproved(int[] hours) {
 			int n = hours.length, maxLen = 0, sum = 0;
-			Map<Integer, Integer> sumIdx = new HashMap<>();
-			sumIdx.put(sum, 0);
-			for (int i = 1; i <= n; i++) {
-				sum += (hours[i - 1] > 8 ? 1 : -1);
-				if (sum > 0) maxLen = Math.max(maxLen, i); // any prefix‐sum > 0 means subarray [0..i−1] is well-performing
-				else if (sumIdx.containsKey(sum - 1)) { // look for the smallest index i where sum[i] = sum[j] − 1
-					maxLen = Math.max(maxLen, i - sumIdx.get(sum - 1));
+			Map<Integer, Integer> prefixSumToIdx = new HashMap<>();
+			prefixSumToIdx.put(sum, -1);
+			for (int i = 0; i < n; i++) {
+				sum += (hours[i] > 8) ? 1 : -1;
+				if (sum > 0) { // any prefix‐sum > 0 means subarray [0..i−1] is well-performing
+					maxLen = Math.max(maxLen, i + 1);
+				} else if (prefixSumToIdx.containsKey(sum - 1)) { // look for the smallest index i where sum[i] = sum[j] − 1
+					maxLen = Math.max(maxLen, i - prefixSumToIdx.get(sum - 1));
 				}
-				
-				if (!sumIdx.containsKey(sum)) {
-					sumIdx.put(sum, i);
-				}
-			}
+				prefixSumToIdx.putIfAbsent(sum, i);
+			}        
+
 			return maxLen;
 		}
 	}
