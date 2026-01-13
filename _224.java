@@ -46,39 +46,30 @@ public class _224 {
 
     class Solution2_Iterative_Stack {
         public int calculate(String s) {
-            Deque<Integer> stack = new ArrayDeque<>();
-            int total = 0;
-            int curNum = 0;
-            int sign = 1;
-
-            for (int i = 0; i < s.length(); i++) {
+            int n = s.length();
+            int total = 0, num = 0, sign = 1;
+            Deque<Integer> stk = new ArrayDeque<>();
+            for (int i = 0; i < n; i++) {
                 char c = s.charAt(i);
                 if (c >= '0' && c <= '9') {
-                    curNum = 10 * curNum  + (c - '0');
-                } else if (c == '+') {
-                    total += sign * curNum;
-                    curNum = 0;
-                    sign = 1;
-                } else if (c == '-') {
-                    total += sign * curNum;
-                    curNum = 0;
-                    sign = -1;
+                    num  = num * 10 + (c - '0');
+                } else if (c == '+' || c == '-') {
+                    total += sign * num;
+                    sign = (c == '+' ? 1 : -1);
+                    num = 0;
                 } else if (c == '(') {
-                    // push result & sign to stack
-                    stack.push(total);
-                    stack.push(sign);
-                    // reset result & sign for the expression in the parenthesis
-                    sign = 1;
+                    stk.push(total);
+                    stk.push(sign);
                     total = 0;
-                } else if (c == ')'){
-                    total += sign * curNum;
-                    curNum = 0; /**IMPORTANT**/
-                    total *= stack.pop();
-                    total += stack.pop();
-
+                    sign = 1;
+                } else if (c == ')') {
+                    total += sign * num;
+                    total *= stk.pop();
+                    total += stk.pop();
+                    num = 0;
                 }
             }
-            return total + sign * curNum;
+            return total + sign * num;
         }
     }
 
