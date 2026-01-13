@@ -71,28 +71,26 @@ public class _1658 {
 	}
 	
 	class FollowUp_Negative_Input {
-		// [0, -2, 3, -2, 1], x = 1
-		// find the longest subarray with sum as
-		// sum(nums) = 0, target = 0 - 1 = -1
-		// prefixSum = [0, 0, -2, 1, -1, 0]
+		// longest substring with sum as k = (totalSum - x) -- COULD BE EMPTY
+		// goal: max(i - j) that presum[i] - presum[j] == k, where j < i
+		// for each i, find min(j)
 		public int minOperations(int[] nums, int x) {
-			int subarraySum = Arrays.stream(nums).sum() - x;
-			int n = nums.length, maxLen = -1;
-			Map<Integer, Integer> preSumToIdx = new HashMap<>();
-			preSumToIdx.put(0, 0);
-			int[] preSum = new int[n + 1];
+			int n = nums.length, maxLen = -1, sum = 0;
+			int k = Arrays.stream(nums).sum() - x;
+			Map<Integer, Integer> presumToIdx = new HashMap<>();
+			presumToIdx.put(sum, -1);
 			for (int i = 0; i < n; i++) {
-				preSum[i + 1] = preSum[i] + nums[i];
+				sum += nums[i];
+				presumToIdx.putIfAbsent(sum, i); // update map before update res since substring could be empty
+				Integer j = presumToIdx.get(sum - k);
+				if (j != null) {
+					maxLen = Math.max(maxLen, i - j);
+				} 
 			}
-			for (int i = 0; i <= n; i++) {
-				// pre[j] - pre[i] = subarraySum
-				int target = preSum[i] - subarraySum;
-				if (preSumToIdx.containsKey(target)) {
-					maxLen = Math.max(maxLen, i - preSumToIdx.get(target));
-				}
-				preSumToIdx.putIfAbsent(preSum[i], i);
+			if (maxLen == -1) { // impossible
+				return -1;
 			}
-			return maxLen == -1 ? -1 : n - maxLen;
+			return n - maxLen;
 		}
 		
 		public int minOperationsImproved(int[] nums, int x) {
