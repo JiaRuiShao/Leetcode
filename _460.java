@@ -9,127 +9,122 @@ import java.util.Set;
  */
 public class _460 {
     static class Solution1_HashMap_DoublyLinkedList_Implementation {
-
         class LFUCache {
-
-            // Doubly linked list node modified from 146 LRU question.
-            // The list is maintained in order:
-            // [LFU & LRU ... LFU & MRU] <-> [MFU & LRU ... MFU & MRU]
-            class CacheNode {
+            // Node represents a key-value pair with frequency
+            class Node {
                 int key;
                 int value;
-                int freq;    // Frequency counter.
-                CacheNode prev;
-                CacheNode next;
-
-                public CacheNode(int key, int value) {
+                int freq;
+                Node prev;
+                Node next;
+                
+                Node(int key, int value) {
                     this.key = key;
                     this.value = value;
-                    this.freq = 1; // New nodes start with frequency 1.
+                    this.freq = 1;
                 }
             }
-
-            CacheNode head;
-            CacheNode tail;
-            Map<Integer, CacheNode> cacheMap;  // Key -> CacheNode.
-            // Maps a frequency to the MRU (rightmost) node for that frequency group.
-            Map<Integer, CacheNode> freqMap;
-            final int capacity;
-
+            
+            // Doubly linked list for maintaining LRU order within same frequency
+            class DLList {
+                Node head;
+                Node tail;
+                int size;
+                
+                DLList() {
+                    head = new Node(0, 0);
+                    tail = new Node(0, 0);
+                    head.next = tail;
+                    tail.prev = head;
+                    size = 0;
+                }
+                
+                void add(Node node) {
+                    Node next = head.next;
+                    head.next = node;
+                    node.prev = head;
+                    node.next = next;
+                    next.prev = node;
+                    size++;
+                }
+                
+                void remove(Node node) {
+                    node.prev.next = node.next;
+                    node.next.prev = node.prev;
+                    size--;
+                }
+                
+                Node removeLast() {
+                    if (size == 0) return null;
+                    Node last = tail.prev;
+                    remove(last);
+                    return last;
+                }
+            }
+            
+            private final int capacity;
+            private int minFreq;
+            private final Map<Integer, Node> cache;              // key -> node
+            private final Map<Integer, DLList> freqMap;          // freq -> DLList
+            
             public LFUCache(int capacity) {
                 this.capacity = capacity;
-                head = new CacheNode(-1, -1);
-                tail = new CacheNode(-1, -1);
-                head.next = tail;
-                tail.prev = head;
-                head.freq = 0;
-                tail.freq = 0;
-                cacheMap = new HashMap<>();
-                freqMap = new HashMap<>();
+                this.minFreq = 0;
+                this.cache = new HashMap<>();
+                this.freqMap = new HashMap<>();
             }
-
+            
             public int get(int key) {
-                CacheNode node = cacheMap.get(key);
-                if (node == null) return -1;
-                updateFrequency(node);
+                Node node = cache.get(key);
+                if (node == null) {
+                    return -1;
+                }
+                updateFreq(node);
                 return node.value;
             }
-
+            
             public void put(int key, int value) {
                 if (capacity == 0) return;
-
-                CacheNode node = cacheMap.get(key);
+                
+                Node node = cache.get(key);
+                
                 if (node != null) {
-                    // Update existing node.
+                    // Update existing key
                     node.value = value;
-                    updateFrequency(node);
+                    updateFreq(node);
                 } else {
-                    // Evict if at capacity: remove the LFU & LRU node (head.next).
-                    if (cacheMap.size() == capacity) {
-                        CacheNode toEvict = head.next;
-                        updateFreqMapOnRemoval(toEvict, toEvict.freq);
-                        removeNode(toEvict);
-                        cacheMap.remove(toEvict.key);
+                    // Add new key
+                    if (cache.size() >= capacity) {
+                        // Evict LFU (and LRU if tie)
+                        DLList minFreqList = freqMap.get(minFreq);
+                        Node toRemove = minFreqList.removeLast();
+                        cache.remove(toRemove.key);
                     }
-                    // Create new node with frequency 1.
-                    CacheNode newNode = new CacheNode(key, value);
-                    // For a new node, if a frequency-1 group exists, insert after its MRU;
-                    // otherwise, insert right after the head.
-                    CacheNode insPoint = freqMap.containsKey(1) ? freqMap.get(1) : head;
-                    addNodeAfter(newNode, insPoint);
-                    cacheMap.put(key, newNode);
-                    freqMap.put(1, newNode);
+                    
+                    // Add new node
+                    Node newNode = new Node(key, value);
+                    cache.put(key, newNode);
+                    freqMap.computeIfAbsent(1, k -> new DLList()).add(newNode);
+                    minFreq = 1;
                 }
             }
-
-            // Increase the frequency of a node and reposition it.
-            // Instead of traversing from the head to find an insertion point,
-            // we capture the candidate from the node’s original previous pointer.
-            private void updateFrequency(CacheNode node) {
+            
+            private void updateFreq(Node node) {
                 int oldFreq = node.freq;
-                // Save the candidate insertion point before removal.
-                updateFreqMapOnRemoval(node, oldFreq);
-                CacheNode candidate = freqMap.getOrDefault(oldFreq, node.prev);
-                removeNode(node);
-                node.freq++;
-                // If there's already a node with the new frequency, insert after its MRU.
-                // Otherwise, we simply reinsert after the candidate.
-                CacheNode insPoint = freqMap.getOrDefault(node.freq, candidate);
-                addNodeAfter(node, insPoint);
-                // Update the MRU pointer for the new frequency.
-                freqMap.put(node.freq, node);
-            }
-
-            // Standard removal from the doubly linked list.
-            private void removeNode(CacheNode node) {
-                CacheNode prev = node.prev;
-                CacheNode next = node.next;
-                prev.next = next;
-                next.prev = prev;
-                node.prev = null;
-                node.next = null;
-            }
-
-            // Insert node right after the specified previous node.
-            private void addNodeAfter(CacheNode node, CacheNode prev) {
-                CacheNode next = prev.next;
-                prev.next = node;
-                node.prev = prev;
-                node.next = next;
-                next.prev = node;
-            }
-
-            // When a node is removed from its frequency group, update freqMap accordingly.
-            private void updateFreqMapOnRemoval(CacheNode node, int freq) {
-                if (freqMap.containsKey(freq) && freqMap.get(freq) == node) {
-                    // Find the new MRU for this frequency group by looking backward.
-                    CacheNode prev = node.prev;
-                    if (prev != head && prev.freq == freq) {
-                        freqMap.put(freq, prev);
-                    } else {
-                        freqMap.remove(freq);
-                    }
+                int newFreq = oldFreq + 1;
+                
+                // Remove from old frequency list
+                DLList oldList = freqMap.get(oldFreq);
+                oldList.remove(node);
+                
+                // Update minFreq if needed
+                if (oldFreq == minFreq && oldList.size == 0) {
+                    minFreq = newFreq;
                 }
+                
+                // Add to new frequency list
+                node.freq = newFreq;
+                freqMap.computeIfAbsent(newFreq, k -> new DLList()).add(node);
             }
         }
     }
