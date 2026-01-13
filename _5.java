@@ -1,7 +1,14 @@
 /**
  * 5. Longest Palindromic Substring
- * Given a string s, return the longest palindromic substring in s.
- * A string is called a palindrome string if the reverse of that string is the same as the original string.
+ * 
+ * - S0 BF: O(n^3), O(1)
+ * - S1 Expand from center: O(n^2), O(n)/O(1) [PREFERRED]
+ * - S2 DP: O(n^2), O(n^2)/O(n)
+ * - S3 Manacher's Algorithm: O(n), O(n) [NOT EXPECTED]
+ * 
+ * Followup:
+ * - Count total number of palindromic substrings? LC 647
+ * - Longest palindromic subsequence? LC 516 
  */
 public class _5 {
 	class Solution1_Two_Pointers_TLE { // Time Limit Exceed, O(n^3) time complexity
@@ -75,11 +82,37 @@ public class _5 {
 		private int findLongestPalindromeLength(String s, int i, int j) { // [i, j]
 			int maxLen = 1, n = s.length();
 			while (i >= 0 && j < n && s.charAt(i) == s.charAt(j)) {
-				maxLen = Math.max(maxLen, j - i + 1);
+				maxLen = j - i + 1;
 				i--;
 				j++;
 			}
 			return maxLen;
+		}
+	}
+
+	class Followup_CountAllPalindromicSubstring {
+		public int countSubstrings(String s) {
+			int count = 0;
+			
+			for (int i = 0; i < s.length(); i++) {
+				// Odd length palindromes
+				count += expandAndCount(s, i, i);
+				// Even length palindromes
+				count += expandAndCount(s, i, i + 1);
+			}
+			
+			return count;
+		}
+
+		private int expandAndCount(String s, int left, int right) {
+			int count = 0;
+			while (left >= 0 && right < s.length() 
+				&& s.charAt(left) == s.charAt(right)) {
+				count++;
+				left--;
+				right++;
+			}
+			return count;
 		}
 	}
 }
