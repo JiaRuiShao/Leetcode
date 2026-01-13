@@ -90,6 +90,55 @@ public class _5 {
 		}
 	}
 
+	class Solution4_DP {
+		public String longestPalindrome(String s) {
+			int n = s.length(), maxLen = 1, start = 0;
+			boolean[][] dp = new boolean[n][n];
+			for (int i = 0; i < n; i++) {
+				dp[i][i] = true;
+			}
+			// j >= i
+			// dp[i][j] = dp[i+1][j-1] if s[i] == s[j]
+			for (int i = n - 1; i >= 0; i--) {
+				for (int j = i + 1; j < n; j++) {
+					if (s.charAt(i) == s.charAt(j)) {
+						dp[i][j] = (j == i + 1) || dp[i+1][j-1];
+						if (dp[i][j] && j - i + 1 > maxLen) {
+							maxLen = j - i + 1;
+							start = i;
+						}
+					}
+				}
+			}
+			return s.substring(start, start + maxLen);
+		}
+
+		public String longestPalindrome_SpaceOptimized(String s) {
+			int n = s.length(), maxLen = 1, start = 0;
+			boolean[] dp = new boolean[n];
+			// j >= i
+			// dp[i][j] = dp[i+1][j-1] if s[i] == s[j]
+			for (int i = n - 1; i >= 0; i--) {
+				boolean prev = false; // dp[i+1][j-1]
+				dp[i] = true;
+				for (int j = i + 1; j < n; j++) {
+					boolean temp = dp[j];
+					if (s.charAt(i) == s.charAt(j)) {
+						dp[j] = (j == i + 1) || prev;
+						if (dp[j] && j - i + 1 > maxLen) {
+							maxLen = j - i + 1;
+							start = i;
+						}
+					} else {
+						dp[j] = false; // explicitly set to false to override value from prev row
+					}
+					prev = temp;
+				}
+			}
+			return s.substring(start, start + maxLen);
+		}
+	}
+
 	class Followup_CountAllPalindromicSubstring {
 		public int countSubstrings(String s) {
 			int count = 0;
