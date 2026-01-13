@@ -29,7 +29,7 @@ public class _588 {
             List<String> names = new ArrayList<>();
             Directory curr = navigate(path);
             if (curr.isFile) {
-                int start = path.lastIndexOf('/') + 1;
+                int start = path.lastIndexOf("/") + 1;
                 if (start < path.length()) {
                     names.add(path.substring(start, path.length()));
                 }
