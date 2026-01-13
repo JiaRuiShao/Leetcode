@@ -1,32 +1,33 @@
+import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.LinkedList;
 
 /**
- * 1944. Number of Visible People in a Queue.
- * Understand process of monotonic stack better
+ * 1944. Number of Visible People in a Queue
  */
 public class _1944 {
+    // Time: O(n^2)
+    // Space: O(1)
+    class Solution0_BruteForce {
 
+    }
+
+    // Time: O(n)
+    // Space: O(n)
     class Solution1_Monotonic_Stack {
         public int[] canSeePersonsCount(int[] heights) {
             int n = heights.length;
-            Deque<Integer> stack = new LinkedList<>();
-            int[] seenToRight = new int[n];
-
+            int[] canSee = new int[n];
+            // pop when peek height < curr height
+            Deque<Integer> minStack = new ArrayDeque<>();
             for (int i = n - 1; i >= 0; i--) {
-                int height = heights[i];
-                // count how many ppl are in betw myself and NGL
-                int pplInBetw = 0;
-                while (!stack.isEmpty() && stack.getFirst() < height) {
-                    stack.removeFirst();
-                    pplInBetw++;
+                while (!minStack.isEmpty() && minStack.peek() < heights[i]) {
+                    canSee[i]++;
+                    minStack.pop();
                 }
-                // # ppl seen is #pplInBetw + 1 if there's a valid NGL or + 0 if not
-                pplInBetw = stack.isEmpty() ? pplInBetw : pplInBetw + 1;
-                seenToRight[i] = pplInBetw;
-                stack.addFirst(height);
+                canSee[i] += (minStack.isEmpty() ? 0 : 1);
+                minStack.push(heights[i]);
             }
-            return seenToRight;
+            return canSee;
         }
     }
 }
