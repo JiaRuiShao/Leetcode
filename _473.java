@@ -198,43 +198,33 @@ public class _473 {
     // Time: O(4^n)
     // Space: O(n)
     class Solution2_Backtrack_Stick_By_Stick {
-        private boolean makeSquare = false;
         public boolean makesquare(int[] matchsticks) {
             int sum = Arrays.stream(matchsticks).sum();
-            // sorting in desc order helps to prune the decision tree, without it we will get TLE
+            if (sum % 4 != 0) {
+                return false;
+            }
+            int sideLength = sum / 4;
             Arrays.sort(matchsticks);
-            reverse(matchsticks);
-            if (sum % 4 != 0) return false;
             int[] sides = new int[4];
-            Arrays.fill(sides, sum / 4);
-            backtrack(matchsticks, 0, sides);
+            Arrays.fill(sides, sideLength);
+            return backtrack(matchsticks, matchsticks.length - 1, sides);
+        }
+
+        private boolean backtrack(int[] ms, int i, int[] sides) {
+            if (i == -1) {
+                return true;
+            }
+
+            boolean makeSquare = false;
+            for (int j = 0; j < sides.length && !makeSquare; j++) {
+                if (j > 0 && sides[j] == sides[j-1]) continue; // early pruning
+                if (sides[j] >= ms[i]) {
+                    sides[j] -= ms[i];
+                    makeSquare = makeSquare || backtrack(ms, i - 1, sides);
+                    sides[j] += ms[i];
+                }
+            }
             return makeSquare;
-        }
-
-        private void backtrack(int[] nums, int idx, int[] sides) {
-            if (makeSquare || idx == nums.length) {
-                makeSquare = true;
-                return;
-            }
-
-            for (int i = 0; i < sides.length; i++) {
-                if (sides[i] < nums[idx]) continue;
-                sides[i] -= nums[idx];
-                backtrack(nums, idx + 1, sides);
-                sides[i] += nums[idx];
-            }
-        }
-
-        private void reverse(int[] nums) {
-            int n = nums.length;
-            int lo = 0, hi = n - 1;
-            while (lo < hi) {
-                int tmp = nums[lo];
-                nums[lo] = nums[hi];
-                nums[hi] = tmp;
-                lo++;
-                hi--;
-            }
         }
     }
 }
