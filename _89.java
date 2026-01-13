@@ -126,6 +126,7 @@ public class _89 {
             codes.add(0);
             for (int i = 0, mask = 1; i < n; i++, mask <<= 1) {
                 int sz = codes.size();
+                // reversely flip to make sure bit diffs by 1
                 for (int j = sz - 1; j >= 0; j--) {
                     codes.add(codes.get(j) | mask);
                 }
