@@ -96,14 +96,15 @@ public class _853 {
             }
             Arrays.sort(cars, (a, b) -> Integer.compare(a.pos, b.pos));
 
-            Deque<Double> maxStk = new ArrayDeque<>(); // find next GTE elements using maxStack
+            Deque<Double> minStk = new ArrayDeque<>();
             for (int i = 0; i < n; i++) {
-                while (!maxStk.isEmpty() && cars[i].time >= maxStk.peek()) {
-                    maxStk.pop();
+                // car behind is faster, catch up with slower car ahead
+                while (!minStk.isEmpty() && cars[i].time >= minStk.peek()) {
+                    minStk.pop();
                 }
-                maxStk.push(cars[i].time);
+                minStk.push(cars[i].time);
             }
-            return maxStk.size();
+            return minStk.size();
         }
     }
 }
