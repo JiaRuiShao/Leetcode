@@ -34,9 +34,10 @@ public class _260 {
         }
     }
 
-    public static class Solution2_HashMap {
+    // this violates constant extra space requirement
+    public static class Solution0_HashMap {
         public int[] singleNumber(int[] nums) {
-            Map<Integer, Integer> map = new HashMap();
+            Map<Integer, Integer> map = new HashMap<>();
             for (int i : nums) {
                 map.put(i, map.getOrDefault(i, 0) + 1);
             }
