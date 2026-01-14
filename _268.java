@@ -1,24 +1,19 @@
+import java.util.Arrays;
+
 /**
  * 268. Missing Number
  */
 public class _268 {
     class Solution1_Bitwise_XOR {
         public int missingNumber(int[] nums) {
-            int n = nums.length;        // the array has n elements drawn from 0..n
-            int xor = 0;
-
-            // 1) XOR all valid numbers -- indices 0..n
-            for (int i = 0; i <= n; i++) {
-                xor ^= i;
+            int n = nums.length, missing = 0;
+            for (int num = 0; num <= n; num++) {
+                missing ^= num;
             }
-
-            // 2) XOR all array values
             for (int num : nums) {
-                xor ^= num;
+                missing ^= num;
             }
-
-            // what remains is the missing number
-            return xor;
+            return missing;
         }
     }
 
@@ -26,12 +21,38 @@ public class _268 {
         int missingNumber(int[] nums) {
             int n = nums.length;
             // Sum of Arithmetic Series -- AP Sum: (first term + last term) * number of terms / 2
-            long expect = (0 + n) * (n + 1) / 2;
-            long sum = 0;
+            int expect = (0 + n) * (n + 1) / 2;
             for (int x : nums) {
-                sum += x;
+                expect -= x;
             }
-            return (int)(expect - sum);
+            return expect;
+        }
+    }
+
+    // Time: O(nlogn)
+    // Space: O(logn)
+    class Solution3_Sorting {
+        public int missingNumber(int[] nums) {
+            Arrays.sort(nums);
+            
+            // Check if 0 is missing
+            if (nums[0] != 0) {
+                return 0;
+            }
+            
+            // Check if n is missing
+            if (nums[nums.length - 1] != nums.length) {
+                return nums.length;
+            }
+            
+            // Check for missing number in the middle
+            for (int i = 1; i < nums.length; i++) {
+                if (nums[i] != nums[i - 1] + 1) {
+                    return nums[i - 1] + 1;
+                }
+            }
+            
+            return -1;  // Should never reach
         }
     }
 }
