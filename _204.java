@@ -1,9 +1,20 @@
-/*
+import java.util.Arrays;
+
+/**
  * 204. Count Primes
+ * 
+ * - S0 BF: O(n^2)/O(n × √n), O(1)
+ * - S1 Sieve of Eratosthenes: O(nloglogn), O(n)
+ * - S2 Segment Sieve: O(nloglogn), O(√n)
+ * 
+ * Clarification:
+ * - Is n inclusive or exclusive? Strictly less than n
+ * - What to return for n =  0 or 1? Return 0
+ * - Is 1 considered as a prime number? No 1 is not prime
  */
 public class _204 {
 
-    class Solution1_TLE {
+    class Solution0_BF_TLE {
         int countPrimes(int n) {
             int count = 0;
             for (int i = 2; i < n; i++) {
@@ -25,7 +36,7 @@ public class _204 {
         }
     }
 
-    class Solution2_TLE_Improved {
+    class Solution0_BF_Improved_TLE {
         int countPrimes(int n) {
             int count = 0;
             for (int i = 2; i < n; i++) {
@@ -46,7 +57,7 @@ public class _204 {
         }
     }
 
-    class Solution3_Sieve_of_Eratosthenes {
+    class Solution1_Sieve_of_Eratosthenes {
         public int countPrimes(int n) {
             int count = 0;
             boolean[] visited = new boolean[n];
@@ -61,37 +72,9 @@ public class _204 {
         }
     }
 
-    class Solution4_Sieve_of_Eratosthenes_Improved {
-        /**
-         * Improved the search range of prime counter i and non-prime counter j.
-         * - Time: O(N * loglogN)
-         * - Space: O(N)
-         * @param n N
-         * @return # of prime numbers within given n
-         */
-        public int countPrimes(int n) {
-            boolean[] visited = new boolean[n];
-            for (int i = 2; i * i <= n; i++) { // sqrt(n) = O(n)
-                if (visited[i]) continue;
-                for (int j = i * i; j < n; j += i) { // O(loglogn)
-                    visited[j] = true;
-                }
-            }
-
-            int count = 0;
-            for (int i = 2; i < n; i++) { // start counting from num 2
-                if (!visited[i]) {
-                    count++;
-                }
-            }
-
-            return count;
-        }
-    }
-
     // Time: O(n log log n)
     // Space: O(n)
-    class Solution5_Sieve_of_Eratosthenes_Improved {
+    class Solution1_Sieve_of_Eratosthenes_Improved {
         public int countPrimes(int n) {
             int primeCount = 0;
             boolean[] visited = new boolean[n];
@@ -108,4 +91,28 @@ public class _204 {
         }
     }
 
+    // Time: O(n log log n)
+    // Space: O(n)
+    class Solution2_Sieve_of_Eratosthenes_Standard {
+        public int countPrimes(int n) {
+            int primeCount = 0;
+            boolean[] isPrime = new boolean[n];
+            Arrays.fill(isPrime, true);
+            int sqrtN = (int) Math.sqrt(n);
+            // only iterate to √n
+            for (int num = 2; num <= sqrtN; num++) { // need <= here because Java truncate down for double
+                if (isPrime[num]) {
+                    // mark all multiples of this prime num as non-prime
+                    for (int product = num * num; product < n; product += num) {
+                        isPrime[product] = false;
+                    }
+                }
+            }
+
+            for (int num = 2; num < n; num++) {
+                primeCount += (isPrime[num] ? 1 : 0);
+            }
+            return primeCount;
+        }
+    }
 }
