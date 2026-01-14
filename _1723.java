@@ -36,6 +36,7 @@ public class _1723 {
 
     // use cache set to store the previously traversed workloads
     // reference: https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs/solutions/1009817/one-branch-cutting-trick-to-solve-three-leetcode-questions/
+    // can be further optimized by sorting the jobs and then fill in from the ones with higher times
     class Solution1_Backtrack_By_Ball_Prune {
         private int minTime;
         public int minimumTimeRequired(int[] jobs, int k) {
