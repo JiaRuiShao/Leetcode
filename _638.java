@@ -4,6 +4,14 @@ import java.util.Map;
 
 /**
  * 638. Shopping Offers
+ * 
+ * Clarification:
+ * - Can special offers exceed my need? No you cannot buy more than you need
+ * - Are special offers always a good deal? No guarantee
+ * - Can offer used multiple times? Yes unlimited uses
+ * 
+ * Followup:
+ * - Each offer can only be used once (0/1 Knapsack)
  */
 public class _638 {
     // Time: average O(n*2^m) where n is num of items in prices; m is num of special offers
@@ -71,7 +79,8 @@ public class _638 {
         }
     }
 
-    // when we add cache for backtrack by ball, the select order needs to be the optimal one; or else the cached result is wrong
+    // when we add cache for backtrack by ball, the state is [needs, offerIndex] and not just needs
+    // this offer-based solution is PREFERRED when each offer can be used at most once (0/1 Knapsack)
     // i.e. prices = [2,2], special = [[1,1,1],[1,1,2],[1,1,3],[1,1,4],[1,1,5],[1,1,6],[1,1,7],[1,1,8],[1,1,9],[1,1,10],[1,1,11],[1,1,12],[1,1,13],[1,1,14],[1,1,15]], needs = [10,10]; expected output = 10
     class Wrong_Solution_Backtrack_By_Ball_With_Memo {
         public int shoppingOffers(List<Integer> prices, List<List<Integer>> offers, List<Integer> needs) {
@@ -86,8 +95,8 @@ public class _638 {
                 return costOfRemainingItems(prices, needs);
             }
 
-            String needAsStr = needs.toString();
-            if (memo.containsKey(needAsStr)) return memo.get(needAsStr);
+            String key = needs.toString() + "-" + offerIdx;
+            if (memo.containsKey(key)) return memo.get(key);
 
             // Option 1: skip this offer
             int cost1 = dfs(prices, offers, needs, offerIdx + 1, memo);
@@ -102,7 +111,7 @@ public class _638 {
                 }
                 revertOffer(offer, needs);
             }
-            memo.put(needAsStr, cost1);
+            memo.put(key, cost1);
             return cost1;
         }
 
@@ -134,8 +143,8 @@ public class _638 {
         }
     }
 
-    // Time: O(n*2^10n) where n is item num in prices
-    // Space: O(10n)
+    // Time: O(s*m*n) where n is item num; m is special offer size; S is num of unique state (max(needs[i])^n)
+    // Space: O(s) = O(k^n+kn) where k is max(needs[i])
     class Solution2_Backtrack_By_Box_Combination_ElemUsedUnlimited_NoDedup_With_Memo {
         public int shoppingOffers(List<Integer> prices, List<List<Integer>> offers, List<Integer> needs) {
             Map<String, Integer> memo = new HashMap<>();
