@@ -65,18 +65,45 @@ public class _137 {
         }
     }
     
-    // Not intuitive at all
+    // - State 0: not in ones or twos
+    // - State 1: in ones, not in twos
+    // - State 2: not in ones, in twos
+    // - State 3 → State 0: in both (threes mask clears both)
     class Solution4_Bit_Manipulation {
         public int singleNumber(int[] nums) {
-            int ones = 0, twos = 0;
+            int ones = 0;  // Bits that appeared 1 time (mod 3)
+            int twos = 0;  // Bits that appeared 2 times (mod 3)
+            
             for (int num : nums) {
-                // ones ^ n adds n into ones if it's not there, or removes it if it is (toggle)
-                // & ~twos exclude num from ones if this num is in twos
-                ones = (ones ^ num) & ~twos;
-                // twos ^ n toggles the bit into twos
-                // & ~ones exclude num from twos if this num is in ones
-                twos = (twos ^ num) & ~ones;
+                // Update twos: add bits that are in both num and ones
+                twos |= ones & num;
+                
+                // Update ones: XOR with num
+                ones ^= num;
+                
+                // Remove bits that appear 3 times (in both ones and twos)
+                int threes = ones & twos;
+                ones &= ~threes;
+                twos &= ~threes;
             }
+            
+            return ones;
+        }
+
+        public int singleNumber2(int[] nums) {
+            int ones = 0, twos = 0;
+            
+            for (int num : nums) {
+                // First update twos, then ones
+                twos = twos | (ones & num);
+                ones = ones ^ num;
+                
+                // Common bits in ones and twos represent 3 appearances
+                int common = ones & twos;
+                ones = ones & ~common;
+                twos = twos & ~common;
+            }
+            
             return ones;
         }
     }    
