@@ -4,6 +4,10 @@ import java.util.Set;
 
 /**
  * 1723. Find Minimum Time to Finish All Jobs
+ * 
+ * - S1: Backtrack with pruning O(k^n) [PREFERRED]
+ * - S2: Binary Search + Backtrack O(logS*k^n)
+ * - S3: DP with Bitmask
  */
 public class _1723 {
     // Time: O(k*k^n) where n is jobs.length and k is num of workers
@@ -93,6 +97,8 @@ public class _1723 {
         }
     }
 
+    // Time: O(log(sum)*k^n)
+    // Space: O(logn+k+n) where n is for recursion stack
     class Solution2_BS_Backtrack_Sorting {
         // left boundary BS on maxWorkingTime
         public int minimumTimeRequired(int[] jobs, int k) {
@@ -117,14 +123,57 @@ public class _1723 {
             }
             int jobWorkload = jobs[idx];
             boolean canFinish = false;
-            for (int worker = 0; worker < workloads.length; worker++) {
+            for (int worker = 0; worker < workloads.length && !canFinish; worker++) {
                 int workload = workloads[worker];
-                if (canFinish || workload + jobWorkload > threshold) continue;
+                if (workload + jobWorkload > threshold) continue;
                 workloads[worker] += jobWorkload;
                 canFinish = canFinishWithKWorker(jobs, idx - 1, workloads, threshold);
                 workloads[worker] -= jobWorkload;
             }
             return canFinish;
+        }
+    }
+
+    // only used when n & k are small
+    // Time: O(k × 3^n)
+    class Solution3_DP_Bitmask {
+        public int minimumTimeRequired(int[] jobs, int k) {
+            int n = jobs.length;
+            
+            // Precompute sum for each subset of jobs
+            int[] subsetSum = new int[1 << n];
+            for (int mask = 0; mask < (1 << n); mask++) {
+                for (int i = 0; i < n; i++) {
+                    if ((mask & (1 << i)) != 0) {
+                        subsetSum[mask] += jobs[i];
+                    }
+                }
+            }
+            
+            // dp[i][mask] = minimum max load using i workers for jobs in mask
+            int[][] dp = new int[k + 1][1 << n];
+            for (int[] row : dp) {
+                Arrays.fill(row, Integer.MAX_VALUE);
+            }
+            dp[0][0] = 0;
+            
+            for (int i = 1; i <= k; i++) {
+                for (int mask = 0; mask < (1 << n); mask++) {
+                    // Try all subsets of mask to assign to worker i
+                    for (int subset = mask; subset > 0; subset = (subset - 1) & mask) {
+                        int remaining = mask ^ subset;
+                        
+                        if (dp[i - 1][remaining] != Integer.MAX_VALUE) {
+                            dp[i][mask] = Math.min(
+                                dp[i][mask],
+                                Math.max(dp[i - 1][remaining], subsetSum[subset])
+                            );
+                        }
+                    }
+                }
+            }
+            
+            return dp[k][(1 << n) - 1];
         }
     }
 }
