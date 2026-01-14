@@ -9,12 +9,22 @@ import java.util.Set;
 
 /**
  * 399. Evaluate Division
+ * 
+ * - S1 DFS O(E+Q(V+E)), O(V+E)
+ * - S2 BFS O(E+Q(V+E)), O(V+E)
+ * - S3 UF O(E+Q), O(V) [PREFERRED]
+ * 
+ * Clarification:
+ * - Are variables in queries also in equations? Not necessary
+ * - Are variables all lowercase English letters? NO they could also be digits -- if only lowercase English letters, we don't need HashMap and helper class in UF solution, int[] parent and double[] weight should be enough
  */
 public class _399 {
     // think each variable as node and their relationship as the edge weight, 
     // i.e. for equation a / b = k, we can build edges:
     // a -> b with weight k 
     // b -> a with weight 1/k
+    // Time: O(E+Q(V+E))
+    // Space: O(V+E+V) = O(V+E) where O(V) for each recursion stack
     class Solution1_Graph_DFS {
         class Edge {
             String var;
@@ -40,17 +50,23 @@ public class _399 {
             for (int i = 0; i < queries.size(); i++) {
                 List<String> query = queries.get(i);
                 String a = query.get(0), b = query.get(1);
+                if (!graph.containsKey(a) || !graph.containsKey(b)) {
+                    calc[i] = -1.0;
+                    continue;
+                }
+                if (a.equals(b)) {
+                    calc[i] = 1.0;
+                    continue;
+                }
                 Set<String> visited = new HashSet<>();
                 calc[i] = dfs(graph, a, b, visited);
             }
             return calc;
         }
 
-        private double dfs(Map<String, List<Edge>> graph, String node, String end, Set<String> visited) {
-            if (!graph.containsKey(node) || !graph.containsKey(end)) return -1.0;
-            if (node.equals(end)) return 1.0;
-            visited.add(node);
-            for (Edge edge : graph.get(node)) {
+        private double dfs(Map<String, List<Edge>> graph, String start, String end, Set<String> visited) {
+            visited.add(start);
+            for (Edge edge : graph.get(start)) {
                 String next = edge.var;
                 if (!visited.contains(next)) {
                     double weight = dfs(graph, next, end, visited);
@@ -116,7 +132,7 @@ public class _399 {
     }
 
     // we use == instead of equals to compare here because the heap address stays the same
-    class Solution2_UF {
+    class Solution2_UF_HashMap {
         Map<String, String> parent;
         Map<String, Double> weight; // var / parent
         public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
@@ -168,6 +184,86 @@ public class _399 {
                 weight.put(var, weight.get(var) * weight.get(p));
             }
             return parent.get(var);
+        }
+    }
+
+    // Time: O(E × α(V) + Q × α(V)) = O(E+Q) where Q is num of queries
+    // Space: O(V)
+    class Solution2_UF_HelperClass {
+        static class EquationNode {
+            String var;
+            EquationNode parent;
+            double ratio; // ratio of this / parent
+            EquationNode(String var) {
+                this.var = var;
+                this.parent = this;
+                this.ratio = 1.0;
+            }
+        }
+
+        private void union(EquationNode a, EquationNode b, double ratio) {
+            EquationNode p1 = find(a);
+            EquationNode p2 = find(b);
+            if (p1 != p2) {
+                p1.parent = p2;
+                // a/b = ratio
+                // a/p1 = a.ratio
+                // b/p2 = b.ratio
+                // p1/p2 = (a/a.ratio) * (b.ratio/b) = b.ratio/a.ratio * a/b = ratio * b.ratio/a.ratio
+                p1.ratio = ratio / a.ratio * b.ratio;
+            }
+        }
+
+        private EquationNode find(EquationNode node) {
+            if (node.parent != node) {
+                EquationNode root = find(node.parent);
+                // node.ratio = node/parent
+                // parent.ratio = parent/root
+                // node/root = node.ratio * parent * parent.ratio/parent = node.ratio * parent.ratio
+                node.ratio = node.ratio * node.parent.ratio;
+                node.parent = root;
+            }
+            return node.parent;
+        }
+
+        public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+            Map<String, EquationNode> nodes = new HashMap<>();
+            for (int i = 0; i < equations.size(); i++) {
+                String a = equations.get(i).get(0);
+                String b = equations.get(i).get(1);
+                double ratio = values[i];
+                // create equation variable & connect them
+                nodes.putIfAbsent(a, new EquationNode(a));
+                nodes.putIfAbsent(b, new EquationNode(b));
+                union(nodes.get(a), nodes.get(b), ratio);
+            }
+
+            double[] calculated = new double[queries.size()];
+            for (int i = 0; i < queries.size(); i++) {
+                String a = queries.get(i).get(0);
+                String b = queries.get(i).get(1);
+                // if a == b, they don't need to be connected
+                if (a.equals(b)) {
+                    calculated[i] = 1.0;
+                    continue;
+                }
+                // check if a & b are valid variable
+                EquationNode na = nodes.get(a);
+                EquationNode nb = nodes.get(b);
+                if (na == null || nb == null) {
+                    calculated[i] = -1.0;
+                    continue;
+                }
+                // check if a & b are connected
+                EquationNode pa = find(na);
+                EquationNode pb = find(nb);
+                if (pa != pb) {
+                    calculated[i] = -1.0;
+                } else {
+                    calculated[i] = na.ratio / nb.ratio;
+                }
+            }
+            return calculated;
         }
     }
 }
