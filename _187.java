@@ -7,12 +7,11 @@ import java.util.Set;
 
 /**
  * 187. Repeated DNA Sequences
- * Sliding Window + Rabin-Karp Algorithm
  */
 public class _187 {
     /**
      * Brute force solution with HashSet.
-     * Notice it's actually sliding window with a fixed window length as L -- 10
+     * Sliding window with a fixed window length as L -- 10
      * Time: O(NL) where N is the number of chars in given string, and L is the DNA
      * sequence length 10
      * Space: O(NL)
@@ -65,7 +64,7 @@ public class _187 {
      * Time: average O(N) worst O(NL) when there are too many results
      * Space: O(N + NL)
      */
-    class Solution3_Sliding_Hash_Technique_Base10 {
+    class Solution3_RabinKarp_Base10 {
         int decimal = 10, numDigits = 10;
 
         public List<String> findRepeatedDnaSequences(String s) {
@@ -124,10 +123,11 @@ public class _187 {
     /**
      * This solution is a optimized version of previous solution with just base-4
      * system.
+     * Notice here max num is maxCharNum * BASE^windowLen which is 3*4^10 = 3*2^20 < Integer.MAX_VALUE = 2^31 - 1
      * Time: average O(N) worst O(NL) when there're too many results
      * Space: O(N + NL)
      */
-    class Solution4_Sliding_Hash_Technique_Base4 {
+    class Solution3_RabinKarp_Base4 {
         public List<String> findRepeatedDnaSequences(String s) {
             Map<Integer, Integer> dnaToFreq = new HashMap<>();
             List<String> repeated = new ArrayList<>();
@@ -157,6 +157,32 @@ public class _187 {
                 default:
                     return 3;
             }
+        }
+    }
+
+    class Solution4_BitManipulation {
+        // we could use int bit mask here since window bit len is 2 * 10 = 20, which is < 31
+        // Time: O(n)
+        // Space: O(n)
+        public List<String> findRepeatedDnaSequences(String s) {
+            Set<String> repeated = new HashSet<>();
+            Set<Integer> hashSet = new HashSet<>();
+            Map<Character, Integer> charToBit = Map.of('A', 0, 'C', 1, 'G', 2, 'T', 3);
+            int mask = (1 << 20) - 1; // keep rightmost 20 bits only
+            int left = 0, right = 0, windowLen = 10, windowHash = 0;
+            while (right < s.length()) {
+                char add = s.charAt(right++);
+                windowHash = ((windowHash << 2) | charToBit.get(add)) & mask;
+                if (right - left == windowLen) {
+                    if (hashSet.contains(windowHash)) {
+                        repeated.add(s.substring(left, right));
+                    } else {
+                        hashSet.add(windowHash);
+                    }
+                    left++;
+                }
+            }
+            return new ArrayList<>(repeated);
         }
     }
 }
