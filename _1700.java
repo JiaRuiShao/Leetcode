@@ -1,12 +1,13 @@
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.Queue;
 
 /**
  * 1700. Number of Students Unable to Eat Lunch
  */
 public class _1700 {
-    public class Solution1_Queue {
+    public class Solution1_Simulation {
         public int countStudents(int[] students, int[] sandwiches) {
             Deque<Integer> queue = new ArrayDeque<>();
             for (int pref : students) {
@@ -33,25 +34,45 @@ public class _1700 {
             
             return queue.size();
         }
+
+        public int countStudents2(int[] students, int[] sandwiches) {
+            Queue<Integer> q = new ArrayDeque<>();
+            for (int student : students) {
+                q.offer(student);
+            }
+
+            for (int i = 0; i < sandwiches.length; i++) {
+                int tries = q.size();
+                while (!q.isEmpty()) {
+                    int student = q.poll();
+                    if (student == sandwiches[i]) {
+                        break;
+                    }
+                    q.offer(student);
+                    if (--tries == 0) {
+                        return q.size();
+                    }
+                }
+            }
+            return 0;
+        }
     }
 
     class Solution2_Greedy {
         public int countStudents(int[] students, int[] sandwiches) {
             // count how many students prefer 0 and 1
-            int[] count = new int[2];
-            for (int type : students) {
-                count[type]++;
+            int[] needs = new int[2];
+            for (int prefer : students) {
+                needs[prefer]++;
             }
+
             // serve sandwiches in order until a type runs out
             for (int sandwich : sandwiches) {
-                if (count[sandwich] > 0) {
-                    count[sandwich]--;
-                } else {
-                    break;  // no one wants this sandwich
+                if (needs[sandwich]-- == 0) {
+                    return needs[1-sandwich];
                 }
             }
-            // remaining students = sum of leftover prefs
-            return count[0] + count[1];
+            return 0;
         }
     }
 
