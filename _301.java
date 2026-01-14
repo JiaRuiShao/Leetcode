@@ -144,6 +144,9 @@ public class _301 {
         }
     }
 
+    // OPTIMAL SOLUTION
+    // Time: O(n*2^n)
+    // Space: O(n) recursion stack
     class Solution2_Backtrack_By_Ball_Target_Remove {
         public List<String> removeInvalidParentheses(String s) {
             int leftRem = 0, rightRem = 0;
