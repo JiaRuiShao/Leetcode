@@ -291,93 +291,81 @@ public class _126 {
         }
     }
 
-    // easiest solution to implement -- BFS to track the valid words and their levels
-    // backtrack from end word and check from built map for valid path
-    // no dedup needed like in parents map
-    // say N is word len, L is num of word in wordList, K is num of valid path
-    // Time: O(L*26N+K*L*26N) = O(KLN)
-    // Space: O(NL)
-    class Solution2_BFS_LevelMap_Backtrack {
+    // 1. BFS to find the shortest distance from beginWord to endWord
+    // 2. Track all possible parents using delayed visited[] set
+    // 3. Backtracking from endWord → beginWord using the parent graph
+    // Let N = num of words, L = word len
+    // Time: O(NL + PL) where P = total num of shortest path (could be exponential in the worst case)
+    // Space: O(NL²)/O(NL) if findNext optimized
+    class MySolution_BFS_Backtrack {
         // aa -> ab -> bb
         // aa -> ba -> bb
         public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
-            Set<String> whitelist = new HashSet<>(wordList);
-            if (!whitelist.contains(endWord)) {
-                return new ArrayList<>();
+            List<List<String>> ss = new ArrayList<>();
+            Set<String> dict = new HashSet<>(wordList);
+            if (!dict.contains(endWord)) {
+                return ss;
             }
 
-            Map<String, Integer> wordToLevel = new HashMap<>();
-            bfs(beginWord, endWord, whitelist, wordToLevel);
-            
-            List<List<String>> transformSeq = new ArrayList<>();
-            List<String> path = new LinkedList<>();
-            path.add(0, endWord);
-            backtrack(endWord, beginWord, wordToLevel, path, transformSeq);
-            return transformSeq;
-        }
-
-        private void backtrack(String start, String end, Map<String, Integer> map, List<String> path, List<List<String>> res) {
-            if (start.equals(end)) {
-                res.add(new ArrayList<>(path));
-                return;
-            }
-            int currLevel = map.getOrDefault(start, -1);
-            for (String nextWord : findNextWords(start)) {
-                int nextWordLevel = map.getOrDefault(nextWord, -1);
-                if (nextWordLevel == currLevel - 1) {
-                    path.add(0, nextWord);
-                    backtrack(nextWord, end, map, path, res);
-                    path.remove(0);
-                }
-            }
-        }
-
-        private void bfs(String begin, String end, Set<String> whitelist, Map<String, Integer> wordToLevel) {
+            Map<String, List<String>> parents = new HashMap<>();
             Queue<String> q = new ArrayDeque<>();
-            int level = 0;
-            q.offer(begin);
-            whitelist.remove(begin);
-            wordToLevel.put(begin, level);
-
+            Set<String> visited = new HashSet<>();
+            q.offer(beginWord);
+            visited.add(beginWord);
             while (!q.isEmpty()) {
+                Set<String> level = new HashSet<>(); // delay visited marking
                 int size = q.size();
-                level++;
                 for (int i = 0; i < size; i++) {
-                    String word = q.poll();
-                    if (word.equals(end)) {
-                        return;
-                    }
-                    for (String nextWord : findNextWords(word)) {
-                        if (whitelist.contains(nextWord)) {
-                            q.offer(nextWord);
-                            whitelist.remove(nextWord);
-                            wordToLevel.putIfAbsent(nextWord, level);
+                    String parent = q.poll();
+                    for (String word : findNext(parent)) {
+                        if (!visited.contains(word) && dict.contains(word)) {
+                            parents.computeIfAbsent(word, k -> new ArrayList<>()).add(parent);
+                            // q.offer(word);
+                            // visited.add(word);
+                            level.add(word);
                         }
                     }
                 }
-            }
-        }
-
-        private List<String> findNextWords(String word) {
-            List<String> words = new ArrayList<>();
-            char[] arr = word.toCharArray();
-            for (int i = 0; i < arr.length; i++) {
-                char old = arr[i];
-                for (char newC = 'a'; newC <= 'z'; newC++) {
-                    if (newC == old) {
-                        continue;
-                    }
-                    arr[i] = newC;
-                    words.add(new String(arr));
+                if (level.contains(endWord)) {
+                    break;
                 }
-                arr[i] = old;
+                q.addAll(level);
+                visited.addAll(level);
             }
-            return words;
-        }
-    }
 
-    public static void main(String[] args) {
-        // _126.Solution solution = new _126.Solution();
-        // solution.findLadders("red", "tax", List.of("ted","tex","red","tax","tad","den","rex","pee"));
+            backtrack(parents, new LinkedList<>(), ss, endWord, beginWord);
+            return ss;
+        }
+
+        private void backtrack(Map<String, List<String>> parents, LinkedList<String> path, List<List<String>> res, String start, String end) {
+            if (start.equals(end)) {
+                List<String> seq = new ArrayList<>();
+                seq.add(end);
+                seq.addAll(path);
+                res.add(seq);
+                return;
+            }
+            for (String parent : parents.getOrDefault(start, List.of())) {
+                path.addFirst(start);
+                backtrack(parents, path, res, parent, end);
+                path.removeFirst();
+            }
+        }
+
+        private List<String> findNext(String s) {
+            List<String> transformed = new ArrayList<>();
+            char[] arr = s.toCharArray();
+            for (int i = 0; i < arr.length; i++) {
+                char oldChar = arr[i];
+                for (char newChar = 'a'; newChar <= 'z'; newChar++) {
+                    if (newChar != oldChar) {
+                        arr[i] = newChar;
+                        transformed.add(new String(arr));
+                    }
+                }
+                arr[i] = oldChar;
+            }
+            return transformed;
+        }
     }
 }
