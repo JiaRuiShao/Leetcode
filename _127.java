@@ -7,6 +7,9 @@ import java.util.Set;
 
 /**
  * 127. Word Ladder
+ * 
+ * Followup: 
+ * - Return all shortest sequences from beginWord to endWord if exists? LC 126
  */
 public class _127 {
     // Time: O(NL) where N is wordList.size and L is average word length
