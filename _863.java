@@ -11,6 +11,9 @@ import helper.TreeNode;
 
 /**
  * 863. All Nodes Distance K in Binary Tree
+ * 
+ * - S1 Parent Map + BFS: O(n), O(n)
+ * - S2 DFS with dist tracking: O(n), O(h)
  */
 public class _863 {
     class Solution1_BFS_ParentMap {
@@ -127,56 +130,66 @@ public class _863 {
     }
 
     // When you find the target, fan out K down. As you unwind, at each ancestor, fan out again but don’t step back into the child that led to the target
-    // Space complexity is optimized from O(n) to O(h)
+    // Time: O(n)
+    // Space: O(h)
     class Solution2_DFS {
+        // for a target node, we need to go down, go up (continue up and go the other side)
+        // Note: k could be 0
         public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
-            List<Integer> nodes = new ArrayList<>();
-            dfs(root, target, k, nodes);
-            return nodes;
+            List<Integer> kDistNodes = new ArrayList<>();
+            dfs(root, target, k, kDistNodes);
+            return kDistNodes;
         }
 
-        private int dfs(TreeNode node, TreeNode target, int k, List<Integer> nodes) {
-            if (node == null) return -1;
-            if (node == target) {
-                goDown(node, k, nodes);
-                return 0; // found target, return distance betw this node to target node
+        private Integer dfs(TreeNode root, TreeNode target, int k, List<Integer> res) {
+            if (root == null) {
+                return null; // target not found
             }
-            int leftDist = dfs(node.left, target, k, nodes);
-            if (leftDist != -1) { // target found in left subtree
-                leftDist++;
-                if (leftDist == k) {
-                    nodes.add(node.val);
-                } else if (leftDist < k) {
-                    goDown(node.right, k - (leftDist + 1), nodes);
+
+            // pre-order to find target
+            if (root == target) {
+                // go down for pre-order traverse
+                goDownByK(root, k, res);
+                // go up for post-order traverse
+                return 0; // mark as found target, dist == 0
+            }
+
+            Integer left = dfs(root.left, target, k, res);
+            if (left != null) {
+                int dist = left + 1;
+                if (dist == k) {
+                    res.add(root.val);
+                } else if (dist < k) { // go up and go right
+                    // go down for pre-order traverse
+                    goDownByK(root.right, k - dist - 1, res);
                 }
-                return leftDist;
+                return dist;
             }
-            int rightDist = dfs(node.right, target, k, nodes);
-            if (rightDist != -1) {
-                rightDist++;
-                if (rightDist == k) {
-                    nodes.add(node.val);
-                } else if (rightDist < k) {
-                    goDown(node.left, k - (rightDist + 1), nodes);
+
+            Integer right = dfs(root.right, target, k, res);
+            if (right != null) {
+                int dist = right + 1;
+                if (dist == k) {
+                    res.add(root.val);
+                } else if (dist < k) { // go up and go left
+                    // go down for pre-order traverse
+                    goDownByK(root.left, k - dist - 1, res);
                 }
-                return rightDist;
+                return dist;
             }
-            return -1;
+            return null;
         }
 
-        private void goDown(TreeNode node, int k, List<Integer> nodes) {
-            if (node == null || k < 0) return;
-            if (k == 0) {
-                nodes.add(node.val);
+        private void goDownByK(TreeNode root, int k, List<Integer> res) {
+            if (root == null) {
                 return;
             }
-            goDown(node.left, k - 1, nodes);
-            goDown(node.right, k - 1, nodes);
+            if (k == 0) {
+                res.add(root.val);
+                return;
+            }
+            goDownByK(root.left, k - 1, res);
+            goDownByK(root.right, k - 1, res);
         }
-    }
-
-    // We can also convert this tree to graph with start node as target node, then perform graph dfs/bfs to find nodes with k distance
-    class Solution3_Graph {
-
     }
 }
