@@ -34,7 +34,7 @@ public class _18 {
 					long k = (long) target - nums[i] - nums[j];
 					int left = j + 1, right = n - 1;
 					while (left < right) {
-						long sum = nums[left] + nums[right];
+						long sum = (long) nums[left] + nums[right];
 						if (sum == k) {
 							quadruplets.add(List.of(nums[i], nums[j], nums[left], nums[right]));
 							while (left + 1 < n && nums[left + 1] == nums[left]) left++;
@@ -56,43 +56,60 @@ public class _18 {
 	class Followup_kSum_Sort_Backtrack_TwoPointers {
 		public List<List<Integer>> kSum(int[] nums, int target, int k) {
 			Arrays.sort(nums);
-			List<List<Integer>> result = new ArrayList<>();
-    		kSumHelper(nums, target, k, 0, new ArrayList<>(), result);
-			return result;
+			List<List<Integer>> res = new ArrayList<>();
+			backtrack(nums, 0, target, k, new ArrayList<>(), res);
+			return res;
 		}
 
-		private void kSumHelper(int[] nums, long target, int k, int start, 
-                        List<Integer> current, List<List<Integer>> result) {			
+		private void backtrack(int[] nums, int start, long target, int k, List<Integer> path, List<List<Integer>> res) {
+			int n = nums.length;
+			if (start >= n || k < 2) return;
 			if (k == 2) {
-				// Base case: two-sum with two pointers
-				int left = start, right = nums.length - 1;
+				int left = start, right = n - 1;
 				while (left < right) {
 					long sum = (long) nums[left] + nums[right];
 					if (sum == target) {
-						List<Integer> combination = new ArrayList<>(current);
-						combination.add(nums[left]);
-						combination.add(nums[right]);
-						result.add(combination);
-
-						while (left < right && nums[left] == nums[left + 1]) left++;
-						while (left < right && nums[right] == nums[right - 1]) right--;
+						List<Integer> pair = new ArrayList<>(path);
+						pair.add(nums[left]);
+						pair.add(nums[right]);
+						res.add(pair);
+						while (left + 1 < right && nums[left] == nums[left+1]) {
+							left++;
+						}
 						left++;
+						while (left < right - 1 && nums[right] == nums[right-1]) {
+							right--;
+						}
 						right--;
 					} else if (sum < target) {
+						while (left + 1 < right && nums[left] == nums[left+1]) {
+							left++;
+						}
 						left++;
 					} else {
+						while (left < right - 1 && nums[right] == nums[right-1]) {
+							right--;
+						}
 						right--;
 					}
 				}
 				return;
 			}
-			
-			// Recursive case
-			for (int i = start; i < nums.length - k + 1; i++) {
-				if (i > start && nums[i] == nums[i - 1]) continue;
-				current.add(nums[i]);
-				kSumHelper(nums, target - nums[i], k - 1, i + 1, current, result);
-				current.remove(current.size() - 1);  // Backtrack
+
+			for (int i = start; i < n - k + 1; i++) {
+				if (i > start && nums[i] == nums[i-1]) {
+					continue;
+				}
+
+				// optional early pruning
+				long minSum = (long) nums[i] + (long) nums[i + 1] * (k - 1);
+				long maxSum = (long) nums[i] + (long) nums[n - 1] * (k - 1);
+				if (target < minSum || target > maxSum) continue;
+				// early pruning ends
+
+				path.add(nums[i]);
+				backtrack(nums, i + 1, target - nums[i], k - 1, path, res);
+				path.remove(path.size() - 1);
 			}
 		}
 	}
