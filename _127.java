@@ -9,10 +9,11 @@ import java.util.Set;
  * 127. Word Ladder
  */
 public class _127 {
+    // Time: O(NL) where N is wordList.size and L is average word length
+    // Space: O(NL)/O(N) if optimized
     class Solution1_BFS {
         public int ladderLength(String beginWord, String endWord, List<String> wordList) {
-            Set<String> whitelist = new HashSet<>();
-            for (String word : wordList) whitelist.add(word);
+            Set<String> whitelist = new HashSet<>(wordList);
             if (!whitelist.contains(endWord)) return 0;
 
             Queue<String> q = new ArrayDeque<>();
@@ -49,7 +50,7 @@ public class _127 {
                     arr[i] = letter;
                     words.add(new String(arr));
                 }
-                arr[i] = oldLetter;
+                arr[i] = oldLetter; //** IMPORTANT **//
             }
             return words;
         }
@@ -61,7 +62,7 @@ public class _127 {
             Set<String> begin = new HashSet<>();
             Set<String> end = new HashSet<>();
             Set<String> visited = new HashSet<>();
-            Set<String> dict = new HashSet<>(wordList); // **Important**
+            Set<String> dict = new HashSet<>(wordList);
     
             int step = 1;
             begin.add(beginWord);
@@ -86,7 +87,7 @@ public class _127 {
                             if (c == prev) continue;
                             chars[i] = c;
                             String newWord = new String(chars);
-                            if (end.contains(newWord)) return step + 1;
+                            if (end.contains(newWord)) return step + 1; //** IMPORTANT **//
                             if (dict.contains(newWord) && !visited.contains(newWord)) {
                                 nextBegin.add(newWord);
                                 visited.add(newWord);
