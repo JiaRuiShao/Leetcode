@@ -17,6 +17,11 @@ import java.util.Set;
  * - Does order matter for duplicate triplets? 
  * - Assume input array min length is 3?
  * - What to return if input array has less than 3 elem or there's no valid triplets? Return an empty list
+ * 
+ * Followup:
+ * - Find triplet whose sum is closest to target (LC 16)
+ * - Solve without sorting? Use HashMap, dedup using Set on sorted triplets
+ * - Generalized to 4Sum & kSum
  */
 public class _15 {
 
@@ -27,7 +32,7 @@ public class _15 {
 	class Solution_Two_Pointers {
 		// Time: O(nlogn + n^2) = O(n^2)
 		// Space: O(logn) quicksort stack height
-		public List<List<Integer>> threeSum1(int[] nums) {
+		public List<List<Integer>> threeSum(int[] nums) {
 			Arrays.sort(nums);
 			List<List<Integer>> triplets = new ArrayList<>();
 			int n = nums.length;
@@ -48,47 +53,6 @@ public class _15 {
 					} else {
 						right--;
 					}
-				}
-			}
-			return triplets;
-		}
-
-		/**
-		 * Sorting + Two Pointers + Dedup.
-		 * Notice we can have the same 1st, 2nd or 3rd num val but never allow the same val to be used twice or more for the same num in the triplet, e.g. [-1, -1, -1, -1, -1, -1], -1 can be used as the 1st, 2nd and 3rd num val, but we should not allow any num to use the same val again.
-		 * Dedup:
-		 * 1. compare ith val with val to the left; if same, skip current index
-		 * 2. compare ith val with val to the right after the while loop; if same, skip next index
-		 * 
-		 * @param nums nums
-		 * @return triplets
-		 */
-		public List<List<Integer>> threeSum2(int[] nums) {
-			Arrays.sort(nums);
-			int n = nums.length;
-			List<List<Integer>> triplets = new ArrayList<>();
-			for (int i = 0; i < n; i++) {
-				// this will cause duplicate results if left has same val as i, e.g. [-1,0,1,2,-1,-4], -1 could be used as twice for the 1st num
-				// we need to prevent this duplicate by skipping the same first num after the while loop
-				// Q: why we cannot skip the same vals before the while loop?
-				// A: we can, but we need to compare the current index val to the left; if we compare and skip the vals to the right, we will miss some valid triplet results where the 2nd or/& 3rd num have the same val as the 1st one, e.g. [-1,-1,2] valid result for nums [-1,0,1,2,-1,-4]
-				int left = i + 1, right = n - 1, target = -nums[i]; 
-				while (left < right) {
-					int leftVal = nums[left];
-					int rightVal = nums[right];
-					int cpr = leftVal + rightVal - target;
-					if (cpr == 0) {
-						triplets.add(List.of(-target, leftVal, rightVal));
-						while (left < right && nums[left] == leftVal) left++;
-						while (left < right && nums[right] == rightVal) right--;
-					} else if (cpr > 0) {
-						while (left < right && nums[right] == rightVal) right--;
-					} else {
-						while (left < right && nums[left] == leftVal) left++;
-					}
-				}
-				while (i + 1 < n && nums[i + 1] == -target) {
-					i++;
 				}
 			}
 			return triplets;
