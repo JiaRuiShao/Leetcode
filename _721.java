@@ -7,9 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * 721. Accounts Merge
+ * 
+ * - S1 DFS/BFS on email: O(ElogE) where E = N accounts x K emails per account, O(E)
+ * - S2 UF on account: O(ElogE), O(E)
+ * - S1 UF on email: same logic as above, more code
+ * 
+ * Followup:
+ * - What if input has duplicates like ["John", "a@m.co", "a@m.co"]? Use Set during collection to deduplicate
+ * - What if we need to merge in real-time? Use HashMap based UF for better scalability
+ * - What if same email appears with different names? 
  */
 public class _721 {
     // the brute force way to solve is to save all emails belong to one account in one set
@@ -21,6 +31,8 @@ public class _721 {
 
     // This question is tricky in that the name is not identifier and the email is. We need to think the emails as nodes
     // and connect the emails belong to one account together
+    // Time: O(ElogE) where E = N accounts x K emails per account
+    // Space: O(E)
     class Solution1_Graph_DFS {
         public List<List<String>> accountsMerge(List<List<String>> accounts) {
             // build adjacency list for emails
@@ -41,11 +53,13 @@ public class _721 {
             for (List<String> account : accounts) {
                 String name = account.get(0), firstEmail = account.get(1);
                 if (visited.contains(firstEmail)) continue;
-                List<String> nameEmails = new ArrayList<>();
-                nameEmails.add(name);
-                dfs(graph, firstEmail, visited, nameEmails);
-                Collections.sort(nameEmails.subList(1, nameEmails.size()));
-                merged.add(nameEmails);
+                List<String> emails = new ArrayList<>();
+                dfs(graph, firstEmail, visited, emails);
+                Collections.sort(emails);
+                List<String> mergedAccount = new ArrayList<>();
+                mergedAccount.add(name);
+                mergedAccount.addAll(emails);
+                merged.add(mergedAccount);
             }
             return merged;
         }
@@ -174,7 +188,85 @@ public class _721 {
         }
     }
 
+    // Time: O(E α(E) + E log E) ≈ O(E log E)
+    // Space: O(E)
     class Solution3_UF_ByEmail {
-        // Implement
+        static class UF {
+            int[] parent;
+            int[] size;
+
+            UF(int n) {
+                parent = new int[n];
+                size = new int[n];
+                for (int i = 0; i < n; i++) {
+                    parent[i] = i;
+                    size[i] = 1;
+                }
+            }
+
+            private int find(int node) {
+                if (parent[node] != node) {
+                    parent[node] = find(parent[node]);
+                }
+                return parent[node];
+            }
+
+            private void union(int n1, int n2) {
+                int r1 = find(n1);
+                int r2 = find(n2);
+                if (r1 == r2) {
+                    return;
+                }
+                if (size[r1] >= size[r2]) {
+                    parent[r2] = r1;
+                    size[r1] += size[r2];
+                } else {
+                    parent[r1] = r2;
+                    size[r2] += size[r1];
+                }
+            }
+        }
+
+        public List<List<String>> accountsMerge(List<List<String>> accounts) {
+            int id = 0;
+            Map<String, Integer> emailToId = new HashMap<>();
+            Map<Integer, String> emailIdToName = new HashMap<>();
+            for (List<String> account : accounts) {
+                String name = account.get(0);
+                for (int i = 1; i < account.size(); i++) {
+                    String email = account.get(i);
+                    if (!emailToId.containsKey(email)) {
+                        emailToId.put(email, id);
+                        emailIdToName.put(id, name);
+                        id++;
+                    }
+                }
+            }
+
+            UF uf = new UF(id);
+            for (List<String> account : accounts) {
+                int first = emailToId.get(account.get(1));
+                for (int i = 2; i < account.size(); i++) {
+                    int email = emailToId.get(account.get(i));
+                    uf.union(first, email);
+                }
+            }
+
+            Map<Integer, TreeSet<String>> emailGroup = new HashMap<>();
+            for (Map.Entry<String, Integer> entry : emailToId.entrySet()) {
+                int root = uf.find(entry.getValue());
+                emailGroup.computeIfAbsent(root, k -> new TreeSet<>()).add(entry.getKey());
+            }
+
+            List<List<String>> merged = new ArrayList<>();
+            for (Map.Entry<Integer, TreeSet<String>> entry : emailGroup.entrySet()) {
+                String name = emailIdToName.get(entry.getKey());
+                List<String> account = new ArrayList<>();
+                account.add(name);
+                account.addAll(entry.getValue());
+                merged.add(account);
+            }
+            return merged;
+        }
     }
 }
