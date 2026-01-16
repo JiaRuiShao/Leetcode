@@ -2,6 +2,8 @@ import helper.TreeNode;
 
 /**
  * 450. Delete Node in a BST
+ * 
+ * Ask if it's allowed to modify node value to decide to go for value replacement or need to replace nodes.
  */
 public class _450 {
     // My original recursive solution, more complicated than the value replacement recursive solution; not recommended
