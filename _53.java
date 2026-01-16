@@ -9,8 +9,8 @@ import helper.IdxSum;
  * 
  * - S1: BF nested loop O(n^2), O(1)
  * - S2: prefixSum O(n), O(n)/O(1) [PREFERRED]
- * - S3: mono queue + prefixSum O(n), O(n)
- * - S4: DP Kadane's Algo O(n), O(n)/O(1) [PREFERRED]
+ * - S3: DP Kadane's Algo O(n), O(n)/O(1) [PREFERRED]
+ * - S4: mono queue + prefixSum O(n), O(n) [x]
  * 
  * Clarification:
  * - Can there be overflow issue?
