@@ -5,6 +5,13 @@ import java.util.Map;
 
 /**
  * 224. Basic Calculator
+ * 
+ * Followup:
+ * - Handle unary + and - (e.g., -5 + 3, -(2+3))
+ *   + and - is unary if it's:
+ *   - at start of string
+ *   - after (
+ *   - after another operator
  */
 public class _224 {
     // Clarifications:
@@ -115,5 +122,16 @@ public class _224 {
             }
             return total + sign * num;
         }
+    }
+
+    public static void main(String[] args) {
+        // standard solution already handles unary operators
+        Solution1_Recursion s = new _224().new Solution1_Recursion();
+        System.out.println(s.calculate("-(1 + (2 - 3))"));  // 0
+        System.out.println(s.calculate("-(-1 + (2 - 3))")); // 2
+        System.out.println(s.calculate("-(3 + 4)"));        // -7
+        System.out.println(s.calculate("-(1 - 4)"));        // 3
+        System.out.println(s.calculate("-(-4)"));           // 4
+        System.out.println(s.calculate("--4"));             // 4
     }
 }
