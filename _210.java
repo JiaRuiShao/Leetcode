@@ -4,12 +4,9 @@ import java.util.*;
  * 210. Course Schedule II
  */
 public class _210 {
-    /**
-     * BFS Traverse.
-     * Time: O(V + E), would be O(VE) if we choose not to build a graph
-     * Space: O(V + E), would be O(V) if we choose not to build a graph
-     */
-    class Solution1_BFS {
+    // Time: O(V + E), would be O(VE) if we choose not to build a graph
+    // Space: O(V + E), would be O(V) if we choose not to build a graph
+    class Solution1_BFS_CycleDetectionForDirectedGraph {
         public int[] findOrder(int numCourses, int[][] prerequisites) {
             // Step 1: Build graph and in-degree array
             List<Integer>[] graph = new ArrayList[numCourses];
@@ -103,65 +100,9 @@ public class _210 {
         }
     }
 
-    /**
-     * DFS Post-order Traversal.
-     * Time: O(V + E)
-     * Space: O(V + E)
-     */
+    // Time: O(V + E)
+    // Space: O(V + E)
     class Solution2_DFS {
-        boolean[] visited, onPath;
-        boolean hasCycle = false;
-
-        public int[] findOrder(int numCourses, int[][] prerequisites) {
-            // 1 - build the directed graph
-            visited = new boolean[numCourses];
-            onPath = new boolean[numCourses];
-            List<Integer>[] g = buildGraph(numCourses, prerequisites);
-            // 2 - traverse the graph & store the post-order traverse result
-            List<Integer> res = new ArrayList<>();
-            for (int node = 0; node < numCourses; node++) {
-                traverse(g, node, res);
-            }
-
-            Collections.reverse(res);
-            return hasCycle ? new int[]{} : res.stream().mapToInt(Integer::intValue).toArray();
-        }
-
-        private List<Integer>[] buildGraph(int n, int[][] edges) {
-            List<Integer>[] g = new LinkedList[n];
-            for (int i = 0; i < n; i++) {
-                g[i] = new LinkedList<>();
-            }
-
-            for (int[] edge : edges) { // n0 depends on n1, n1 -> n0
-                g[edge[1]].add(edge[0]);
-            }
-
-            return g;
-        }
-
-        private void traverse(List<Integer>[] g, int node, List<Integer> res) {
-            if (onPath[node]) hasCycle = true;
-            if (hasCycle || visited[node]) return;
-
-            visited[node] = true;
-            onPath[node] = true;
-
-            for (int next : g[node]) {
-                traverse(g, next, res);
-            }
-
-            onPath[node] = false;
-            res.add(node); // post-order traversal
-        }
-    }
-
-    /**
-     * DFS Post-order Traversal without using global variables.
-     * Time: O(V + E)
-     * Space: O(V + E)
-     */
-    class Solution3_DFS_Improved {
         public int[] findOrder(int numCourses, int[][] prerequisites) {
             List<Integer>[] graph = buildGraph(numCourses, prerequisites);
             boolean[] visited = new boolean[numCourses];
@@ -217,4 +158,54 @@ public class _210 {
         }
     }
 
+    class Solution2_DFS_CycleDetectionForDirectedGraph {
+        public int[] findOrder(int numCourses, int[][] prerequisites) {
+            List<Integer>[] graph = new ArrayList[numCourses];
+            for (int i = 0; i < numCourses; i++) {
+                graph[i] = new ArrayList<>();
+            }
+
+            for (int[] prereq : prerequisites) {
+                graph[prereq[1]].add(prereq[0]);
+            }
+
+            // 0 - unvisited
+            // 1 - visiting
+            // 2 - visited
+            int[] state = new int[numCourses];
+            List<Integer> reversed = new ArrayList<>();
+            for (int start = 0; start < numCourses; start++) {
+                if (state[start] == 0) {
+                    if (cycleFound(graph, start, state, reversed)) {
+                        return new int[0];
+                    }
+                }
+            }
+            
+            int[] ordered = new int[numCourses];
+            for (int i = 0; i < numCourses; i++) {
+                ordered[i] = reversed.get(numCourses - 1 - i);
+            }
+            return ordered;
+        }
+
+        private boolean cycleFound(List<Integer>[] graph, int node, int[] state, List<Integer> reversed) {
+            if (state[node] == 1) {
+                return true;
+            }
+            if (state[node] == 2) {
+                return false;
+            }
+
+            state[node] = 1;
+            for (int nbr : graph[node]) {
+                if (cycleFound(graph, nbr, state, reversed)) {
+                    return true;
+                }
+            }
+            state[node] = 2;
+            reversed.add(node);
+            return false;
+        }
+    }
 }
