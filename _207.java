@@ -4,13 +4,7 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * 207. Course Schedule.
- * There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1.
- * * You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that
- * * you must take course bi first if you want to take course ai.
- *
- * For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
- * Return true if you can finish all courses. Otherwise, return false.
+ * 207. Course Schedule
  */
 public class _207 {
     class Solution1_DFS_Traverse {
@@ -96,7 +90,7 @@ public class _207 {
         }
     }
 
-    class Solution2_DFS_Without_Global_Variables {
+    class Solution1_DFS_Without_Global_Variables {
         class Solution {
             public boolean canFinish(int numCourses, int[][] prerequisites) {
                 List<Integer>[] graph = buildGraph(numCourses, prerequisites);
@@ -145,7 +139,69 @@ public class _207 {
         }
     }
 
-    class Solution3_BFS {
+    // Time: O(V + E)
+    // Space: O(V + E)
+    class Solution1_DFS_CycleDetection {
+        private static final int UNVISITED = 0; // Unvisited
+        private static final int VISITING = 1;  // Visiting (in current path)
+        private static final int VISITED = 2; // Visited (completed)
+        
+        private List<Integer>[] graph;
+        private int[] state;
+        
+        public boolean canFinish(int numCourses, int[][] prerequisites) {
+            // Build adjacency list: a→b means "must take a before b"
+            graph = new ArrayList[numCourses];
+            for (int i = 0; i < numCourses; i++) {
+                graph[i] = new ArrayList<>();
+            }
+            
+            for (int[] prereq : prerequisites) {
+                int course = prereq[0];
+                int prerequisite = prereq[1];
+                // Edge: prerequisite → course
+                graph[prerequisite].add(course);
+            }
+            
+            state = new int[numCourses]; // All WHITE initially
+            
+            // Check all components (graph might be disconnected)
+            for (int i = 0; i < numCourses; i++) {
+                if (state[i] == UNVISITED) {
+                    if (hasCycle(i)) {
+                        return false; // Cycle detected
+                    }
+                }
+            }
+            
+            return true; // No cycles, can finish all courses
+        }
+        
+        private boolean hasCycle(int node) {
+            state[node] = VISITING; // Mark as visiting
+            
+            for (int neighbor : graph[node]) {
+                if (state[neighbor] == VISITING) {
+                    // Back edge detected - cycle found!
+                    return true;
+                }
+                
+                if (state[neighbor] == UNVISITED) {
+                    if (hasCycle(neighbor)) {
+                        return true;
+                    }
+                }
+                // If VISITED, already processed, skip
+            }
+            
+            state[node] = VISITED; // Mark as completed
+            return false;
+        }
+    }
+
+    // Time: O(V + E)
+    // Space: O(V + E)
+    class Solution2_BFS_KhanAlgo {
         /**
          * BFS Traversal.
          * 1) Build a directed graph by implementing an adjacency list
@@ -201,7 +257,9 @@ public class _207 {
         }
     }
 
-    class Solution4_Without_Build_Graph {
+    // Time: O(NE)
+    // Space: O(N)
+    class Solution2_Without_Build_Graph {
         /**
          * Time: O(V + E + VE) = O(VE)
          * Space: O(V)
