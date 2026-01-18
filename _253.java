@@ -59,6 +59,46 @@ public class _253 {
             return maxRooms;
         }
 
+        // Space Optimized Version of Difference Array
+        // Time: O(n + range) where range = max_time - min_time
+        // Space: O(range)
+        public int minMeetingRooms(int[][] intervals) {
+            if (intervals == null || intervals.length == 0) {
+                return 0;
+            }
+            
+            // Find time range
+            int minTime = Integer.MAX_VALUE;
+            int maxTime = Integer.MIN_VALUE;
+            
+            for (int[] interval : intervals) {
+                minTime = Math.min(minTime, interval[0]);
+                maxTime = Math.max(maxTime, interval[1]);
+            }
+            
+            // Difference array
+            int[] diff = new int[maxTime - minTime + 1];
+            
+            for (int[] interval : intervals) {
+                int start = interval[0] - minTime;
+                int end = interval[1] - minTime;
+                
+                diff[start]++;    // Meeting starts
+                diff[end]--;      // Meeting ends
+            }
+            
+            // Find max prefix sum
+            int rooms = 0;
+            int maxRooms = 0;
+            
+            for (int delta : diff) {
+                rooms += delta;
+                maxRooms = Math.max(maxRooms, rooms);
+            }
+            
+            return maxRooms;
+        }
+
         public int minMeetingRooms_TreeMap(int[][] intervals) {
             TreeMap<Integer, Integer> diff = new TreeMap<>();
 
@@ -149,4 +189,37 @@ public class _253 {
         }
     }
 
+    class Followup_ReturnActualRoom {
+        public int[] assignRooms(int[][] intervals) {
+            int n = intervals.length;
+            // track original positions
+            Integer[] indices = new Integer[n];
+            for (int i = 0; i < n; i++) {
+                indices[i] = i;
+            }
+
+            // sort by start time
+            Arrays.sort(indices, (a, b) -> Integer.compare(intervals[a][0], intervals[b][0]));
+            // minHeap stores [end_time, room_number]
+            PriorityQueue<int[]> minHeap = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0]));
+            
+            int[] assignment = new int[n];
+            int nextRoom = 0;
+            for (int i : indices) {
+                int[] meeting = intervals[i];
+                int roomNum;
+                if (!minHeap.isEmpty() && minHeap.peek()[0] <= meeting[0]) {
+                    // use previous room
+                    roomNum = minHeap.poll()[1];
+                } else {
+                    // allocate a new room
+                    roomNum = nextRoom++;
+                }
+                assignment[i] = roomNum;
+                minHeap.offer(new int[]{meeting[1], roomNum});
+            }
+            
+            return assignment;
+        }
+    }
 }
