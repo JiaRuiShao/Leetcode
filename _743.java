@@ -45,8 +45,9 @@ public class _743 {
         }
     }
 
-    class Solution2_Dijkstra_With_AdjList {
-        // Time: O(e + (n+e)logn)
+    class Solution1_Dijkstra {
+        // Time: O(ElogV)
+        // Space: O(V+E)
         public int networkDelayTime(int[][] times, int n, int k) {
             int[] dist = new int[n];
             Arrays.fill(dist, Integer.MAX_VALUE);
@@ -88,6 +89,34 @@ public class _743 {
                 maxTime = Math.max(maxTime, time);
             }
             return maxTime == Integer.MAX_VALUE ? -1 : maxTime;
+        }
+    }
+
+    class Solution2_BellmanFord {
+        // ** IMPORTANT: convert base-1 nodes to base-0 nodes **
+        // Time: O(VE)
+        // Space: O(V)
+        public int networkDelayTime(int[][] times, int n, int k) {
+            int[] delay = new int[n];
+            Arrays.fill(delay, Integer.MAX_VALUE / 2);
+            delay[k - 1] = 0;
+
+            for (int i = 0; i < n - 1; i++) {
+                for (int[] time : times) {
+                    int from = time[0] - 1, to = time[1] - 1, weight = time[2];
+                    delay[to] = Math.min(delay[to], delay[from] + weight);
+                }
+            }
+
+            // assume no cycle
+            int maxDelay = 0;
+            for (int node = 0; node < n; node++) {
+                if (delay[node] == Integer.MAX_VALUE / 2) { // never reach
+                    return -1;
+                }
+                maxDelay = Math.max(maxDelay, delay[node]);
+            }
+            return maxDelay;
         }
     }
 }
