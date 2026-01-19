@@ -3,18 +3,44 @@ import java.util.Queue;
 
 /**
  * 785. Is Graph Bipartite?
- * Use byte[] colors instead if the graph vertex number is large
  */
 public class _785 {
-	/**
-	 * BFS - color before traverse for the 1st time.
-	 * Time: O(n+e)
-	 * Space: O(n)
-	 */
-	class Solution {
+	class Solution1_DFS {
 		public boolean isBipartite(int[][] graph) {
 			int n = graph.length;
-			int[] colors = new int[n]; // 1 , 2
+			int[] color = new int[n]; // 0 - unvisit; 1 - red; 2 - black
+			for (int start = 0; start < n; start++) {
+				if (color[start] == 0 && !isBipartite(graph, start, 1, color)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private boolean isBipartite(int[][] graph, int node, int parentColor, int[] color) {
+			color[node] = (parentColor == 1 ? 2 : 1);
+			if (graph[node] == null || graph[node].length == 0) {
+				return true;
+			}
+
+			for (int nbr : graph[node]) {
+				if (color[nbr] == color[node]) {
+					return false;
+				}
+				if (color[nbr] == 0 && !isBipartite(graph, nbr, color[node], color)) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+
+	// Time: O(V+E)
+	// Space: O(V)
+	class Solution2_BFS {
+		public boolean isBipartite(int[][] graph) {
+			int n = graph.length;
+			int[] colors = new int[n];  // 0 - unvisit; 1 - red; 2 - black
 
 			for (int v = 0; v < n; v++) {
 				if (colors[v] == 0) {
@@ -46,107 +72,52 @@ public class _785 {
 		}
 	}
 
-	class Solution2_DFS {
-		boolean isBipartite = true;
-
+	// Time: O(V+E*alpha(V)) = O(V+E)
+	// Space: O(V)
+	class Solution3_UF {
+		private int[] parent;
+		
 		public boolean isBipartite(int[][] graph) {
 			int n = graph.length;
-			int[] color = new int[n];
+			parent = new int[n];
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			
 			for (int node = 0; node < n; node++) {
-				if (color[node] != 0 || !isBipartite) {
-					continue;
-				}
-				dfs(node, graph, color, 1);
-			}
-			return isBipartite;
-		}
-
-		private void dfs(int node, int[][] graph, int[] color, int parentColor) {
-			if (color[node] != 0) {
-				if (color[node] == parentColor) {
-					isBipartite = false;
-				}
-				return;
-			}
-			if (!isBipartite) {
-				return;
-			}
-			color[node] = parentColor == 1 ? 2 : 1;
-			for (int neighbor : graph[node]) {
-				dfs(neighbor, graph, color, color[node]);
-			}
-		}
-	}
-
-	/**
-	 * DFS - set color when traverse for the 1st time.
-	 * Time:	O(n + e)
-	 * Space:	O(n)
-	 */
-	class Solution3_DFS_Without_Global_Variables {
-		public boolean isBipartite(int[][] graph) {
-			int n = graph.length;
-			int[] color = new int[n]; // 0 = unvisited, 1 or 2 = color sets
-
-			for (int node = 0; node < n; node++) {
-				if (color[node] == 0) {
-					if (!dfs(node, graph, color, 1)) {
-						return false;
+				if (graph[node].length == 0) continue;
+				
+				// All neighbors of 'node' must be in the same group
+				// And that group must be different from 'node's group
+				int firstNeighbor = graph[node][0];
+				
+				for (int neighbor : graph[node]) {
+					// Check if node and neighbor are in same set
+					if (find(node) == find(neighbor)) {
+						return false; // Both in same set → not bipartite
 					}
+					
+					// Union all neighbors together (they're in opposite set from node)
+					union(firstNeighbor, neighbor);
 				}
 			}
+			
 			return true;
 		}
-
-		private boolean dfs(int node, int[][] graph, int[] color, int currColor) {
-			if (color[node] != 0) {
-				return color[node] == currColor;
+		
+		private int find(int x) {
+			if (parent[x] != x) {
+				parent[x] = find(parent[x]);
 			}
-
-			color[node] = currColor;
-			for (int neighbor : graph[node]) {
-				if (!dfs(neighbor, graph, color, 3 - currColor)) {
-					return false;
-				}
-			}
-			return true;
+			return parent[x];
 		}
-	}
-
-	/**
-	 * DFS - color before traverse for the 1st time.
-	 * Recommended for BFS solution
-	 * Time:	O(n + e)
-	 * Space:	O(n)
-	 */
-	class Solution4_DFS_Without_Global_Variables_Without_Extra_Color_Parameter {
-		public boolean isBipartite(int[][] graph) {
-			int n = graph.length;
-			int[] colors = new int[n]; // 1 , 2
-
-			for (int v = 0; v < n; v++) {
-				if (colors[v] == 0) {
-					colors[v] = 1;
-					if (!dfs(v, colors, graph)) {
-						return false;
-					}
-				}
+		
+		private void union(int x, int y) {
+			int rootX = find(x);
+			int rootY = find(y);
+			if (rootX != rootY) {
+				parent[rootX] = rootY;
 			}
-			return true;
-		}
-
-		private boolean dfs(int v, int[] colors, int[][] graph) {
-			for (int nbr : graph[v]) {
-				if (colors[nbr] == 0) {
-					colors[nbr] = 3 - colors[v];
-					if (!dfs(nbr, colors, graph)) {
-						return false;
-					}
-				} else if (colors[nbr] == colors[v]) {
-					return false;
-				}
-			}
-			return true;
 		}
 	}
 }
