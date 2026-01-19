@@ -39,20 +39,24 @@ public class _133 {
     class Solution2_DFS {
         public Node cloneGraph(Node node) {
             Map<Node, Node> nodeToClone = new HashMap<>();
-            traverse(node, nodeToClone);
-            return nodeToClone.getOrDefault(node, null);
+            return clone(node, nodeToClone);
         }
 
-        private void traverse(Node root, Map<Node, Node> nodeToClone) {
-            if (root == null || nodeToClone.containsKey(root)) return;
-            Node clone = new Node(root.val);
-            nodeToClone.put(root, clone);
-            List<Node> neighbors = new ArrayList<>();
-            for (Node nbr : root.neighbors) {
-                traverse(nbr, nodeToClone);
-                neighbors.add(nodeToClone.get(nbr));
+        private Node clone(Node root, Map<Node, Node> map) {
+            if (root == null) {
+                return null;
             }
-            clone.neighbors = neighbors;
+            // pre-order to create node
+            Node clone = new Node(root.val);
+            map.put(root, clone);
+
+            for (Node nbr : root.neighbors) {
+                if (!map.containsKey(nbr)) {
+                    clone(nbr, map);
+                }
+                clone.neighbors.add(map.get(nbr));
+            }
+            return clone;
         }
     }
 }
