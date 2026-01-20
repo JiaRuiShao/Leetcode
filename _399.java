@@ -242,11 +242,6 @@ public class _399 {
             for (int i = 0; i < queries.size(); i++) {
                 String a = queries.get(i).get(0);
                 String b = queries.get(i).get(1);
-                // if a == b, they don't need to be connected
-                if (a.equals(b)) {
-                    calculated[i] = 1.0;
-                    continue;
-                }
                 // check if a & b are valid variable
                 EquationNode na = nodes.get(a);
                 EquationNode nb = nodes.get(b);
