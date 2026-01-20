@@ -2,6 +2,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * 924. Minimize Malware Spread
@@ -79,53 +80,14 @@ public class _924 {
         }
     }
 
+    // Time: O(n^2 * α(n) + klogk) = O(n^2) where n is nodes in graph and k is number of infected nodes in initial
+    // Space: O(n)
     class Solution2_UF {
-        public int minMalwareSpread(int[][] graph, int[] initial) {
-            int n = graph.length;
-            DSU dsu = new DSU(n);
+        class UF {
+            int[] parent;
+            int[] size;
 
-            // 1) Build connected components.
-            for (int i = 0; i < n; i++) {
-                for (int j = i + 1; j < n; j++) {
-                    if (graph[i][j] == 1) dsu.union(i, j);
-                }
-            }
-
-            // 2) Component sizes.
-            int[] componentSize = new int[n];
-            for (int node = 0; node < n; node++) {
-                int root = dsu.find(node);
-                componentSize[root]++;
-            }
-
-            // 3) Count initially infected nodes per component.
-            int[] infectedInComponent = new int[n];
-            for (int node : initial) {
-                infectedInComponent[dsu.find(node)]++;
-            }
-
-            // 4) Choose the node to remove.
-            Arrays.sort(initial); // ensures smallest index on ties
-            int bestNode = initial[0];
-            int bestSaved = -1;
-
-            for (int node : initial) {
-                int root = dsu.find(node);
-                int saved = (infectedInComponent[root] == 1) ? componentSize[root] : 0;
-
-                if (saved > bestSaved || (saved == bestSaved && node < bestNode)) {
-                    bestSaved = saved;
-                    bestNode = node;
-                }
-            }
-
-            return bestNode;
-        }
-
-        // Union-Find with path compression and union by size
-        class DSU {
-            int[] parent, size;
-            DSU(int n) {
+            UF (int n) {
                 parent = new int[n];
                 size = new int[n];
                 for (int i = 0; i < n; i++) {
@@ -133,16 +95,112 @@ public class _924 {
                     size[i] = 1;
                 }
             }
-            int find(int x) {
-                if (parent[x] != x) parent[x] = find(parent[x]);
-                return parent[x];
+
+            int find(int node) {
+                if (parent[node] != node) {
+                    parent[node] = find(parent[node]);
+                }
+                return parent[node];
             }
-            void union(int a, int b) {
-                int ra = find(a), rb = find(b);
-                if (ra == rb) return;
-                if (size[ra] < size[rb]) { int t = ra; ra = rb; rb = t; }
-                parent[rb] = ra;
-                size[ra] += size[rb];
+
+            void union(int n1, int n2) {
+                int r1 = find(n1), r2 = find(n2);
+                if (r1 != r2) {
+                    if (size[r1] >= size[r2]) {
+                        parent[r2] = r1;
+                        size[r1] += size[r2];
+                    } else {
+                        parent[r1] = r2;
+                        size[r2] += size[r1];
+                    }
+                }
+            }
+        }
+
+        public int minMalwareSpread(int[][] graph, int[] initial) {
+            int n = graph.length;
+            UF uf = new UF(n);
+            for (int i = 0; i < n - 1; i++) {
+                for (int j = i + 1; j < n; j++) {
+                    if (graph[i][j] == 1) {
+                        uf.union(i, j);
+                    }
+                }
+            }
+
+            // Count component sizes
+            int[] components = new int[n];
+            for (int node = 0; node < n; node++) {
+                int root = uf.find(node);
+                components[root]++;
+            }
+
+            // Count infected per component
+            int[] infected = new int[n];
+            for (int infect : initial) {
+                infected[uf.find(infect)]++;
+            }
+
+            Arrays.sort(initial);
+            int nodeToRem = initial[0];
+            int maxComponent = 0;
+            for (int infect : initial) {
+                int root = uf.find(infect);
+                if (infected[root] == 1 && components[root] > maxComponent) {
+                    maxComponent = components[root];
+                    nodeToRem = infect;
+                }
+            }
+            return nodeToRem;
+        }
+    }
+
+    class Solution3_BF_Simulation {
+        public int minMalwareSpread(int[][] graph, int[] initial) {
+            int n = graph.length;
+            int minInfected = n + 1;
+            int result = Integer.MAX_VALUE;
+            
+            Arrays.sort(initial); // For tiebreaker
+            
+            // Try removing each initially infected node
+            for (int toRemove : initial) {
+                // Count infected if we remove this node
+                Set<Integer> infected = new HashSet<>();
+                
+                for (int start : initial) {
+                    if (start != toRemove) {
+                        bfs(graph, start, infected);
+                    }
+                }
+                
+                int count = infected.size();
+                
+                if (count < minInfected || (count == minInfected && toRemove < result)) {
+                    minInfected = count;
+                    result = toRemove;
+                }
+            }
+            
+            return result;
+        }
+        
+        private void bfs(int[][] graph, int start, Set<Integer> infected) {
+            if (infected.contains(start)) return;
+            
+            Queue<Integer> queue = new LinkedList<>();
+            queue.offer(start);
+            infected.add(start);
+            
+            while (!queue.isEmpty()) {
+                int node = queue.poll();
+                
+                for (int neighbor = 0; neighbor < graph.length; neighbor++) {
+                    if (graph[node][neighbor] == 1 && !infected.contains(neighbor)) {
+                        infected.add(neighbor);
+                        queue.offer(neighbor);
+                    }
+                }
             }
         }
     }
