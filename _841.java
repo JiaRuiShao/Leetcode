@@ -6,11 +6,13 @@ import java.util.Queue;
  * 841. Keys and Rooms
  */
 public class _841 {
+    // Time: O(V + E)
+    // Space: O(V)
     class Solution1_DFS {
         public boolean canVisitAllRooms(List<List<Integer>> rooms) {
-            int n = rooms.size(), start = 0; // we can only start from 0
+            int n = rooms.size();
             boolean[] visited = new boolean[n];
-            dfs(rooms, start, visited);
+            dfs(rooms, 0, visited);
             for (boolean visit : visited) {
                 if (!visit) {
                     return false;
@@ -20,10 +22,11 @@ public class _841 {
         }
 
         private void dfs(List<List<Integer>> rooms, int room, boolean[] visited) {
-            if (visited[room]) return;
             visited[room] = true;
-            for (int nextRoom : rooms.get(room)) {
-                dfs(rooms, nextRoom, visited);
+            for (int next : rooms.get(room)) {
+                if (!visited[next]) {
+                    dfs(rooms, next, visited);
+                }
             }
         }
     }
