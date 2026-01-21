@@ -114,27 +114,25 @@ public class _5 {
 		}
 
 		public String longestPalindrome_SpaceOptimized(String s) {
-			int n = s.length(), maxLen = 1, start = 0;
+			int n = s.length();
+			int maxLen = 1, start = 0;
+			
 			boolean[] dp = new boolean[n];
-			// j >= i
-			// dp[i][j] = dp[i+1][j-1] if s[i] == s[j]
 			for (int i = n - 1; i >= 0; i--) {
-				boolean prev = false; // dp[i+1][j-1]
 				dp[i] = true;
-				for (int j = i + 1; j < n; j++) {
-					boolean temp = dp[j];
+				for (int j = n - 1; j > i; j--) {
 					if (s.charAt(i) == s.charAt(j)) {
-						dp[j] = (j == i + 1) || prev;
+						dp[j] = j == i + 1 || dp[j - 1];
 						if (dp[j] && j - i + 1 > maxLen) {
 							maxLen = j - i + 1;
 							start = i;
 						}
 					} else {
-						dp[j] = false; // explicitly set to false to override value from prev row
+						dp[j] = false;
 					}
-					prev = temp;
 				}
 			}
+
 			return s.substring(start, start + maxLen);
 		}
 	}
