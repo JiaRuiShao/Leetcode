@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 54. Spiral Matrix.
+ * 54. Spiral Matrix
  */
 public class _54 {
 	public static class Solution1 {
@@ -50,36 +50,32 @@ public class _54 {
 	
 	class Solution2 {
 		public List<Integer> spiralOrder(int[][] matrix) {
-			List<Integer> sprial = new ArrayList<>();
+			List<Integer> spiral = new ArrayList<>();
 			int m = matrix.length, n = matrix[0].length;
-			int rowUpper = m - 1, colUpper = n - 1, rowLower = 0, colLower = 0;
-			while (rowLower <= rowUpper && colLower <= colUpper) {
-				if (rowLower <= rowUpper) {
-					for (int col = colLower; col <= colUpper; col++) {
-						sprial.add(matrix[rowLower][col]);
-					}
+			int top = 0, down = m - 1, left = 0, right = n - 1;
+			while (top <= down && left <= right) {
+				for (int c = left; c <= right; c++) {
+					spiral.add(matrix[top][c]);
 				}
-				rowLower++;
-				if (colLower <= colUpper) {
-					for (int row = rowLower; row <= rowUpper; row++) {
-						sprial.add(matrix[row][colUpper]);
-					}
+				top++;
+				for (int r = top; r <= down; r++) {
+					spiral.add(matrix[r][right]);
 				}
-				colUpper--;
-				if (rowLower <= rowUpper) {
-					for (int col = colUpper; col >= colLower; col--) {
-						sprial.add(matrix[rowUpper][col]);
+				right--;
+				if (top <= down) {
+					for (int c = right; c >= left; c--) {
+						spiral.add(matrix[down][c]);
 					}
+					down--;
 				}
-				rowUpper--;
-				if (colLower <= colUpper) {
-					for (int row = rowUpper; row >= rowLower; row--) {
-						sprial.add(matrix[row][colLower]);
+				if (left <= right) {
+					for (int r = down; r >= top; r--) {
+						spiral.add(matrix[r][left]);
 					}
+					left++;
 				}
-				colLower++;
 			}
-			return sprial;
+			return spiral;
 		}
 	}
 }
