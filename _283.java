@@ -16,4 +16,22 @@ public class _283 {
             }
         }
     }
+
+    class Solution2_TwoPass {
+        // write non-zeros, then fill remaining with zeros
+        public void moveZeroes(int[] nums) {
+            // [0, left): non-zero
+            int n = nums.length;
+            int left = 0, right = 0;
+            while (right < n) {
+                if (nums[right] != 0) {
+                    nums[left++] = nums[right];
+                }
+                right++;
+            }
+            while (left < n) {
+                nums[left++] = 0;
+            }
+        }
+    }
 }
