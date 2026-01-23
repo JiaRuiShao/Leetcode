@@ -37,23 +37,22 @@ public class _238 {
     }
 
     class Solution2_Prefix_Suffix_Improved {
+        // product[i] = pre[i-1] * suff[i+1]
         public int[] productExceptSelf(int[] nums) {
             int n = nums.length;
-            int[] productExceptSelf = new int[n];
-            // build prefix
-            productExceptSelf[0] = nums[0];
-            for (int i = 1; i < n; i++) {
-                productExceptSelf[i] = productExceptSelf[i - 1] * nums[i];
+            int[] product = new int[n];
+            int prefix = 1;
+            // calc prefix product
+            for (int i = 0; i < n; i++) {
+                product[i] = prefix;
+                prefix *= nums[i];
             }
-    
-            // build suffix & get answer
             int suffix = 1;
-            for (int i = n - 1; i > 0; i--) {
-                productExceptSelf[i] = suffix * productExceptSelf[i - 1];
-                suffix *= nums[i];
+            for (int j = n - 1; j >= 0; j--) {
+                product[j] *= suffix;
+                suffix *= nums[j];
             }
-            productExceptSelf[0] = suffix;
-            return productExceptSelf;
+            return product;
         }
     }
 }
