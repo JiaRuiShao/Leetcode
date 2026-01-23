@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.TreeMap;
 
 /**
@@ -147,16 +148,14 @@ public class _253 {
     class Solution2_PriorityQueue {
         public int minMeetingRooms(int[][] intervals) {
             Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
-            // minHeap to store end times of ongoing meetings
-            PriorityQueue<Integer> endTimes = new PriorityQueue<>();
-            endTimes.offer(intervals[0][0]);
+            Queue<int[]> minHeap = new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));
             for (int[] interval : intervals) {
-                if (interval[0] >= endTimes.peek()) { // free one room
-                    endTimes.poll();
+                if (!minHeap.isEmpty() && minHeap.peek()[1] <= interval[0]) {
+                    minHeap.poll();
                 }
-                endTimes.offer(interval[1]);
+                minHeap.offer(interval);
             }
-            return endTimes.size();
+            return minHeap.size();
         }
     }
 
