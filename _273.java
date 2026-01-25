@@ -1,5 +1,6 @@
 /**
  * 273. Integer to English Words
+ * 1234567 -> One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven
  */
 public class _273 {
     class Solution1 {
