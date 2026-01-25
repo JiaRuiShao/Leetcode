@@ -53,7 +53,7 @@ public class _93 {
         }
     }
 
-    // Time: O(3^4) = O(1)
+    // Time: O(3^4) = O(1); O(3^n) without early pruning
     // Space: O(1)
     class Solution2_Backtrack_Combination_ElemUsedOnce_NoDedup {
         public List<String> restoreIpAddresses(String s) {
