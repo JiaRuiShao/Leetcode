@@ -50,12 +50,64 @@ public class _767 {
             }
             if (!maxHeap.isEmpty()) {
                 CharFreq cf = maxHeap.poll();
-                if (!reorg.isEmpty() && reorg.charAt(reorg.length() - 1) == cf.c || cf.freq > 1) {
-                    return "";
-                }
+                // if (!reorg.isEmpty() && reorg.charAt(reorg.length() - 1) == cf.c || cf.freq > 1) {
+                //     return "";
+                // }
                 reorg.append(cf.c);
             }
             return reorg.toString();
+        }
+    }
+
+    // Count frequencies
+    // Find most frequent character
+    // Place it at even positions (0, 2, 4, ...)
+    // Fill remaining characters in remaining positions
+    class Solution2_MostFreqFirst {
+        public String reorganizeString(String s) {
+            int n = s.length();
+            int[] count = new int[26];
+            int maxCount = 0;
+            char maxChar = 'a';
+            
+            // Count and find max frequency character
+            for (char c : s.toCharArray()) {
+                count[c - 'a']++;
+                if (count[c - 'a'] > maxCount) {
+                    maxCount = count[c - 'a'];
+                    maxChar = c;
+                }
+            }
+            
+            // Check if possible
+            if (maxCount > (n + 1) / 2) {
+                return "";
+            }
+            
+            char[] result = new char[n];
+            int index = 0;
+            
+            // Place most frequent character at even positions
+            while (count[maxChar - 'a'] > 0) {
+                result[index] = maxChar;
+                index += 2;
+                count[maxChar - 'a']--;
+            }
+            
+            // Place remaining characters
+            for (int i = 0; i < 26; i++) {
+                char ch = (char) ('a' + i);
+                while (count[i] > 0) {
+                    if (index >= n) {
+                        index = 1;  // Switch to odd positions
+                    }
+                    result[index] = ch;
+                    index += 2;
+                    count[i]--;
+                }
+            }
+            
+            return new String(result);
         }
     }
 }
