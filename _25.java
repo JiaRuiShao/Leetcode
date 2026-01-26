@@ -1,7 +1,7 @@
 import helper.ListNode;
 
 /**
- * 25. Reverse Nodes in k-Group.
+ * 25. Reverse Nodes in k-Group
  */
 public class _25 {
 	
@@ -111,6 +111,8 @@ public class _25 {
 	}
 	
 	// Ref: https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-8f30d/ru-he-k-ge-d591d/
+	// Time: O(n)
+	// Space: O(n/k)
 	public static class Solution3_Recursion {
 		ListNode reverse(ListNode a) {
 			ListNode prev = null, curr = a, next = a;
@@ -125,17 +127,16 @@ public class _25 {
 		}
 		
 		/**
-		 * reverse the linked list in range [a, b)
+		 * Reverse the linked list in range [a, b) and return the new head of the reversed linked list
 		 */
 		ListNode reverseRange(ListNode a, ListNode b) {
-			ListNode prev = null, curr = a, next = a;
+			ListNode prev = null, curr = a;
 			while (curr != b) {
-				next = curr.next;  // store the next node of curr
-				curr.next = prev; // reverse
-				prev = curr; //  update curr
-				curr = next; // update next
+				ListNode next = curr.next;
+				curr.next = prev;
+				prev = curr;
+				curr = next;
 			}
-			// return the new head of the reversed linked list
 			return prev;
 		}
 		
