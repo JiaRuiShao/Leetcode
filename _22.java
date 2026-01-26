@@ -1,19 +1,11 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/* 
-
-Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
-
-Example:
-Input: n = 3
-Output: ["((()))","(()())","(())()","()(())","()()()"]
-
-Combination
-Backtrack
+/**
+ * 22. Generate Parentheses
  */
-
 public class _22 {
 
     /**
@@ -52,6 +44,37 @@ public class _22 {
         List<String> res = new LinkedList<>();
         backtrack(new StringBuilder(), res, n, n);
         return res;
+    }
+
+    class Solution1_Backtrack {
+        private static final String OPEN_PARENTHESIS = "(";
+        private static final String CLOSE_PARENTHESIS = ")";
+
+        public List<String> generateParenthesis(int n) {
+            StringBuilder path = new StringBuilder();
+            List<String> parentheses = new ArrayList<>();
+            backtrack(0, n * 2, path, parentheses);
+            return parentheses;
+        }
+
+        private void backtrack(int open, int n, StringBuilder path, List<String> parentheses) {
+            if (path.length() == n) {
+                parentheses.add(path.toString());
+                return;
+            }
+
+            if (open < n / 2) {
+                path.append(OPEN_PARENTHESIS);
+                backtrack(open + 1, n, path, parentheses);
+                path.deleteCharAt(path.length() - 1);
+            }
+
+            if (path.length() - open < open) {
+                path.append(CLOSE_PARENTHESIS);
+                backtrack(open, n, path, parentheses);
+                path.deleteCharAt(path.length() - 1);
+            }
+        }
     }
     
     public static void main(String[] args) {
