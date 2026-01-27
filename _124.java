@@ -3,13 +3,16 @@ import helper.TreeNode;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 124. Binary Tree Maximum Path Sum
+ */
 public class _124 {
-    public static class Solution1 {
-        int max = Integer.MIN_VALUE;
-
+    class Solution1_DFS {
+        int maxSum;
         public int maxPathSum(TreeNode root) {
+            maxSum = Integer.MIN_VALUE;
             dfs(root);
-            return max;
+            return maxSum;
         }
 
         private int dfs(TreeNode root) {
@@ -17,12 +20,10 @@ public class _124 {
                 return 0;
             }
 
-            int left = Math.max(dfs(root.left), 0);
-            int right = Math.max(dfs(root.right), 0);
-
-            max = Math.max(max, root.val + left + right);
-
-            return root.val + Math.max(left, right);
+            int leftSum = Math.max(0, dfs(root.left));
+            int rightSum = Math.max(0, dfs(root.right));
+            maxSum = Math.max(maxSum, leftSum + rightSum + root.val);
+            return Math.max(leftSum, rightSum) + root.val;
         }
     }
 
