@@ -5,21 +5,42 @@ import java.util.Deque;
  * 1475. Final Prices With a Special Discount in a Shop
  */
 public class _1475 {
-    class Solution1_MonoStack {
+    class Solution1_BF {
         public int[] finalPrices(int[] prices) {
             int n = prices.length;
-            int[] nle = new int[n];
-            Deque<Integer> minStk = new ArrayDeque<>(); // mono increasing stack
-            for (int i = n - 1; i >= 0; i--) {
-                int price = prices[i];
-                while (!minStk.isEmpty() && minStk.peek() > price) {
-                    minStk.pop();
+            int[] result = new int[n];
+            
+            for (int i = 0; i < n; i++) {
+                int discount = 0;
+                
+                // Find first item to the right with price ≤ current
+                for (int j = i + 1; j < n; j++) {
+                    if (prices[j] <= prices[i]) {
+                        discount = prices[j];
+                        break;  // Found first discount
+                    }
                 }
-                int discount = minStk.isEmpty() ? 0 : minStk.peek();
-                nle[i] = price - discount;
-                minStk.push(price);
+                
+                result[i] = prices[i] - discount;
             }
-            return nle;
+            
+            return result;
+        }
+    }
+
+    class Solution2_MonoStack {
+        public int[] finalPrices(int[] prices) {
+            int n = prices.length;
+            Deque<Integer> maxStk = new ArrayDeque<>();
+            int[] finalPrices = new int[n];
+            for (int i = n - 1; i >= 0; i--) {
+                while (!maxStk.isEmpty() && maxStk.peek() > prices[i]) {
+                    maxStk.pop();
+                }
+                finalPrices[i] = prices[i] - (maxStk.isEmpty() ? 0 : maxStk.peek());
+                maxStk.push(prices[i]);
+            }
+            return finalPrices;
         }
     }
 }
