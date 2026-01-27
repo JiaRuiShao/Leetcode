@@ -80,7 +80,7 @@ public class _57 {
             for (int[] newInterval : newIntervals) {
                 result = insert(result, newInterval);
             }
-            return result;
+            // return result;
             // Time: O(k × n) where k = number of new intervals
             
             // Approach 2: Merge all together
@@ -89,6 +89,16 @@ public class _57 {
             System.arraycopy(newIntervals, 0, combined, intervals.length, newIntervals.length);
             return merge(combined);  // Use Merge Intervals
             // Time: O((n+k) log(n+k))
+        }
+
+        int[][] insert(int[][] result, int[] newInterval) {
+            // logic ignored
+            return new int[0][];
+        }
+
+        int[][] merge(int[][] result) {
+            // logic ignored
+            return result;
         }
     }
 
