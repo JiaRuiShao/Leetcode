@@ -4,6 +4,9 @@ import java.util.List;
 
 /**
  * 51. N-Queens
+ * 
+ * Clarification:
+ * - Can queens attack diagonally? Yes all 8 directions
  */
 public class _51 {
     class Solution1_DFS {
