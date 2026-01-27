@@ -184,7 +184,7 @@ public class _887 {
         }
         
         // 2 - traverse left to right, top down
-        public int superEggDrop2(int k, int n) {
+        public int superEggDrop3(int k, int n) {
             int[] prev = new int[k + 1]; // prev row for col j-1
             int moves = 0;
             while (prev[k] < n) {
