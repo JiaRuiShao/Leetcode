@@ -1,11 +1,4 @@
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * 198. House Robber
@@ -108,8 +101,7 @@ public class _198 {
             }
             
             dp[0][0][0] = 0; // Base case: 0 houses, 0 robbed
-            dp[0][0][0] = 
-            
+
             for (int i = 1; i <= n; i++) {
                 for (int j = 0; j <= k; j++) {
                     // Don't rob i-th house
