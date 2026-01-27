@@ -88,6 +88,6 @@ public class _560 {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(new Solution3_PrefixSum_HashMap_Wrong_Answer().subarraySum(new int[]{1,-1,0}, 0)); // 3
+		System.out.println(new _560().new WrongSolution_SlidingWindow().subarraySum(new int[]{1,-1,0}, 0)); // 3
 	}
 }
