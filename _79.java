@@ -1,6 +1,3 @@
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * 79. Word Search
  */
@@ -55,7 +52,7 @@ public class _79 {
     }
 
 	// Time: O(m × n × 3^L) where L is word length
-	// Space: O(3^L)
+	// Space: O(L)
 	public static class Solution2_DFS_Improved {
         public boolean exist(char[][] board, String word) {
             int row = board.length;
