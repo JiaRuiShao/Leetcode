@@ -6,18 +6,21 @@ import java.util.*;
  * 236. Lowest Common Ancestor of a Binary Tree
  */
 public class _236 {
-
+    // Time: O(n)
+    // Space: O(h)
     class Solution1_DFS {
         public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-            return findLCA(root, p, q);
-        }
-    
-        private TreeNode findLCA(TreeNode root, TreeNode p, TreeNode q) {
-            if (root == null) return null;
-            if (root == p || root == q) return root;
-            TreeNode left = findLCA(root.left, p, q);
-            TreeNode right = findLCA(root.right, p, q);
-            if (left != null && right != null) return root;
+            if (root == null) {
+                return null;
+            }
+            if (root == p || root == q) {
+                return root;
+            }
+            TreeNode left = lowestCommonAncestor(root.left, p, q);
+            TreeNode right = lowestCommonAncestor(root.right, p, q);
+            if (left != null && right != null) {
+                return root;
+            }
             return left != null ? left : right;
         }
     }
