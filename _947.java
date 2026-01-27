@@ -248,6 +248,7 @@ public class _947 {
     }
 
     // Time: O(n^2)
+    // Space: O(n)
     class Solution3_DFS {
         public int removeStones(int[][] stones) {
             int n = stones.length;
@@ -276,6 +277,59 @@ public class _947 {
         
         private boolean isConnected(int[] a, int[] b) {
             return a[0] == b[0] || a[1] == b[1]; // same row or same column
+        }
+    }
+
+    // Time: O(n × k) where k is average connectivity
+    // Space: O(n)
+    class Solution3_DFS_Optimized {
+        public int removeStones(int[][] stones) {
+            // Map: row/column -> list of stone indices
+            Map<Integer, List<Integer>> rowMap = new HashMap<>();
+            Map<Integer, List<Integer>> colMap = new HashMap<>();
+            
+            for (int i = 0; i < stones.length; i++) {
+                int row = stones[i][0];
+                int col = stones[i][1];
+                
+                rowMap.computeIfAbsent(row, k -> new ArrayList<>()).add(i);
+                colMap.computeIfAbsent(col, k -> new ArrayList<>()).add(i);
+            }
+            
+            boolean[] visited = new boolean[stones.length];
+            int components = 0;
+            
+            for (int i = 0; i < stones.length; i++) {
+                if (!visited[i]) {
+                    dfs(i, stones, rowMap, colMap, visited);
+                    components++;
+                }
+            }
+            
+            return stones.length - components;
+        }
+        
+        private void dfs(int idx, int[][] stones, 
+                        Map<Integer, List<Integer>> rowMap,
+                        Map<Integer, List<Integer>> colMap,
+                        boolean[] visited) {
+            visited[idx] = true;
+            int row = stones[idx][0];
+            int col = stones[idx][1];
+            
+            // Visit all stones in same row
+            for (int neighbor : rowMap.get(row)) {
+                if (!visited[neighbor]) {
+                    dfs(neighbor, stones, rowMap, colMap, visited);
+                }
+            }
+            
+            // Visit all stones in same column
+            for (int neighbor : colMap.get(col)) {
+                if (!visited[neighbor]) {
+                    dfs(neighbor, stones, rowMap, colMap, visited);
+                }
+            }
         }
     }
 }
