@@ -280,7 +280,7 @@ public class _322 {
             return dp[amount] > amount ? -1 : dp[amount];
         }
 
-        // solve using 2D dp array
+        // dp[i][j] = min(dp[i-1][j], 1 + dp[i - 1][j-coins[i-1]])
         public int coinChange2D(int[] coins, int amount) {
             int n = coins.length;
             int[][] dp = new int[n + 1][amount + 1]; // min coin # to make amount j using first i coins
