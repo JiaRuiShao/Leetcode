@@ -7,6 +7,8 @@ import java.util.Map;
  * 496. Next Greater Element I
  */
 public class _496 {
+    // Time: O(n^2)
+    // Space: O(1)
     class Solution1_BruteForce {
         public int[] nextGreaterElement(int[] nums1, int[] nums2) {
             int[] res = new int[nums1.length];
@@ -33,6 +35,8 @@ public class _496 {
     }
 
     // Use monotonic stack to get the next greater elements for each number in O(n) time complexity
+    // Time: O(n)
+    // Space: O(n)
     class Solution2_MonoStack {
         public int[] nextGreaterElement(int[] nums1, int[] nums2) {
             Map<Integer, Integer> valToNGL = findNGL(nums2);
